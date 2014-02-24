@@ -1,0 +1,11 @@
+
+CXX = wine g++.exe
+LDLIBS = -mwindows -lm -lSDLmain -lSDL -lSDL_image -lSDL_ttf
+
+all: DangerousTux.exe
+
+DangerousTux.exe: dangerous_tux.cpp gameentity.hpp player.hpp aliens.hpp jetpack.hpp gun.hpp level.hpp gamescreen.hpp gameentity.hpp gameevent_manager.hpp highscore.hpp score.hpp savegame.hpp
+	$(CXX) -o $@ dangerous_tux.cpp $(LDLIBS)
+
+clean:
+	rm -f DangerousTux.exe

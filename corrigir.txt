@@ -1,0 +1,73 @@
+samuel@samuel:~/Desktop/Engine/DangerousTux$ g++ -o DangerousTux dangerous_tux.cpp -g -march=i386 -lm `sdl-config --cflags --static-libs` -lSDL_image -lSDL_ttf -Wall
+In file included from include/light.hpp:20:0,
+                 from dangerous_tux.cpp:25:
+include/animation.hpp: Na função membro ‘void CAnimation::set_delay(int, int)’:
+include/animation.hpp:90:23: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/animation.hpp: Na função membro ‘void CAnimation::set_frames_delay(int)’:
+include/animation.hpp:99:35: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/animation.hpp: Na função membro ‘bool CAnimation::set_index(int)’:
+include/animation.hpp:118:34: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/animation.hpp: Na função membro ‘SDL_Rect CAnimation::get_frame(int)’:
+include/animation.hpp:134:34: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/animation.hpp: Na função membro ‘virtual int CAnimation::update()’:
+include/animation.hpp:241:32: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+In file included from include/light.hpp:21:0,
+                 from dangerous_tux.cpp:25:
+include/tilemap.hpp: Na função membro ‘bool CTileMap::set_tile(int, int, int)’:
+include/tilemap.hpp:35:25: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/tilemap.hpp: Na função membro ‘void CTileMap::set_tile(int, int)’:
+include/tilemap.hpp:45:35: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/tilemap.hpp: Na função membro ‘int CTileMap::get_tile(int, int)’:
+include/tilemap.hpp:58:37: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/tilemap.hpp: Na função membro ‘int CTileMap::get_tile(int)’:
+include/tilemap.hpp:66:35: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/tilemap.hpp: Na função membro ‘bool CTileMap::has_tile(int)’:
+include/tilemap.hpp:104:35: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+In file included from include/light.hpp:23:0,
+                 from dangerous_tux.cpp:25:
+include/background.hpp: Na função membro ‘virtual int CAnimatedBackground::update()’:
+include/background.hpp:147:3: aviso: no return statement in function returning non-void [-Wreturn-type]
+In file included from include/light.hpp:27:0,
+                 from dangerous_tux.cpp:25:
+include/gui/writer.hpp: Na função membro ‘SDL_Surface* CWriter::render_text(std::string, SDL_Color)’:
+include/gui/writer.hpp:112:33: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/gui/writer.hpp:114:47: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/gui/writer.hpp:117:29: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/gui/writer.hpp:133:32: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/gui/writer.hpp:158:32: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+In file included from include/light.hpp:28:0,
+                 from dangerous_tux.cpp:25:
+include/gui/widget.hpp: Em construtor de cópia ‘CWidget::CWidget(CWidget&)’:
+include/gui/widget.hpp:36:36: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/gui/widget.hpp: Na função membro ‘CWidget& CWidget::operator=(CWidget&)’:
+include/gui/widget.hpp:52:36: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/gui/widget.hpp: Na função membro ‘void CWidget::set_pos(SVect)’:
+include/gui/widget.hpp:74:34: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/gui/widget.hpp: Na função membro ‘bool CWidget::has_child(CWidget*)’:
+include/gui/widget.hpp:142:34: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/gui/widget.hpp: Na função membro ‘CWidget* CWidget::get_child(int)’:
+include/gui/widget.hpp:198:41: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+include/gui/widget.hpp: Na função membro ‘int CWidget::child_update()’:
+include/gui/widget.hpp:226:3: aviso: no return statement in function returning non-void [-Wreturn-type]
+In file included from include/light.hpp:29:0,
+                 from dangerous_tux.cpp:25:
+include/gui/label.hpp: Na função membro ‘virtual void CTextInput::input(SDL_Event&)’:
+include/gui/label.hpp:274:23: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+In file included from gamescreen.hpp:5:0,
+                 from dangerous_tux.cpp:27:
+player.hpp: Na função membro ‘bool CPlayer::collect_items()’:
+player.hpp:615:33: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+player.hpp:616:37: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+In file included from gamescreen.hpp:6:0,
+                 from dangerous_tux.cpp:27:
+level.hpp: Na função membro ‘virtual int CLevel::update()’:
+level.hpp:151:34: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+In file included from gamescreen.hpp:7:0,
+                 from dangerous_tux.cpp:27:
+gamescreen.hpp: Na função membro ‘void CGameScreen::clear_levels()’:
+gamescreen.hpp:418:35: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+gamescreen.hpp: Na função membro ‘virtual int CGameScreen::update()’:
+gamescreen.hpp:563:40: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+gamescreen.hpp:663:41: aviso: comparison between signed and unsigned integer expressions [-Wsign-compare]
+dangerous_tux.cpp: Na função ‘int main(int, char**)’:
+dangerous_tux.cpp:50:41: aviso: conversão obsoleta de constante string para ‘char*’ [-Wwrite-strings]
