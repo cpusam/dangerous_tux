@@ -265,18 +265,12 @@ class CGameTitle: public CStateMachine
 			
 			press_enter = new CLabel("PRESS ENTER!", (SDL_Color){0,0,0,0});
 			press_enter->set_pos(SVect(188,439));
-			version = new CLabel("vERSION 1.0.0 - 2014", (SDL_Color){255,255,0,0});
+			version = new CLabel("vERSION ALPHA - 2014", (SDL_Color){255,255,0,0});
 			version->set_pos(SVect((960 - version->get_surface()->w)/2, 565));
 			penter.add_frame((SDL_Rect){0,0,0,0}, 25);
 			penter.add_frame((SDL_Rect){0,0,0,0}, 25);
 		}
-	
-		// só para posicionar as imagens
-		void input ( SDL_Event & event )
-		{
-			
-		}
-	
+
 		void reset (  )
 		{
 			tn_pos = tn_init;
@@ -898,7 +892,6 @@ class CGameScreen: public CStateMachine
 		
 		void input ( SDL_Event & event )
 		{
-			title.input(event);
 			window.input(event);
 			highscore.input(event);
 
