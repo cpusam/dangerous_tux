@@ -3,7 +3,9 @@
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
+#include <SDL/SDL_mixer.h>
 #include <SDL/SDL_image.h>
+
 
 #include <iostream>
 #include <vector>
@@ -24,12 +26,16 @@ using namespace std;
 #include "movable.hpp"
 #include "util.hpp"
 
+// módulo de gui
 #include "gui/writer.hpp"
 #include "gui/widget.hpp"
 #include "gui/label.hpp"
 #include "gui/button.hpp"
 #include "gui/bar.hpp"
 // #include "gui/gamemenu.hpp"
+
+// módulo de som
+#include "sound/soundplayer.hpp"
 
 #endif
 

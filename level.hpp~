@@ -450,7 +450,7 @@ class CLevel: public CStateMachine
 					cam->lookat(player->get_pos());
 					
 					// se passou de fase
-					if (player->get_state() == FINNISH_LEVEL)
+					if (player->get_state() == FINISHED_LEVEL)
 					{
 						widget->show(false);
 						set_state(NEXT_LEVEL);
@@ -488,7 +488,7 @@ class CLevel: public CStateMachine
 					static_cast<CLabelNumber *>(widget->get_child("num_score"))->set_value(player->score.get_score());
 					static_cast<CLabelNumber *>(widget->get_child("num_lives"))->set_value(player->get_lives());
 					
-					if (player->update() != WAITING)
+					if (player->get_state() != WAITING)
 					{
 						SDL_Rect a, b;
 						SVect p1, p2;
@@ -501,6 +501,8 @@ class CLevel: public CStateMachine
 							if ((*i))
 								(*i)->update();
 						}
+						
+						player->update();
 						
 						kernel_signal.update();
 						exit_signal.update();
@@ -538,6 +540,9 @@ class CLevel: public CStateMachine
 							}
 						}
 					}
+					else
+						player->update();
+
 					break;
 
 				case NEXT_LEVEL: // esperando nova fase

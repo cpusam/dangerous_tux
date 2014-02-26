@@ -6,7 +6,7 @@ DEPS = src/dangerous_tux.cpp src/gameentity.hpp src/player.hpp src/aliens.hpp sr
 all: DangerousTux
 
 DangerousTux: $(DEPS)
-	$(CXX) -o $@ src/dangerous_tux.cpp -g -march=i386 $(LDLIBS)
+	$(CXX) -o $@ dangerous_tux.cpp -g -march=i386 $(LDLIBS)
 
 clean:
 	rm -f DangerousTux

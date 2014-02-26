@@ -40,15 +40,11 @@ class CGameEventManager: public CStateMachine
 			return singleton;
 		}
 		
-		bool add_event ( SGameEvent e )
+		void add_event ( SGameEvent e )
 		{
-			if (get_state() == 1)
-			{
-				events.push_back(e);
-				return true;
-			}
-			
-			return false;
+			events.push_back(e);
+			count = 0; // resta count para evitar perder processamento dos eventos
+			set_state(1);
 		}
 		
 		vector <SGameEvent> get_events ( CGameEntity * who )
@@ -56,11 +52,9 @@ class CGameEventManager: public CStateMachine
 			vector <SGameEvent> aux;
 			
 			for (vector <SGameEvent>::iterator i = events.begin(); i != events.end(); i++)
-			{
 				if ((*i).receiver == who && (*i).receiver != 0)
 					aux.push_back((*i));
-			}
-			
+
 			return aux;
 		}
 		
@@ -69,6 +63,8 @@ class CGameEventManager: public CStateMachine
 			switch (get_state())
 			{
 				case 0:
+					if (events.size() > 0)
+						set_state(1);
 					break;
 				
 				case 1:
@@ -76,10 +72,12 @@ class CGameEventManager: public CStateMachine
 					{
 						count = 0;
 						events.clear();
+						set_state(0);
 					}
 					break;
 				
 				default:
+					set_state(0);
 					break;
 			}
 		

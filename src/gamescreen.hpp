@@ -313,7 +313,7 @@ class CGameTitle: public CStateMachine
 		}
 };
 
-enum EGameIntrodutionState
+enum EGameIntroductionState
 {
 	PARALLEL_UNIVERSE,
 	LINUS_TYPING,
@@ -325,7 +325,7 @@ enum EGameIntrodutionState
 	INACTIVE_INTRODUCTION
 };
 
-class CGameIntrodution: public CStateMachine
+class CGameIntroduction: public CStateMachine
 {
 	protected:
 		vector <CAnimation> anim;
@@ -339,7 +339,7 @@ class CGameIntrodution: public CStateMachine
 		int vel_hand; // velocidade de movimento da mão
 	
 	public:
-		CGameIntrodution (  )
+		CGameIntroduction (  )
 		{
 			#if _WIN32 || _WIN64 || __MINGW32__
 				char path[FILENAME_MAX];
@@ -365,7 +365,7 @@ class CGameIntrodution: public CStateMachine
 			
 			browser_bg = optimize_surface_alpha(IMG_Load(path));
 			if (!browser_bg)
-				throw "CGameIntrodution: não foi possível carregar scene1_BG.png\n";
+				throw "CGameIntroduction: não foi possível carregar scene1_BG.png\n";
 			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				#ifndef PREFIX
@@ -383,7 +383,7 @@ class CGameIntrodution: public CStateMachine
 			
 			keyboard_bg = optimize_surface_alpha(IMG_Load(path));
 			if (!keyboard_bg)
-				throw "CGameIntrodution: não foi possível carregar scene2_BG.png\n";
+				throw "CGameIntroduction: não foi possível carregar scene2_BG.png\n";
 			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				#ifndef PREFIX
@@ -401,7 +401,7 @@ class CGameIntrodution: public CStateMachine
 			
 			kernel_site = optimize_surface_alpha(IMG_Load(path));
 			if (!kernel_site)
-				throw "CGameIntrodution: não foi possível carregar scene3_BG.png\n";
+				throw "CGameIntroduction: não foi possível carregar scene3_BG.png\n";
 			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				#ifndef PREFIX
@@ -418,7 +418,7 @@ class CGameIntrodution: public CStateMachine
 			#endif
 
 			if (!CWriter::instance()->set_font(path, 80))
-				throw "CGameIntrodution: não foi possível carregar font\n";
+				throw "CGameIntroduction: não foi possível carregar font\n";
 
 			parallel = new CLabel("In a parallel universe...", (SDL_Color){255,255,0,0});
 			parallel->set_pos(SVect((960 - parallel->get_surface()->w)/2, (624 - parallel->get_surface()->h)/2));
@@ -439,7 +439,7 @@ class CGameIntrodution: public CStateMachine
 			
 			anim[].surface = optimize_surface_alpha(IMG_Load(path));
 			if (!anim[].surface)
-				throw "CGameIntrodution: não foi possível carregar \n";
+				throw "CGameIntroduction: não foi possível carregar \n";
 			*/
 			
 			anim.resize(6);
@@ -460,7 +460,7 @@ class CGameIntrodution: public CStateMachine
 			
 			anim[0].surface = optimize_surface_alpha(IMG_Load(path));
 			if (!anim[0].surface)
-				throw "CGameIntrodution: não foi possível carregar scene2-Enter.png\n";
+				throw "CGameIntroduction: não foi possível carregar scene2-Enter.png\n";
 			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				#ifndef PREFIX
@@ -478,7 +478,7 @@ class CGameIntrodution: public CStateMachine
 			
 			anim[1].surface = optimize_surface_alpha(IMG_Load(path));
 			if (!anim[1].surface)
-				throw "CGameIntrodution: não foi possível carregar scene2-Hand.png\n";
+				throw "CGameIntroduction: não foi possível carregar scene2-Hand.png\n";
 			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				#ifndef PREFIX
@@ -496,7 +496,7 @@ class CGameIntrodution: public CStateMachine
 			
 			anim[4].surface = optimize_surface_alpha(IMG_Load(path));
 			if (!anim[4].surface)
-				throw "CGameIntrodution: não foi possível carregar scene1-Kernel.png\n";
+				throw "CGameIntroduction: não foi possível carregar scene1-Kernel.png\n";
 			
 			anim[0].set_repeat(false); // animação da tecla enter pressionada
 			anim[0].add_frame((SDL_Rect){0,0,270,269}, 1);
@@ -537,7 +537,7 @@ class CGameIntrodution: public CStateMachine
 			reset();
 		}
 		
-		~CGameIntrodution (  )
+		~CGameIntroduction (  )
 		{
 			if (parallel)
 				delete parallel;
@@ -752,6 +752,168 @@ class CGameCredits: public CStateMachine
 		}
 };
 
+class CGameTransition: public CStateMachine
+{
+	protected:
+		CBackground bg;
+		CCamera * cam;
+		CTileMapView * map;
+		CPlayer * player;
+	
+	public:
+		CGameTransition (  )
+		{
+			cam = 0;
+			map = new CTileMapView(48);
+			
+			#if _WIN32 || _WIN64 || __MINGW32__
+				char path[FILENAME_MAX];
+				char p2[FILENAME_MAX];
+				_getcwd(p2, sizeof(p2));
+				#ifndef PREFIX
+					sprintf(path, "%s\\images\\tiles.png", p2);
+				#else
+					sprintf(path, "%s\\dangeroustux\\images\\tiles.png", PREFIX);
+				#endif
+			#else
+				char path[1024];
+				#ifndef PREFIX
+					sprintf(path, "./images/tiles.png");
+				#else
+					sprintf(path, "%s/share/games/dangeroustux/images/tiles.png", PREFIX);
+				#endif
+			#endif
+			map->surface = optimize_surface_alpha(IMG_Load(path));
+			if (!map->surface)
+				throw "CGameTransition: não foi possível carregar tiles.png\n";
+		}
+		
+		~CGameTransition (  )
+		{
+			delete map;
+		}
+		
+		void set_cam ( CCamera * c, SDL_Surface * screen )
+		{
+			if (cam)
+				delete cam;
+
+			SDL_Rect d = c->get_dimension();
+			cam = new CCamera((SDL_Rect){0, (screen->h - d.h)/2, d.w,d.h}, (SDL_Rect){0,0,d.w,d.h});
+		}
+		
+		void set_bg ( string path )
+		{
+			bg.surface = optimize_surface_alpha(IMG_Load(path.c_str()));
+			if (!bg.surface)
+				throw "CGameTransition: não foi possível carregar background\n";
+		}
+		
+		void set_player ( CPlayer * p )
+		{
+			player = p;
+		}
+		
+		void reset (  )
+		{
+			#if _WIN32 || _WIN64 || __MINGW32__
+				char path[FILENAME_MAX];
+				char p2[FILENAME_MAX];
+				_getcwd(p2, sizeof(p2));
+			#else
+				char path[1024];
+			#endif
+			if (rand() % 2)
+			{
+				#if _WIN32 || _WIN64 || __MINGW32__
+					#ifndef PREFIX
+						sprintf(path, "%s\\levels\\transition1.txt", p2);
+					#else
+						sprintf(path, "%s\\dangeroustux\\levels\\transition1.txt", PREFIX);
+					#endif
+				#else
+					#ifndef PREFIX
+						sprintf(path, "./levels/transition1.txt");
+					#else
+						sprintf(path, "%s/share/games/dangeroustux/levels/transition1.txt", PREFIX);
+					#endif
+				#endif
+			}
+			else
+			{
+				#if _WIN32 || _WIN64 || __MINGW32__
+					#ifndef PREFIX
+						sprintf(path, "%s\\levels\\transition2.txt", p2);
+					#else
+						sprintf(path, "%s\\dangeroustux\\levels\\transition2.txt", PREFIX);
+					#endif
+				#else
+					#ifndef PREFIX
+						sprintf(path, "./levels/transition2.txt");
+					#else
+						sprintf(path, "%s/share/games/dangeroustux/levels/transition2.txt", PREFIX);
+					#endif
+				#endif
+			}
+			
+			if (!map->read(path))
+				throw "CGameTransition: não foi possível carregar o mapa\n";
+			
+			int ts = map->get_tilesize();
+			map->remove_tile('.'); // remove o tile vazio da visão
+			map->remove_tile('P'); // remove o jogador da visão
+			map->set_source('a', (SDL_Rect){0,0,ts,ts});
+			map->set_source('b', (SDL_Rect){ts,0,ts,ts});
+			map->set_source('c', (SDL_Rect){ts*2,0,ts,ts});
+			map->set_source('E', (SDL_Rect){ts*7,0,ts,ts});
+			map->set_source('i', (SDL_Rect){0,ts,ts,ts});
+			map->set_source('j', (SDL_Rect){ts,ts,ts,ts});
+			map->set_source('k', (SDL_Rect){ts*2,ts,ts,ts});
+			map->set_source('l', (SDL_Rect){ts*3,ts,ts,ts});
+			map->set_source('m', (SDL_Rect){ts*4,ts,ts,ts});
+			map->set_source('n', (SDL_Rect){ts*5,ts,ts,ts});
+			map->set_source('s', (SDL_Rect){ts*6,ts*2,ts,ts});
+			map->set_source('t', (SDL_Rect){ts*7,ts*2,ts,ts});
+			
+			cam->set_limit(map->get_dimension());
+			
+			float final_pos = cam->get_dimension().w - 48 * 2;
+			SVect p;
+			
+			int i, tile;
+			for (i = 0, tile; (tile = map->get_tile(i)) != -1; i++)
+				if (tile == 'P')
+				{
+					p.x = (i % map->get_width()) * map->get_tilesize();
+					p.y = (i / map->get_height()) * map->get_tilesize();
+				}
+			
+			if (i < map->get_width() * map->get_height())
+				throw "CGameTransition: cadê o 'P' no mapa de transição?\n";
+			
+			player->set_transition(map, p, final_pos);
+			set_state(1);
+		}
+		
+		void draw ( SDL_Surface * screen )
+		{
+			bg.draw(cam, screen);
+			map->draw(cam, screen);
+			player->draw(cam, screen);
+		}
+		
+		int update (  )
+		{
+			if (get_state() == 1)
+			{
+				if (player->update() == INACTIVE_PLAYER)
+					set_state(0);
+			}
+			
+			return get_state();
+		}
+};
+
 // enumeração das telas
 enum EScreenState
 {
@@ -762,7 +924,7 @@ enum EScreenState
 	SAVE_GAME,
 	LOAD_LEVELS_SCREEN,
 	NEXT_LEVEL_SCREEN,
-	LEVEL_INIT_SCREEN,
+	INIT_LEVEL_SCREEN,
 	PAUSE_SCREEN,
 	MAIN_LOOP,
 	TRANSITION,
@@ -786,13 +948,13 @@ class CGameScreen: public CStateMachine
 		SGameOver gameover;
 		CGameTitle title;
 		CGameCredits credits;
-		CGameIntrodution introduction;
+		CGameIntroduction introduction;
+		CGameTransition transition;
 		CSaveGame save;
 		CHighScore highscore;
 		CWidget window;
 		CLabel * pause;
 		CLabel * name_msg;
-		CLabel * transition;
 		CLabel * final;
 		CTextInput * textinput;
 
@@ -812,6 +974,10 @@ class CGameScreen: public CStateMachine
 				
 			if (!cam)
 				throw "CGameScreen: cam é nulo\n";
+
+			// pre seta a transição
+			transition.set_cam(cam, screen);
+			transition.set_player(player);
 
 			// carrega as imagens da tela de título
 			title.load();
@@ -846,15 +1012,12 @@ class CGameScreen: public CStateMachine
 			name_msg->set_pos(SVect(230, 110));
 			textinput = new CTextInput(80, (SDL_Color){255,0,0,0});
 			textinput->set_pos(SVect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_surface()->h));
-			transition = new CLabel(" TRANSITION\npress any key", (SDL_Color){255,128,128,0});
-			transition->set_pos(SVect((screen->w - transition->get_surface()->w)/2, (screen->h - transition->get_surface()->h)/2));
 			final = new CLabel("   FINAL\npress any key", (SDL_Color){255,0,0,0});
 			final->set_pos(SVect((screen->w - final->get_surface()->w)/2, (screen->h - final->get_surface()->h)/2));
 
 			window.add_child(pause);
 			window.add_child(name_msg);
 			window.add_child(textinput);
-			window.add_child(transition);
 			window.add_child(final);
 			window.show();
 			window.show_child(false);
@@ -875,7 +1038,6 @@ class CGameScreen: public CStateMachine
 			
 			delete name_msg;
 			delete textinput;
-			delete transition;
 			delete final;
 		}
 		
@@ -972,6 +1134,10 @@ class CGameScreen: public CStateMachine
 					title.draw(cam, screen);
 					break;
 
+				case TRANSITION:
+					transition.draw(screen);
+					break;
+
 				case GAMEOVER_SCREEN:
 					gameover.draw(cam, screen);
 					break;
@@ -999,7 +1165,7 @@ class CGameScreen: public CStateMachine
 					break;
 
 				case INTRODUCTION: // tela de introdução do jogo
-					if (any_key || introduction.get_state() == INACTIVE_INTRODUCTION)
+					if (enter_key || introduction.get_state() == INACTIVE_INTRODUCTION)
 					{
 						any_key = 0;
 						enter_key = 0;
@@ -1061,21 +1227,27 @@ class CGameScreen: public CStateMachine
 							sprintf(d.score, "%d", player->score.get_score());
 							sprintf(d.score_aux, "%d", player->score.get_score_aux());
 							save.save(d);
-							set_state(NEXT_LEVEL_SCREEN);
 							cout << "CGameScreen salvando jogo\n";
+							
+							transition.set_bg(levels[curr_level]->get_bg_path());
+							transition.reset();
+							set_state(TRANSITION);
 						}
 						else
-							set_state(LEVEL_INIT_SCREEN);
+						{
+							levels[0]->widget->show(false);
+							final->show(true);
+							any_key = 0;
+							set_state(FINAL_SCREEN); // vai para tela de final
+							break;
+						}
 					}
 					else
 					{
 						any_key = 0;
-						//gameover->show(true);
 						gameover.reset();
 						set_state(GAMEOVER_SCREEN);
-						break;
 					}
-					
 					break;
 
 				case LOAD_LEVELS_SCREEN:
@@ -1129,15 +1301,15 @@ class CGameScreen: public CStateMachine
 					if (curr_level == -1)
 						set_state(NEXT_LEVEL_SCREEN);
 					else
-						set_state(LEVEL_INIT_SCREEN);
+						set_state(INIT_LEVEL_SCREEN);
 					break;
 
 				case NEXT_LEVEL_SCREEN:
 					curr_level++;
-					set_state(LEVEL_INIT_SCREEN);
+					set_state(INIT_LEVEL_SCREEN);
 					break;
 
-				case LEVEL_INIT_SCREEN: // inicializando o level	
+				case INIT_LEVEL_SCREEN: // inicializando o level	
 					levels[curr_level]->set_state(0); // seta o level para estado de iniciando
 					levels[curr_level]->update(); // executa um update para inicializar variáveis
 					
@@ -1151,20 +1323,12 @@ class CGameScreen: public CStateMachine
 				
 				case MAIN_LOOP: // main loop
 					// verifica se passou da fase
-					if (levels[curr_level]->get_state() == 2)
+					if (levels[curr_level]->get_state() == NEXT_LEVEL)
 					{
 						window.show_child(false);
 						any_key = 0;
-						if (curr_level + 1 >= levels.size())
-						{
-							levels[0]->widget->show(false);
-							final->show(true);
-							set_state(FINAL_SCREEN); // vai para tela de final
-							break;
-						}
-
-						transition->show(true);
-						set_state(TRANSITION); // vai para tela de transição de fase
+						levels[curr_level]->unload();
+						set_state(SAVE_GAME); // vai para tela de save game
 						break;
 					}
 					
@@ -1188,8 +1352,11 @@ class CGameScreen: public CStateMachine
 					{
 						any_key = 0;
 						window.show_child(false);
-						set_state(SAVE_GAME); // vai para salvando jogo
+						set_state(NEXT_LEVEL_SCREEN);
+						break;
 					}
+					
+					transition.update();
 					break;
 				
 				case FINAL_SCREEN: // tela do final do jogo
@@ -1276,8 +1443,9 @@ class CGameScreen: public CStateMachine
 						highscore.show(false);
 						player->score.set_score(0);
 						any_key = 0;
-						introduction.reset();
-						set_state(INTRODUCTION); // vai para tela de introdução
+						enter_key = 0;
+						title.reset();
+						set_state(TITLE_SCREEN); // vai para tela de título
 					}
 					break;
 

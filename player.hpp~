@@ -1,3 +1,10 @@
+/*
+	comandos para atualizar o git
+	rm -f *~ include/gui/*~ include/*~ levels/*~
+	git add .
+	git commit -a -m 'MENSAGEM AQUI'
+	git push origin master
+*/
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
