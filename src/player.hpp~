@@ -123,7 +123,7 @@ class CPlayer: public CGameEntity
 			coll_tiles.push_back('a');
 			coll_tiles.push_back('b');
 			coll_tiles.push_back('c');
-			coll_tiles.push_back('u');
+			coll_tiles.push_back('s');
 			
 			// pontos de colisão
 			// colisão a direita

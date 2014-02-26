@@ -885,7 +885,7 @@ class CGameTransition: public CStateMachine
 				if (tile == 'P')
 				{
 					p.x = (i % map->get_width()) * map->get_tilesize();
-					p.y = (i / map->get_height()) * map->get_tilesize();
+					p.y = (i / map->get_width()) * map->get_tilesize();
 				}
 			
 			if (i < map->get_width() * map->get_height())
@@ -1348,15 +1348,13 @@ class CGameScreen: public CStateMachine
 					break;
 				
 				case TRANSITION: // transição de fase
-					if (any_key)
+					if (any_key || transition.update() == 0)
 					{
 						any_key = 0;
 						window.show_child(false);
 						set_state(NEXT_LEVEL_SCREEN);
 						break;
 					}
-					
-					transition.update();
 					break;
 				
 				case FINAL_SCREEN: // tela do final do jogo

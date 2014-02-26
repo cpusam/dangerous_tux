@@ -317,6 +317,7 @@ class CPlayer: public CGameEntity
 		{
 			set_map(m);
 			pos = p;
+			collision_ver();
 			final_pos = f_pos;
 			set_state(WALKING_TRANSITION);
 		}
