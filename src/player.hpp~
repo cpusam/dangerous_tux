@@ -1,6 +1,6 @@
 /*
 	comandos para atualizar o git
-	rm -f *~ include/gui/*~ include/*~ levels/*~
+	rm -f DT_highscore DT_save *~ include/gui/*~ include/*~ levels/*~
 	git add .
 	git commit -a -m 'MENSAGEM AQUI'
 	git push origin master
@@ -317,6 +317,7 @@ class CPlayer: public CGameEntity
 		{
 			set_map(m);
 			pos = p;
+			collision_ver();
 			final_pos = f_pos;
 			set_state(WALKING_TRANSITION);
 		}

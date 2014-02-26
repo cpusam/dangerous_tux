@@ -1,6 +1,6 @@
 /*
 	comandos para atualizar o git
-	rm -f *~ include/gui/*~ include/*~ levels/*~
+	rm -f DangerousTux DT_highscore DT_save *~ include/gui/*~ include/*~ levels/*~
 	git add .
 	git commit -a -m 'MENSAGEM AQUI'
 	git push origin master

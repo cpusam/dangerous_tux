@@ -886,9 +886,10 @@ class CGameTransition: public CStateMachine
 				{
 					p.x = (i % map->get_width()) * map->get_tilesize();
 					p.y = (i / map->get_width()) * map->get_tilesize();
+					break;
 				}
 			
-			if (i < map->get_width() * map->get_height())
+			if (i >= map->get_width() * map->get_height())
 				throw "CGameTransition: cadê o 'P' no mapa de transição?\n";
 			
 			player->set_transition(map, p, final_pos);
@@ -1228,7 +1229,7 @@ class CGameScreen: public CStateMachine
 							sprintf(d.score_aux, "%d", player->score.get_score_aux());
 							save.save(d);
 							cout << "CGameScreen salvando jogo\n";
-							
+
 							transition.set_bg(levels[curr_level]->get_bg_path());
 							transition.reset();
 							set_state(TRANSITION);
@@ -1348,9 +1349,8 @@ class CGameScreen: public CStateMachine
 					break;
 				
 				case TRANSITION: // transição de fase
-					if (any_key || transition.update() == 0)
+					if (transition.update() == 0)
 					{
-						any_key = 0;
 						window.show_child(false);
 						set_state(NEXT_LEVEL_SCREEN);
 						break;
