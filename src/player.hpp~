@@ -1,6 +1,6 @@
 /*
 	comandos para atualizar o git
-	rm -f DT_highscore DT_save *~ include/gui/*~ include/*~ levels/*~
+	rm -f DangerousTux DT_highscore DT_save *~ src/*~ include/gui/*~ include/*~ levels/*~
 	git add .
 	git commit -a -m 'MENSAGEM AQUI'
 	git push origin master
@@ -316,9 +316,14 @@ class CPlayer: public CGameEntity
 		void set_transition ( CTileMap * m, SVect p, float f_pos )
 		{
 			set_map(m);
+			vel.zero();
+			acc.zero();
 			pos = p;
 			collision_ver();
 			final_pos = f_pos;
+			dir = RIGHT_PLAYER;
+			curr_anim = &anim[]; // caminhando para direita
+			curr_anim->reset();
 			set_state(WALKING_TRANSITION);
 		}
 		
