@@ -1,10 +1,3 @@
-/*
-	comandos para atualizar o git
-	rm -f DangerousTux DT_highscore DT_save *~ src/*~ include/gui/*~ include/*~ levels/*~
-	git add .
-	git commit -a -m 'MENSAGEM AQUI'
-	git push origin master
-*/
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 

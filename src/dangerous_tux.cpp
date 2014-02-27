@@ -17,9 +17,9 @@
 #include <ctime>
 
 #if _WIN32 || _WIN64 || __MINGW32__
-	#include "include\\light.hpp"
+	#include "light_engine\\light.hpp"
 #else
-	#include "include/light.hpp"
+	#include "light_engine/light.hpp"
 #endif
 
 #include "gamescreen.hpp" // contém todos os headers do jogo

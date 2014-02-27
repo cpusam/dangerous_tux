@@ -240,16 +240,7 @@ class CWidget: public CStateMachine
 		
 		virtual int update (  )
 		{
-			switch (get_state())
-			{
-				case 0:
-					return 0;
-				case 1:
-					child_update();
-					return 1;
-				default:
-					break;
-			}
+			child_update();
 			
 			return get_state();
 		}

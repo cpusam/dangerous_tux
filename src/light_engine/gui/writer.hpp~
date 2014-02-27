@@ -1,6 +1,12 @@
 #ifndef WRITER_HPP
 #define WRITER_HPP
 
+struct SText
+{
+	string text;
+	SDL_Color color;
+};
+
 enum ETextType
 {
 	SOLID_TEXT,
@@ -44,20 +50,7 @@ class CWriter
 				delete singleton;
 			}
 		}
-		
-		/*
-		// removido
-		void set_font ( TTF_Font * f )
-		{
-			if (!TTF_WasInit())
-				throw "SDL_ttf não inicializada\n";
-
-			font = f;
-			if (!font)
-				throw "Fonte inválida ou nula\n";
-		}
-		*/
-		
+	
 		int set_font ( string p, int s )
 		{
 			if (!TTF_WasInit())
@@ -222,9 +215,76 @@ class CWriter
 			}
 
 			surf = optimize_surface_alpha(surf);
-
+			
+			if (!surf)
+				throw "CWriter: surface de retorno nula\n";
+			
 			return surf;
 		}
+		
+		/*
+			Para colori um texto basta usar as tags <color=R,G,B> TEXTO AQUI </color>
+		*/
+		/*
+		SDL_Surface * render_colored_text ( string text, SDL_Color color, int type=SOLID_TEXT )
+		{
+			SText t;
+			vector <SDL_Surface *> tmp;
+			char error[512];
+			int i, j, state = 0;
+
+			for (i = 0; i < text.size(); )
+			{
+				switch (state)
+				{
+					case 0:
+						if (text[i] == '<')
+						{
+							if (text.substr(text.begin() + i + 1, text.begin() + i + 4) == "color")
+							{
+								for (j = i + 4; text[j]; j++)
+									if (text[j] == '>')
+										break;
+								
+								if (j < text.size())
+								{
+									state = 1;
+									break;
+								}
+								else
+								{
+									sprintf(error, "CWriter: não foi possível fazer parssing de %s, faltou o '>'\n", text.c_str());
+								
+									throw error;
+								}
+							}
+						}
+						
+						t.text.push_back(text[i]);
+						
+						i++;
+						break;
+
+					case 1: // color parsing
+						i++;
+						break;
+					
+					case 2: // make surface
+						if (t.text.size() > 0)
+						{
+							tmp.push_back(render_text(t.text, t.color, type));
+							t.text.clear();
+							t.color = (SDL_Color){0,0,0,0};
+							set_state(
+						}
+						break;
+					default:
+						state = 0;
+						break;
+				}
+			}
+		}
+		*/
 };
 
 CWriter * CWriter::singleton = 0;
