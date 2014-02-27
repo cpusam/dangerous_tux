@@ -940,8 +940,8 @@ class CGameTransition: public CStateMachine
 		{
 			if (get_state() == 1)
 			{
-				if (player->update() == INACTIVE_PLAYER)
-					set_state(0);
+				//if (player->update() == INACTIVE_PLAYER)
+				//	set_state(0);
 			}
 			
 			return get_state();
