@@ -124,7 +124,10 @@ class CAnimation: protected CStateMachine
 			if (i >= 0 && i < frames.size())
 			{
 				index = i;
+<<<<<<< HEAD
 				timer.reset();
+=======
+>>>>>>> 9aeed8c5044214ec82e64e611b1c7acd44cc4897
 				return true;
 			}
 			

@@ -49,7 +49,11 @@ int main ( int argc, char **argv )
 	{
 		SDL_putenv("SDL_VIDEO_CENTERED=center");
 
+<<<<<<< HEAD
 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
+=======
+		if (SDL_Init(SDL_INIT_VIDEO) < 0)
+>>>>>>> 9aeed8c5044214ec82e64e611b1c7acd44cc4897
 			throw SDL_GetError();
 	
 		if (TTF_Init() < 0)

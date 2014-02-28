@@ -95,7 +95,11 @@ class CShot: public CGameEntity
 					
 					for (vector <CGameEntity *>::iterator i = target.begin(); i != target.end(); i++)
 					{
+<<<<<<< HEAD
 						if ((*i) == 0)
+=======
+						if (!(*i))
+>>>>>>> 9aeed8c5044214ec82e64e611b1c7acd44cc4897
 							continue;
 
 						SDL_Rect a, b;
@@ -146,7 +150,13 @@ class CShot: public CGameEntity
 			cam_d.y = cam_p.y;
 			
 			if (!pointbox(p, cam_d))
+<<<<<<< HEAD
 				set_state(0);
+=======
+			{
+				set_state(0);
+			}
+>>>>>>> 9aeed8c5044214ec82e64e611b1c7acd44cc4897
 		}
 };
 
