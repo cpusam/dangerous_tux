@@ -459,7 +459,7 @@ class CGameIntroduction: public CStateMachine
 			sound.set_chunk(path);
 			CSoundPlayer::instance()->add_sound(sound);
 			
-			anim.resize(6);
+			anim.resize(8);
 			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				#ifndef PREFIX
@@ -499,6 +499,24 @@ class CGameIntroduction: public CStateMachine
 			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				#ifndef PREFIX
+					sprintf(path, "%s\\images\\intro_scene\\scene4.png", p2);
+				#else
+					sprintf(path, "%s\\dangeroustux\\images\\intro_scene\\scene4.png", PREFIX);
+				#endif
+			#else
+				#ifndef PREFIX
+					sprintf(path, "./images/intro_scene/scene4.png");
+				#else
+					sprintf(path, "%s/share/games/dangeroustux/images/intro_scene/scene4.png", PREFIX);
+				#endif
+			#endif
+			
+			anim[3].surface = optimize_surface_alpha(IMG_Load(path));
+			if (!anim[3].surface)
+				throw "CGameIntroduction: não foi possível carregar scene4.png\n";
+			
+			#if _WIN32 || _WIN64 || __MINGW32__
+				#ifndef PREFIX
 					sprintf(path, "%s\\images\\intro_scene\\scene1-Kernel.png", p2);
 				#else
 					sprintf(path, "%s\\dangeroustux\\images\\intro_scene\\scene1-Kernel.png", PREFIX);
@@ -528,9 +546,9 @@ class CGameIntroduction: public CStateMachine
 			anim[2].add_frame((SDL_Rect){0,0,0,0}, 75); // animação do hack do kernel
 			anim[2].set_repeat(false);
 
-			anim[3].add_frame((SDL_Rect){0,0,0,0}, 15); // animação do rosto de Linus
-			anim[3].add_frame((SDL_Rect){0,0,0,0}, 15);
-			anim[3].set_repeat(false);
+			anim[3].set_repeat(false); // animação do rosto de Linus
+			anim[3].add_frame((SDL_Rect){0,0,960,624}, 20);
+			anim[3].add_frame((SDL_Rect){0,624,960,624}, 25);
 			
 			anim[4].add_frame((SDL_Rect){0,170*9,717,170}, 20); // animação de digitando
 			anim[4].add_frame((SDL_Rect){0,170*8,717,170}, 10);
@@ -546,6 +564,8 @@ class CGameIntroduction: public CStateMachine
 			
 			anim[5].add_frame((SDL_Rect){0,0,0,0}, 100); // em um universo paralelo
 			anim[5].set_repeat(false);
+			
+			
 			
 			init_hand = -anim[1].surface->w/2;
 			final_hand = -(anim[1].surface->w - 567); 
@@ -607,6 +627,7 @@ class CGameIntroduction: public CStateMachine
 					break;
 					
 				case LINUS_FACE:
+					anim[3].draw(0,0,screen);
 					break;
 					
 				case LINUS_TUX_TALKING:
