@@ -442,6 +442,23 @@ class CGameIntroduction: public CStateMachine
 				throw "CGameIntroduction: não foi possível carregar \n";
 			*/
 			
+			CSound sound;
+			#if _WIN32 || _WIN64 || __MINGW32__
+				#ifndef PREFIX
+					sprintf(path, "%s\\sounds\\key_press.wav", p2);
+				#else
+					sprintf(path, "%s\\dangeroustux\\sounds\\key_press.wav", PREFIX);
+				#endif
+			#else
+				#ifndef PREFIX
+					sprintf(path, "./sounds/key_press.wav");
+				#else
+					sprintf(path, "%s/share/games/dangeroustux/key_press.wav", PREFIX);
+				#endif
+			#endif
+			sound.set_chunk(path);
+			CSoundPlayer::instance()->add_sound(sound);
+			
 			anim.resize(6);
 			
 			#if _WIN32 || _WIN64 || __MINGW32__
@@ -500,7 +517,7 @@ class CGameIntroduction: public CStateMachine
 			
 			anim[0].set_repeat(false); // animação da tecla enter pressionada
 			anim[0].add_frame((SDL_Rect){0,0,270,269}, 1);
-			anim[0].add_frame((SDL_Rect){0,269,270,269}, 6);
+			anim[0].add_frame((SDL_Rect){0,269,270,269}, 2);
 			anim[0].add_frame((SDL_Rect){0,269*2,270,269}, 20);
 
 			anim[1].set_repeat(false); // animação da mão
@@ -617,13 +634,21 @@ class CGameIntroduction: public CStateMachine
 					}
 					break;
 				case LINUS_TYPING:
-					if (anim[4].update() == 3)
 					{
-						pos_hand = init_hand;
-						anim[0].reset();
-						anim[1].pause();
-						anim[1].reset();
-						set_state(ENTER_KEYDOWN);
+						int upd = anim[4].update();
+						
+						if (upd == 2)
+						{
+							CSoundPlayer::instance()->play_sound("key_press.wav");
+						}
+						else if (upd == 3)
+						{
+							pos_hand = init_hand;
+							anim[0].reset();
+							anim[1].pause();
+							anim[1].reset();
+							set_state(ENTER_KEYDOWN);
+						}
 					}
 					break;
 					
@@ -637,11 +662,20 @@ class CGameIntroduction: public CStateMachine
 					
 					anim[1].update();
 					if (anim[1].get_index() == 1)
-						if (anim[0].update() == 3)
+					{
+						int upd = anim[0].update();
+						
+						if (upd == 2 && anim[0].get_index() == 1)
+						{
+							CSoundPlayer::instance()->play_sound("key_press.wav");
+						}
+						
+						if (upd == 3)
 						{
 							anim[2].reset();
 							set_state(KERNEL_HACKED);
 						}
+					}
 					break;
 					
 				case KERNEL_HACKED:
@@ -946,6 +980,11 @@ class CGameTransition: public CStateMachine
 			
 			return get_state();
 		}
+};
+
+class CGameMenu: public CStateMachine
+{
+	
 };
 
 // enumeração das telas
@@ -1428,11 +1467,12 @@ class CGameScreen: public CStateMachine
 					break;
 				
 				case GAMEOVER_SCREEN: // tela de game over
-					if (any_key)
+					if (enter_key)
 					{
 						window.show_child(false);
 						if (highscore.is_highscore(player->score.get_score()))
 						{
+							any_key = 0;
 							enter_key = 0;
 							name_msg->show();
 							textinput->show();
@@ -1461,6 +1501,7 @@ class CGameScreen: public CStateMachine
 
 						highscore.show();
 						any_key = 0;
+						enter_key = 0;
 						set_state(HIGHSCORE_SCREEN); // vai para tela de high score
 					}
 					

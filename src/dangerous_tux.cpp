@@ -53,11 +53,14 @@ int main ( int argc, char **argv )
 			throw SDL_GetError();
 	
 		if (TTF_Init() < 0)
-			throw "Erro na inicializaÃ§Ã£o da font\n";
-		
+			throw "Erro na inicialização da font\n";
+
 		if (IMG_Init(IMG_INIT_PNG) == 0)
-			throw "Erro na inicializaÃ§Ã£o da sdl image\n";
-	
+			throw "Erro na inicialização da sdl image\n";
+		
+		if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
+			throw SDL_GetError();
+		
 		SDL_Surface * screen;
 		SDL_Event event;
 
