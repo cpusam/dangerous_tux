@@ -1,0 +1,12 @@
+
+CXX = wine g++.exe
+LDLIBS = -mwindows -lm -lSDLmain -lSDL -lSDL_image -lSDL_ttf -lSDL_mixer
+DEPS = src/dangerous_tux.cpp src/gameentity.hpp src/player.hpp src/aliens.hpp src/jetpack.hpp src/gun.hpp src/level.hpp src/gamescreen.hpp src/gameentity.hpp src/gameevent_manager.hpp src/highscore.hpp src/score.hpp src/savegame.hpp src/gamesignal.hpp src/gamevideo.hpp
+
+all: DangerousTux.exe
+
+DangerousTux.exe: $(DEPS)
+	$(CXX) -o $@ src/dangerous_tux.cpp $(LDLIBS)
+
+clean:
+	rm -f DangerousTux.exe
