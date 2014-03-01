@@ -121,16 +121,8 @@ int main ( int argc, char **argv )
 	SDL_Quit();
 	IMG_Quit();
 	TTF_Quit();
-<<<<<<< HEAD
-<<<<<<< HEAD
 	CSoundPlayer::instance()->free_sounds();
 	Mix_CloseAudio();
-=======
->>>>>>> Bug fix
-=======
-	CSoundPlayer::instance()->free_sounds();
-	Mix_CloseAudio();
->>>>>>> 3c0dfd8d21731ccd79edcb81b42290901308c1fc
 
 	return 0;
 }
