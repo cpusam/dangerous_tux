@@ -15,12 +15,8 @@ SDL_Surface * set_screen ( int w, int h )
 	if (info->wm_available == 0)
 		flags |= SDL_FULLSCREEN;
 	
-<<<<<<< HEAD
 	bpp = 32; //info->vfmt->BitsPerPixel;
 	cout << "set_screen bpp = " << bpp << endl; 
-=======
-	bpp = info->vfmt->BitsPerPixel;
->>>>>>> 9aeed8c5044214ec82e64e611b1c7acd44cc4897
 	
 	return SDL_SetVideoMode(w, h, bpp, flags);
 }

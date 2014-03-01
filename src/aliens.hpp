@@ -149,11 +149,7 @@ class CWalkerAlien: public CGameEntity
 				#endif
 			#endif
 			anim[0].surface = optimize_surface_alpha(IMG_Load(path));
-<<<<<<< HEAD
 
-=======
-			
->>>>>>> 9aeed8c5044214ec82e64e611b1c7acd44cc4897
 			if (!anim[0].surface)
 				throw "CWalkerAlien: não foi possível abrir walkeralien_right.png\n";
 			
@@ -603,10 +599,7 @@ class CFlyerAlien: public CGameEntity
 				#endif
 			#endif
 			anim[0].surface = optimize_surface_alpha(IMG_Load(path));
-<<<<<<< HEAD
 			
-=======
->>>>>>> 9aeed8c5044214ec82e64e611b1c7acd44cc4897
 			if (!anim[0].surface)
 				throw "CFlyerAlien: não conseguiu abrir flyeralien.png\n";
 			

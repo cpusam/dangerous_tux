@@ -137,10 +137,6 @@ class CLevel: public CStateMachine
 			{
 				case INIT: // inicializando
 				{
-<<<<<<< HEAD
-=======
-					
->>>>>>> 9aeed8c5044214ec82e64e611b1c7acd44cc4897
 					#if _WIN32 || _WIN64 || __MINGW32__
 						char path[FILENAME_MAX];
 						char pimage[FILENAME_MAX];
@@ -249,12 +245,9 @@ class CLevel: public CStateMachine
 							p.y = (i / map->get_width()) * map->get_tilesize();
 							player->set_respawn(p);
 							player->reset();
-<<<<<<< HEAD
 							player->gun.shot.clear_targets();
 							player->gun.set_gun(false);
 							player->jetpack.set_jetpack(false);
-=======
->>>>>>> 9aeed8c5044214ec82e64e611b1c7acd44cc4897
 							break;
 						}
 					
