@@ -165,6 +165,9 @@ class CGun: public CStateMachine
 			has = h;
 			used = false;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3c0dfd8d21731ccd79edcb81b42290901308c1fc
 			
 			static int loaded = 0;
 			if (!loaded)
@@ -193,8 +196,11 @@ class CGun: public CStateMachine
 				
 				loaded = 1;
 			}
+<<<<<<< HEAD
 =======
 >>>>>>> Bug fix
+=======
+>>>>>>> 3c0dfd8d21731ccd79edcb81b42290901308c1fc
 		}
 
 		CGun ( SVect p[2], bool h=false )
@@ -228,21 +234,30 @@ class CGun: public CStateMachine
 		}
 		
 <<<<<<< HEAD
+<<<<<<< HEAD
 		void fire ( SVect entity_pos, int d, SVect vel_shot )
 =======
 		void fire ( SVect player_pos, int d, SVect vel_shot )
 >>>>>>> Bug fix
+=======
+		void fire ( SVect entity_pos, int d, SVect vel_shot )
+>>>>>>> 3c0dfd8d21731ccd79edcb81b42290901308c1fc
 		{
 			if ((d != 0 || d != 1) && used == true)
 				return;
 			
 			used = true;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			shot.set_shot(entity_pos + pos_dir[d], vel_shot);
 			CSoundPlayer::instance()->play_sound("beam_fire.wav");
 =======
 			shot.set_shot(player_pos + pos_dir[d], vel_shot);
 >>>>>>> Bug fix
+=======
+			shot.set_shot(entity_pos + pos_dir[d], vel_shot);
+			CSoundPlayer::instance()->play_sound("beam_fire.wav");
+>>>>>>> 3c0dfd8d21731ccd79edcb81b42290901308c1fc
 		}
 		
 		int update (  )

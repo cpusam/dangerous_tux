@@ -30,11 +30,17 @@ class CWriter
 			font = 0;
 			size = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			
 			if (!TTF_WasInit())
 				throw "CWriter: SDL_ttf não inicializada\n";
 =======
 >>>>>>> Bug fix
+=======
+			
+			if (!TTF_WasInit())
+				throw "CWriter: SDL_ttf não inicializada\n";
+>>>>>>> 3c0dfd8d21731ccd79edcb81b42290901308c1fc
 		}
 		
 	public:
@@ -60,11 +66,14 @@ class CWriter
 		int set_font ( string p, int s )
 		{
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 			if (!TTF_WasInit())
 				throw "CWriter: SDL_ttf não inicializada\n";
 			
 >>>>>>> Bug fix
+=======
+>>>>>>> 3c0dfd8d21731ccd79edcb81b42290901308c1fc
 			if (s > 0 && s == size && p == path)
 				return -1;
 			
@@ -91,11 +100,14 @@ class CWriter
 		bool resize_font ( int s )
 		{
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 			if (!TTF_WasInit())
 				throw "SDL_ttf não inicializada\n";
 
 >>>>>>> Bug fix
+=======
+>>>>>>> 3c0dfd8d21731ccd79edcb81b42290901308c1fc
 			if (!font || s <= 0)
 				return false;
 			
@@ -111,11 +123,14 @@ class CWriter
 		SDL_Surface * render_text ( string text, SDL_Color c, int type=SOLID_TEXT )
 		{
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 			if (!TTF_WasInit())
 				throw "SDL_ttf não inicializada\n";
 			
 >>>>>>> Bug fix
+=======
+>>>>>>> 3c0dfd8d21731ccd79edcb81b42290901308c1fc
 			if (font == 0)
 				throw "Nenhuma fonte usada\n";
 
