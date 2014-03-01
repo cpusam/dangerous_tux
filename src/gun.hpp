@@ -164,6 +164,34 @@ class CGun: public CStateMachine
 		{
 			has = h;
 			used = false;
+			
+			static int loaded = 0;
+			if (!loaded)
+			{
+				CSound sound;
+				#if _WIN32 || _WIN64 || __MINGW32__
+					char path[FILENAME_MAX];
+					char p2[FILENAME_MAX];
+					_getcwd(p2, sizeof(p2));
+					#ifndef PREFIX
+						sprintf(path, "%s\\sounds\\beam_fire.wav", p2);
+					#else
+						sprintf(path, "%s\\dangeroustux\\sounds\\beam_fire.wav", PREFIX);
+					#endif
+				#else
+					char path[1024];
+					#ifndef PREFIX
+						sprintf(path, "./sounds/beam_fire.wav");
+					#else
+						sprintf(path, "%s/share/games/dangeroustux/sounds/beam_fire.wav", PREFIX);
+					#endif
+				#endif
+				
+				sound.set_chunk(path);
+				CSoundPlayer::instance()->add_sound(sound);
+				
+				loaded = 1;
+			}
 		}
 
 		CGun ( SVect p[2], bool h=false )
@@ -196,13 +224,14 @@ class CGun: public CStateMachine
 			return used;
 		}
 		
-		void fire ( SVect player_pos, int d, SVect vel_shot )
+		void fire ( SVect entity_pos, int d, SVect vel_shot )
 		{
 			if ((d != 0 || d != 1) && used == true)
 				return;
 			
 			used = true;
-			shot.set_shot(player_pos + pos_dir[d], vel_shot);
+			shot.set_shot(entity_pos + pos_dir[d], vel_shot);
+			CSoundPlayer::instance()->play_sound("beam_fire.wav");
 		}
 		
 		int update (  )

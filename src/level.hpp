@@ -540,7 +540,8 @@ class CLevel: public CStateMachine
 						
 						if (player->has_kernel())
 							kernel_signal.show(false);
-						
+
+						CSoundPlayer::instance()->update();
 						CGameEventManager::instance()->update();
 						for (vector <CGameEntity *>::iterator i = aliens.begin(); i != aliens.end(); i++)
 						{

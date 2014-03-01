@@ -29,6 +29,9 @@ class CWriter
 		{
 			font = 0;
 			size = 0;
+			
+			if (!TTF_WasInit())
+				throw "CWriter: SDL_ttf não inicializada\n";
 		}
 		
 	public:
@@ -53,9 +56,6 @@ class CWriter
 	
 		int set_font ( string p, int s )
 		{
-			if (!TTF_WasInit())
-				throw "CWriter: SDL_ttf não inicializada\n";
-			
 			if (s > 0 && s == size && p == path)
 				return -1;
 			
@@ -81,9 +81,6 @@ class CWriter
 		
 		bool resize_font ( int s )
 		{
-			if (!TTF_WasInit())
-				throw "SDL_ttf não inicializada\n";
-
 			if (!font || s <= 0)
 				return false;
 			
@@ -98,9 +95,6 @@ class CWriter
 		
 		SDL_Surface * render_text ( string text, SDL_Color c, int type=SOLID_TEXT )
 		{
-			if (!TTF_WasInit())
-				throw "SDL_ttf não inicializada\n";
-			
 			if (font == 0)
 				throw "Nenhuma fonte usada\n";
 
