@@ -14,25 +14,6 @@ class CGameOver: public CStateMachine
 	public:
 		CGameOver (  )
 		{
-			background = 0;
-			title = 0;
-			stars.surface = 0;
-		}
-		
-		~CGameOver (  )
-		{
-			if (background)
-				SDL_FreeSurface(background);
-			
-			if (title)
-				SDL_FreeSurface(title);
-			
-			if (stars.surface)
-				SDL_FreeSurface(stars.surface);
-		}
-		
-		void load (  )
-		{
 			#if _WIN32 || _WIN64 || __MINGW32__
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
@@ -105,6 +86,18 @@ class CGameOver: public CStateMachine
 			stars.add_frame((SDL_Rect){0,184*4,296,184}, 3);
 			stars.add_frame((SDL_Rect){0,184*5,296,184}, 3);
 			stars.add_frame((SDL_Rect){0,184*6,296,184}, 3);
+		}
+		
+		~CGameOver (  )
+		{
+			if (background)
+				SDL_FreeSurface(background);
+			
+			if (title)
+				SDL_FreeSurface(title);
+			
+			if (stars.surface)
+				SDL_FreeSurface(stars.surface);
 		}
 		
 		void reset (  )

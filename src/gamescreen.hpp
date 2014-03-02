@@ -79,12 +79,6 @@ class CGameScreen: public CStateMachine
 			// pre seta a transição
 			transition.set_cam(cam, screen);
 			transition.set_player(player);
-
-			// carrega as imagens da tela de título
-			title.load();
-			
-			// carrega as imagens da tela de game over
-			gameover.load();
 			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				char path[FILENAME_MAX];

@@ -188,6 +188,7 @@ class CGun: public CStateMachine
 				#endif
 				
 				sound.set_chunk(path);
+				Mix_VolumeChunk(sound.get_chunk(), 64);
 				CSoundPlayer::instance()->add_sound(sound);
 				
 				loaded = 1;

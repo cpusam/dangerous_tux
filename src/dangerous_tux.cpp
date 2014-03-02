@@ -27,11 +27,10 @@
 
 
 #define TILESIZE 48
-#define FPS 50
 
-bool control_fps ( int time_first )
+bool control_fps ( int time_first, int fps )
 {
-	static int fps = 1000/FPS;
+	fps = 1000/fps;
 	int time_now = SDL_GetTicks() - time_first;
 
 	if (time_now < fps)
@@ -58,14 +57,17 @@ int main ( int argc, char **argv )
 		if (IMG_Init(IMG_INIT_PNG) == 0)
 			throw "Erro na inicialização da sdl image\n";
 		
-		if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
+		if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) < 0)
 			throw SDL_GetError();
 		
 		SDL_Surface * screen;
 		SDL_Event event;
 
+		int fps;
 		// no tamanho aproximado do dangerous dave original
-		screen = set_screen(TILESIZE * 20, TILESIZE * 13);
+		screen = set_screen(TILESIZE * 20, TILESIZE * 13, &fps);
+		SDL_PixelFormat * fmt = screen->format;
+		cout << "screen->bitsperpixel = " << fmt->BitsPerPixel << endl;
 		
 		if (!screen)
 			throw SDL_GetError();
@@ -89,11 +91,15 @@ int main ( int argc, char **argv )
 			{
 				if (event.type == SDL_QUIT)
 					done = 1;
+				
+				if (event.type == SDL_KEYDOWN)
+					if (event.key.keysym.sym == SDLK_ESCAPE)
+						done = 1;
 
 				gamescreen.input(event);
 			}
 		
-			if (control_fps(time_now))
+			if (control_fps(time_now, fps))
 			{
 				gamescreen.update();
 				gamescreen.draw();

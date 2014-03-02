@@ -20,28 +20,9 @@ class CGameTitle: public CStateMachine
 	public:
 		CGameTitle (  )
 		{
-			background = 0;
-			title_name = 0;
-			tux_rocket.surface = 0;
-			
 			press_enter = 0;
 			version = 0;
-		}
-		
-		~CGameTitle (  )
-		{
-			if (background)
-				SDL_FreeSurface(background);
-		
-			if (title_name)
-				SDL_FreeSurface(title_name);
-		
-			if (tux_rocket.surface)
-				SDL_FreeSurface(tux_rocket.surface);
-		}
-	
-		void load (  )
-		{
+			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
@@ -138,6 +119,23 @@ class CGameTitle: public CStateMachine
 			version->set_pos(SVect((960 - version->get_surface()->w)/2, 624 - version->get_surface()->h));
 			p_enter.add_frame((SDL_Rect){0,0,0,0}, 25);
 			p_enter.add_frame((SDL_Rect){0,0,0,0}, 25);
+		}
+		
+		~CGameTitle (  )
+		{
+			if (background)
+				SDL_FreeSurface(background);
+		
+			if (title_name)
+				SDL_FreeSurface(title_name);
+		
+			if (tux_rocket.surface)
+				SDL_FreeSurface(tux_rocket.surface);
+		}
+	
+		void load (  )
+		{
+			
 		}
 
 		void reset (  )
