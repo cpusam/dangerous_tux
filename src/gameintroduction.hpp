@@ -141,7 +141,7 @@ class CGameIntroduction: public CStateMachine
 				#ifndef PREFIX
 					sprintf(path, "./sounds/key_press.wav");
 				#else
-					sprintf(path, "%s/share/games/dangeroustux/key_press.wav", PREFIX);
+					sprintf(path, "%s/share/games/dangeroustux/sounds/key_press.wav", PREFIX);
 				#endif
 			#endif
 			sound.set_chunk(path);
