@@ -542,6 +542,8 @@ class CLevel: public CStateMachine
 							kernel_signal.show(false);
 						
 						CSoundPlayer::instance()->update();
+						CGameEventManager::instance()->update();
+						
 						for (vector <CGameEntity *>::iterator i = aliens.begin(); i != aliens.end(); i++)
 						{
 							p1 = player->get_pos();
@@ -564,7 +566,7 @@ class CLevel: public CStateMachine
 								ev.event = "touched_alien";
 								player->gun.shot.rem_target((*i));
 								CGameEventManager::instance()->add_event(ev);
-								
+
 								ev.receiver = (*i);
 								ev.event = "touched_player";
 								CGameEventManager::instance()->add_event(ev);

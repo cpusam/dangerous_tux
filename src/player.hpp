@@ -300,6 +300,7 @@ class CPlayer: public CGameEntity
 			vel.zero();
 			acc.zero();
 			pos = respawn;
+			shot_at = touched_alien = false;
 			curr_anim = &anim[13]; // animação de esperando controle
 			left_key = right_key = up_key = down_key = 0;
 			gun_key = jetpack_key = 0;

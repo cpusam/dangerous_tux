@@ -1,0 +1,11 @@
+background_lava.jpg
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+b...................a....F...a.......o.o.ob
+bP.q..o.............a....a...a.........E..b
+baaa.....o....o.....a....a...a..o....o.o.ob
+b.o........o........a....a...a....do......b
+b..d...d......o.o...a....a...a...od.......b
+b....f........oKo...a....a...a....do......b
+b..d...d......ooo...a....a...F...od.......b
+b....o..............F....a................b
+oooooooooooooooooooooooooaooooooooooooooooo

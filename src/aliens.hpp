@@ -380,11 +380,6 @@ class CWalkerAlien: public CGameEntity
 					shot_at = true;
 					break;
 				}
-				else if ((*it).event == "touched_player")
-				{
-					touched_player = true;
-					break;
-				}
 			}
 		}
 		
@@ -685,11 +680,6 @@ class CFlyerAlien: public CGameEntity
 				if ((*it).event == "shot_at")
 				{
 					shot_at = true;
-					break;
-				}
-				else if ((*it).event == "touched_player")
-				{
-					touched_player = true;
 					break;
 				}
 			}
