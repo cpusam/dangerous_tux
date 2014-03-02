@@ -64,12 +64,14 @@ class CPlayer: public CGameEntity
 	protected:
 		int dir; // direção, 0 - esquerda e 1 - direita
 		int up_key, down_key, left_key, right_key;
-		int gun_key, jetpack_key;
+		int jump_key, gun_key, jetpack_key;
 		int lives; // quantidade de vidas
 		bool kernel; // se tem o ítem "chave" da porta
 		bool shot_at; // se foi baleado pelos aliens
 		bool touched_alien; // se tocou um alien
+		bool has_joystick; // se tem ou não joystick
 		float final_pos; // posição final em X na tela de transição
+		SDL_Joystick * joystick; // o joystick propriamente dito
 		SDL_Rect limit; // limites de movimento do jogador
 		SVect respawn; // ponto onde deve reaparecer quando morrer
 		CAnimation * curr_anim; // animação atual
@@ -90,7 +92,7 @@ class CPlayer: public CGameEntity
 		{
 			dir = RIGHT_PLAYER;
 			up_key = down_key = left_key = right_key = 0;
-			gun_key = jetpack_key = 0;
+			jump_key = gun_key = jetpack_key = 0;
 			map = 0;
 			lives = 2;
 			final_pos = 0;
@@ -102,6 +104,15 @@ class CPlayer: public CGameEntity
 			gun.set_pos_dir(pos_d);
 			gun.shot.set_id("player_shot");
 			set_id("player");
+			
+			if (SDL_NumJoysticks() == 0)
+				has_joystick = false;
+			else
+			{
+				SDL_JoystickEventState(SDL_ENABLE);
+				joystick = SDL_JoystickOpen(0);
+				has_joystick = true;
+			}
 
 			// define os itens para coletar
 			item.push_back('d');
@@ -252,6 +263,9 @@ class CPlayer: public CGameEntity
 			
 			if (anim[6].surface)
 				SDL_FreeSurface(anim[6].surface);
+			
+			if (has_joystick)
+				SDL_JoystickClose(joystick);
 		}
 		
 		void set_kernel ( bool h )
@@ -303,7 +317,7 @@ class CPlayer: public CGameEntity
 			shot_at = touched_alien = false;
 			curr_anim = &anim[13]; // animação de esperando controle
 			left_key = right_key = up_key = down_key = 0;
-			gun_key = jetpack_key = 0;
+			jump_key = gun_key = jetpack_key = 0;
 			set_state(WAITING);
 		}
 		
@@ -583,6 +597,85 @@ class CPlayer: public CGameEntity
 						break;
 				}
 			}
+			
+			if (!has_joystick)
+				return;
+			
+			if (event.type == SDL_JOYAXISMOTION)
+			{
+				// se é no eixo X
+				if (event.jaxis.axis == 0)
+				{
+					if (event.jaxis.value < 0)
+					{
+						left_key = 1;
+					}
+					else if (event.jaxis.value > 0)
+					{
+						right_key = 1;
+					}
+					else
+						left_key = right_key = 0;
+				}
+				
+				// se é no eixo Y
+				if (event.jaxis.axis == 1)
+				{
+					if (event.jaxis.value < 0)
+					{
+						up_key = 1;
+					}
+					else if (event.jaxis.value > 0)
+					{
+						down_key = 1;
+					}
+					else
+						up_key = down_key = 0;
+				}
+			}
+			
+			if (event.type == SDL_JOYBUTTONDOWN)
+			{
+				switch (event.jbutton.button)
+				{
+					case 1:
+						jetpack_key = 1;
+						break;
+						
+					case 2:
+						jump_key = 1;
+						break;
+
+					case 3:
+						gun_key = 1;
+						break;
+						
+					default:
+						int num = event.jbutton.button;
+						cout << "CPlayer: joystick button = " << num << endl;
+						break;
+				}
+			}
+			else if (event.type == SDL_JOYBUTTONUP)
+			{
+				switch (event.jbutton.button)
+				{
+					case 1:
+						jetpack_key = 0;
+						break;
+						
+					case 2:
+						jump_key = 0;
+						break;
+
+					case 3:
+						gun_key = 0;
+						break;
+						
+					default:
+						break;
+				}
+			}
 		}
 		
 		void draw ( CCamera * cam, SDL_Surface * screen )
@@ -648,7 +741,7 @@ class CPlayer: public CGameEntity
 							}
 						}
 						
-						if (up_key)
+						if (up_key || jump_key)
 						{
 							vel.y = -config.vel_max.y;
 							collision_ver();
@@ -777,7 +870,7 @@ class CPlayer: public CGameEntity
 							}
 						}
 						
-						if (up_key)
+						if (up_key || jump_key)
 						{
 							vel.y = -config.vel_max.y;
 							collision_ver();

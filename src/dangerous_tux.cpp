@@ -48,7 +48,7 @@ int main ( int argc, char **argv )
 	{
 		SDL_putenv("SDL_VIDEO_CENTERED=center");
 
-		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0)
+		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_JOYSTICK) < 0)
 			throw SDL_GetError();
 	
 		if (TTF_Init() < 0)
@@ -59,6 +59,8 @@ int main ( int argc, char **argv )
 		
 		if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) < 0)
 			throw SDL_GetError();
+		
+		Mix_AllocateChannels(20); // aloca 20 canais para tocar sons
 		
 		SDL_Surface * screen;
 		SDL_Event event;
