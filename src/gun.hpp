@@ -126,7 +126,11 @@ class CShot: public CGameEntity
 			return get_state();
 		}
 		
-		void draw ( CCamera * cam, SDL_Surface * screen )
+		#ifndef USE_SDL2
+			void draw ( CCamera * cam, SDL_Surface * screen )
+		#else
+			void draw ( CCamera * cam, SDL_Renderer * renderer )
+		#endif
 		{
 			if (get_state() != 1)
 				return;
@@ -137,7 +141,11 @@ class CShot: public CGameEntity
 			d.w = dim.w;
 			d.h = dim.h;
 			
-			fill_rect(cam, screen, SDL_MapRGB(screen->format, 255,0,0), d);
+			#ifndef USE_SDL2
+				fill_rect(cam, screen, SDL_MapRGB(screen->format, 255,0,0), d);
+			#else
+				fill_rect(cam, renderer, 0xFF000000, d);
+			#endif
 			
 			SVect p = pos + c_point, cam_p = cam->get_position();
 			SDL_Rect cam_d = cam->get_dimension();
@@ -268,12 +276,20 @@ class CGun: public CStateMachine
 			return get_state();
 		}
 		
-		void draw ( CCamera * cam, SDL_Surface * screen )
+		#ifndef USE_SDL2
+			void draw ( CCamera * cam, SDL_Surface * screen )
+		#else
+			void draw ( CCamera * cam, SDL_Renderer * renderer )
+		#endif
 		{
 			if (!used)
 				return;
-
-			shot.draw(cam, screen);
+			
+			#ifndef USE_SDL2
+				shot.draw(cam, screen);
+			#else
+				shot.draw(cam, renderer);
+			#endif
 		}
 };
 

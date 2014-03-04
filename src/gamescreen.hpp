@@ -39,7 +39,12 @@ class CGameScreen: public CStateMachine
 	protected:
 		int curr_level; // índice do level atual
 		vector <CLevel *> levels; // os levels
-		SDL_Surface * screen;
+		#ifndef USE_SDL2
+			SDL_Surface * screen;
+		#else
+			SDL_Window * window;
+			SDL_Renderer * renderer;
+		#endif
 		CCamera * cam;
 		CPlayer * player;
 		int any_key, enter_key, pause_key;
@@ -52,32 +57,50 @@ class CGameScreen: public CStateMachine
 		CGameTransition transition;
 		CSaveGame save;
 		CHighScore highscore;
-		CWidget window;
+		CWidget widget;
 		CLabel * pause;
 		CLabel * name_msg;
 		CLabel * final;
 		CTextInput * textinput;
 
 	public:
-		CGameScreen ( SDL_Surface * s, CCamera * c, CPlayer * p, int ts )
+		#ifndef USE_SDL2
+			CGameScreen ( SDL_Surface * s, CCamera * c, CPlayer * p, int ts )
+		#else
+			CGameScreen ( SDL_Window * w, SDL_Renderer * r, CCamera * c, CPlayer * p, int ts ): gameover(r), highscore(r), title(r), credits(r), transition(r), introduction(r)
+		#endif
 		{
 			curr_level = -1;
 			tilesize = ts;
-			screen = s;
+			#ifndef USE_SDL2
+				screen = s;
+			#else
+				window = w;
+				renderer = r;
+			#endif
 			cam = c;
 			player = p;
 			
-			if (!screen)
-				throw "CGameScreen: screen Ã© nulo\n";
-				
+			#ifndef USE_SDL2
+				if (!screen)
+					throw "CGameScreen: screen é nulo\n";
+			#else
+				if (!w || !r)
+					throw "CGameScreen: window ou renderer nulo\n";
+			#endif
+			
 			if (!player)
 				throw "CGameScreen: player Ã© nulo\n";
 				
 			if (!cam)
 				throw "CGameScreen: cam Ã© nulo\n";
 
-			// pre seta a transiÃ§Ã£o
-			transition.set_cam(cam, screen);
+			// pre seta a transição
+			#ifndef USE_SDL2
+				transition.set_cam(cam, screen);
+			#else
+				transition.set_cam(cam, renderer);
+			#endif
 			transition.set_player(player);
 			
 			#if _WIN32 || _WIN64 || __MINGW32__
@@ -99,23 +122,41 @@ class CGameScreen: public CStateMachine
 			#endif
 
 			if (CWriter::instance()->set_font(path, 80) == 0)
-				throw "CGameScreen: nÃ£o foi possÃ­vel carregar fonte\n";
+				throw "CGameScreen: não foi possí­vel carregar fonte\n";
 			
-			pause = new CLabel("PAUSE!", (SDL_Color){0,0,0,0});
-			pause->set_pos(SVect((screen->w - pause->get_surface()->w)/2, (screen->h - pause->get_surface()->h)/2));
-			name_msg = new CLabel("YOU GOT A HIGH SCORE!\n Enter your name:", (SDL_Color){255,255,0, 0});
-			name_msg->set_pos(SVect(230, 110));
-			textinput = new CTextInput(80, (SDL_Color){255,0,0,0});
-			textinput->set_pos(SVect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_surface()->h));
-			final = new CLabel("   FINAL\npress any key", (SDL_Color){255,0,0,0});
-			final->set_pos(SVect((screen->w - final->get_surface()->w)/2, (screen->h - final->get_surface()->h)/2));
-
-			window.add_child(pause);
-			window.add_child(name_msg);
-			window.add_child(textinput);
-			window.add_child(final);
-			window.show();
-			window.show_child(false);
+			#if USE_SDL2
+				CWriter::instance()->set_renderer(r);
+			#endif
+			
+			#ifndef USE_SDL2
+				pause = new CLabel("PAUSE!", (SDL_Color){0,0,0,0});
+				pause->set_pos(SVect((screen->w - pause->get_surface()->w)/2, (screen->h - pause->get_surface()->h)/2));
+				name_msg = new CLabel("YOU GOT A HIGH SCORE!\n Enter your name:", (SDL_Color){255,255,0, 0});
+				name_msg->set_pos(SVect(230, 110));
+				textinput = new CTextInput(80, (SDL_Color){255,0,0,0});
+				textinput->set_pos(SVect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_surface()->h));
+				final = new CLabel("   FINAL\nPRESS ANY KEY", (SDL_Color){255,0,0,0});
+				final->set_pos(SVect((screen->w - final->get_surface()->w)/2, (screen->h - final->get_surface()->h)/2));
+			#else
+				int width, height;
+				SDL_RenderGetLogicalSize(renderer, &width, &height);
+				
+				pause = new CLabel("PAUSE!", (SDL_Color){0,0,0,0});
+				pause->set_pos(SVect((width - pause->get_texture_width())/2, (height - pause->get_texture_height())/2));
+				name_msg = new CLabel("YOU GOT A HIGH SCORE!\n Enter your name:", (SDL_Color){255,255,0, 0});
+				name_msg->set_pos(SVect(230, 110));
+				textinput = new CTextInput(80, (SDL_Color){255,0,0,0});
+				textinput->set_pos(SVect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_texture_height()));
+				final = new CLabel("   FINAL\npress any key", (SDL_Color){255,0,0,0});
+				final->set_pos(SVect((width - final->get_texture_width())/2, (height - final->get_texture_height())/2));
+			#endif
+			
+			widget.add_child(pause);
+			widget.add_child(name_msg);
+			widget.add_child(textinput);
+			widget.add_child(final);
+			widget.show();
+			widget.show_child(false);
 			
 			any_key = enter_key = pause_key = 0;
 			credits.reset();
@@ -148,7 +189,7 @@ class CGameScreen: public CStateMachine
 		
 		void input ( SDL_Event & event )
 		{
-			window.input(event);
+			widget.input(event);
 			highscore.input(event);
 
 			if (get_state() == MAIN_LOOP || get_state() == PAUSE_SCREEN)
@@ -156,7 +197,11 @@ class CGameScreen: public CStateMachine
 			
 			if (event.type == SDL_KEYDOWN)
 			{
-				textinput->set_pos(SVect(name_msg->get_pos().x + (name_msg->get_surface()->w - textinput->get_surface()->w)/2, textinput->get_pos().y));
+				#ifndef USE_SDL2
+					textinput->set_pos(SVect(name_msg->get_pos().x + (name_msg->get_surface()->w - textinput->get_surface()->w)/2, textinput->get_pos().y));
+				#else
+					textinput->set_pos(SVect(name_msg->get_pos().x + (name_msg->get_texture_width() - textinput->get_texture_width())/2, textinput->get_pos().y));
+				#endif
 				if (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER)
 					enter_key = 1;
 					
@@ -202,43 +247,82 @@ class CGameScreen: public CStateMachine
 			switch (get_state())
 			{
 				case CREDITS_SCREEN:
-					credits.draw(screen);
+					#ifndef USE_SDL2
+						credits.draw(screen);
+					#else
+						credits.draw(renderer);
+					#endif
 					break;
 
 				case INTRODUCTION:
-					introduction.draw(screen);
+					#ifndef USE_SDL2
+						introduction.draw(screen);
+					#else
+						introduction.draw(renderer);
+					#endif
 					break;
 
 				case PAUSE_SCREEN:
 				case MAIN_LOOP:
 					if (curr_level < 0)
 						break;
-
-					SDL_FillRect(screen, NULL, 0x0);
-					levels[curr_level]->draw();
-					window.draw(screen);
+					
+					#ifndef USE_SDL2
+						SDL_FillRect(screen, NULL, 0x0);
+						levels[curr_level]->draw();
+						widget.draw(screen);
+					#else
+						SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
+						SDL_RenderClear(renderer);
+						levels[curr_level]->draw();
+						widget.draw(renderer);
+					#endif
 					break;
 
-				case HIGHSCORE_SCREEN: // high score
-					SDL_FillRect(screen, NULL, 0x0);
-					highscore.draw(screen);
+				case HIGHSCORE_SCREEN:
+					#ifndef USE_SDL2
+						SDL_FillRect(screen, NULL, 0x0);
+						highscore.draw(screen);
+					#else
+						SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
+						SDL_RenderClear(renderer);
+						highscore.draw(renderer);
+					#endif
 					break;
 
 				case TITLE_SCREEN:
-					title.draw(cam, screen);
+					#ifndef USE_SDL2
+						title.draw(cam, screen);
+					#else
+						title.draw(cam, renderer);
+					#endif
 					break;
 
 				case TRANSITION:
-					transition.draw(screen);
+					#ifndef USE_SDL2
+						transition.draw(screen);
+					#else
+						transition.draw();
+					#endif
 					break;
 
 				case GAMEOVER_SCREEN:
-					gameover.draw(cam, screen);
+					#ifndef USE_SDL2
+						gameover.draw(cam, screen);
+					#else
+						gameover.draw(cam, renderer);
+					#endif
 					break;
 
 				default:
-					SDL_FillRect(screen, NULL, 0x0);
-					window.draw(screen);
+					#ifndef USE_SDL2
+						SDL_FillRect(screen, NULL, 0x0);
+						widget.draw(screen);
+					#else
+						SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
+						SDL_RenderClear(renderer);
+						widget.draw(renderer);
+					#endif
 					break;
 			}
 		}
@@ -252,7 +336,7 @@ class CGameScreen: public CStateMachine
 					{
 						any_key = 0;
 						enter_key = 0;
-						window.show_child(false);
+						widget.show_child(false);
 						title.reset();
 						set_state(TITLE_SCREEN);
 					}
@@ -263,7 +347,7 @@ class CGameScreen: public CStateMachine
 					{
 						any_key = 0;
 						enter_key = 0;
-						window.show_child(false);
+						widget.show_child(false);
 						set_state(LOAD_LEVELS_SCREEN);
 						break;
 					}
@@ -374,8 +458,15 @@ class CGameScreen: public CStateMachine
 						ifstream file(path, ifstream::in | ifstream::binary);
 						if (file)
 						{
-							CLevel * l = new CLevel(tilesize, i + 1);
-							l->screen = screen;
+							#ifndef USE_SDL2
+								CLevel * l = new CLevel(tilesize, i + 1);
+							#else
+								CLevel * l = new CLevel(renderer, tilesize, i + 1);
+							#endif
+							
+							#ifndef USE_SDL2
+								l->screen = screen;
+							#endif
 							l->player = player;
 							l->cam = cam;
 							
@@ -405,13 +496,13 @@ class CGameScreen: public CStateMachine
 
 				case INIT_LEVEL_SCREEN: // inicializando o level	
 					levels[curr_level]->set_state(0); // seta o level para estado de iniciando
-					levels[curr_level]->update(); // executa um update para inicializar variÃ¡veis
+					levels[curr_level]->update(); // executa um update para inicializar variáveis
 					
 					player->jetpack.set_jetpack(false);
 					player->gun.set_gun(false);
 					player->set_kernel(false);
 					
-					window.show_child(false);
+					widget.show_child(false);
 					set_state(MAIN_LOOP);
 					break;
 				
@@ -419,7 +510,7 @@ class CGameScreen: public CStateMachine
 					// verifica se passou da fase
 					if (levels[curr_level]->get_state() == NEXT_LEVEL)
 					{
-						window.show_child(false);
+						widget.show_child(false);
 						any_key = 0;
 						levels[curr_level]->unload();
 						set_state(SAVE_GAME); // vai para tela de save game
@@ -429,7 +520,7 @@ class CGameScreen: public CStateMachine
 					if (player->get_state() == GAMEOVER) // se deu game over
 					{
 						levels[curr_level]->widget->show(false);
-						window.show_child(false);
+						widget.show_child(false);
 						any_key = 0;
 						set_state(SAVE_GAME); // vai para tela save game
 						break;
@@ -444,7 +535,7 @@ class CGameScreen: public CStateMachine
 				case TRANSITION: // transiÃ§Ã£o de fase
 					if (transition.update() == 0)
 					{
-						window.show_child(false);
+						widget.show_child(false);
 						set_state(NEXT_LEVEL_SCREEN);
 						break;
 					}
@@ -453,7 +544,7 @@ class CGameScreen: public CStateMachine
 				case FINAL_SCREEN: // tela do final do jogo
 					if (any_key)
 					{
-						window.show_child(false);
+						widget.show_child(false);
 						if (highscore.is_highscore(player->score.get_score()))
 						{
 							enter_key = 0;
@@ -476,9 +567,13 @@ class CGameScreen: public CStateMachine
 									sprintf(path, "%s/share/games/dangeroustux/fonts/inhouseedition.ttf", PREFIX);
 								#endif
 							#endif
-							// Ã© preciso redefinir a fonte
+							// É preciso redefinir a fonte
 							if (CWriter::instance()->set_font(path, 80) == 0)
 								throw "CGameScreen: nÃ£o conseguiu abrir fonte\n";
+							
+							#if USE_SDL2
+								CWriter::instance()->set_renderer(renderer);
+							#endif
 							break;
 						}
 						highscore.show();
@@ -490,7 +585,7 @@ class CGameScreen: public CStateMachine
 				case GAMEOVER_SCREEN: // tela de game over
 					if (enter_key)
 					{
-						window.show_child(false);
+						widget.show_child(false);
 						if (highscore.is_highscore(player->score.get_score()))
 						{
 							any_key = 0;
@@ -514,9 +609,13 @@ class CGameScreen: public CStateMachine
 									sprintf(path, "%s/share/games/dangeroustux/fonts/inhouseedition.ttf", PREFIX);
 								#endif
 							#endif
-							// Ã© preciso redefinir a fonte
+							// É preciso redefinir a fonte
 							if (CWriter::instance()->set_font(path, 80) == 0)
 								throw "CGameScreen: nÃ£o conseguiu abrir fonte\n";
+							
+							#if USE_SDL2
+								CWriter::instance()->set_renderer(renderer);
+							#endif
 							break;
 						}
 
@@ -532,7 +631,7 @@ class CGameScreen: public CStateMachine
 				case HIGHSCORE_SCREEN: // tela de high score 
 					if (any_key)
 					{
-						window.show_child(false);
+						widget.show_child(false);
 						highscore.show(false);
 						player->score.set_score(0);
 						any_key = 0;

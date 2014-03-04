@@ -9,9 +9,16 @@ class CGameTransition: public CStateMachine
 		CTileMapView * map;
 		CPlayer * player;
 		CLabel * phrase;
+		#if USE_SDL2
+			SDL_Renderer * renderer;
+		#endif
 	
 	public:
-		CGameTransition (  )
+		#ifndef USE_SDL2
+			CGameTransition (  )
+		#else
+			CGameTransition ( SDL_Renderer * r )
+		#endif
 		{
 			cam = 0;
 			phrase = 0;
@@ -34,9 +41,19 @@ class CGameTransition: public CStateMachine
 					sprintf(path, "%s/share/games/dangeroustux/images/tiles.png", PREFIX);
 				#endif
 			#endif
-			map->surface = optimize_surface_alpha(IMG_Load(path));
-			if (!map->surface)
-				throw "CGameTransition: não foi possível carregar tiles.png\n";
+			
+			#ifndef USE_SDL2
+				map->surface = optimize_surface_alpha(IMG_Load(path));
+				if (!map->surface)
+					throw "CGameTransition: não foi possível carregar tiles.png\n";
+			#else
+				renderer = r;
+				SDL_Surface * aux = IMG_Load(path);
+				map->texture = SDL_CreateTextureFromSurface(r, aux);
+				SDL_FreeSurface(aux);
+				if (!map->texture)
+					throw "CGameTransition: não foi possível carregar tiles.png\n";
+			#endif
 		}
 		
 		~CGameTransition (  )
@@ -47,20 +64,38 @@ class CGameTransition: public CStateMachine
 				delete phrase;
 		}
 		
-		void set_cam ( CCamera * c, SDL_Surface * screen )
+		#ifndef USE_SDL2
+			void set_cam ( CCamera * c, SDL_Surface * screen )
+		#else
+			void set_cam ( CCamera * c, SDL_Renderer * renderer )
+		#endif
 		{
 			if (cam)
 				delete cam;
 
 			SDL_Rect d = c->get_dimension();
-			cam = new CCamera((SDL_Rect){0, (screen->h - d.h)/2, d.w,d.h}, (SDL_Rect){0,0,d.w,d.h});
+			#ifndef USE_SDL2
+				cam = new CCamera((SDL_Rect){0, (screen->h - d.h)/2, d.w,d.h}, (SDL_Rect){0,0,d.w,d.h});
+			#else
+				int h;
+				SDL_RenderGetLogicalSize(renderer, NULL, &h);
+				cam = new CCamera((SDL_Rect){0, (h - d.h)/2, d.w,d.h}, (SDL_Rect){0,0,d.w,d.h});
+			#endif
 		}
 		
 		void set_bg ( string path )
 		{
-			bg.surface = optimize_surface_alpha(IMG_Load(path.c_str()));
-			if (!bg.surface)
-				throw "CGameTransition: não foi possível carregar background\n";
+			#ifndef USE_SDL2
+				bg.set_surface(optimize_surface_alpha(IMG_Load(path.c_str())));
+				if (!bg.get_surface())
+					throw "CGameTransition: não foi possível carregar background\n";
+			#else
+				SDL_Surface * aux = IMG_Load(path.c_str());
+				bg.set_texture(SDL_CreateTextureFromSurface(renderer, aux));
+				SDL_FreeSurface(aux);
+				if (!bg.get_texture())
+					throw "CGameTransition: não foi possível carregar background\n";
+			#endif
 		}
 		
 		void set_player ( CPlayer * p )
@@ -165,6 +200,10 @@ class CGameTransition: public CStateMachine
 			if (!CWriter::instance()->set_font(path, 80))
 				throw "CGameTransition: não conseguiu carregar font\n";
 			
+			#if USE_SDL2
+				CWriter::instance()->set_renderer(renderer);
+			#endif
+			
 			if (num_levels - curr_level - 1 > 1)
 				sprintf(path, "GOOD WORK! ONLY %d LEVELS TO GO", num_levels - curr_level - 1);
 			else
@@ -174,16 +213,32 @@ class CGameTransition: public CStateMachine
 				delete phrase;
 
 			phrase = new CLabel(path, (SDL_Color){255,255,0,0});
-			phrase->set_pos(SVect((960 - phrase->get_surface()->w)/2, 0));
+			#ifndef USE_SDL2
+				phrase->set_pos(SVect((960 - phrase->get_surface()->w)/2, 0));
+			#else
+				phrase->set_pos(SVect((960 - phrase->get_texture_width())/2, 0));
+			#endif
 		}
-			
-		void draw ( SDL_Surface * screen )
-		{
-			bg.draw(cam, screen);
-			map->draw(cam, screen);
-			player->draw(cam, screen);
-			phrase->draw(screen);
-		}
+		
+		#ifndef USE_SDL2
+			void draw ( SDL_Surface * screen )
+			{
+				bg.draw(cam, screen);
+				map->draw(cam, screen);
+				player->draw(cam, screen);
+				phrase->draw(screen);
+			}
+		#else
+			void draw (  )
+			{
+				SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
+				SDL_RenderClear(renderer);
+				bg.draw(cam, renderer);
+				map->draw(cam, renderer);
+				player->draw(cam, renderer);
+				phrase->draw(renderer);
+			}
+		#endif
 		
 		int update (  )
 		{

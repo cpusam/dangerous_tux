@@ -1,15 +1,28 @@
 #if _WIN32 || _WIN64 || __MINGW32__
+	#ifndef USE_SDL2
+		#include "SDL\\SDL.h"
+		#include "SDL\\SDL_image.h"
+		#include "SDL\\SDL_ttf.h"
+	#else
+		#include "SDL2\\SDL.h"
+		#include "SDL2\\SDL_image.h"
+		#include "SDL2\\SDL_ttf.h"
+	#endif
+
 	#include <windows.h>
 	#include <direct.h>
-	#include "SDL\\SDL.h"
-	#include "SDL\\SDL_image.h"
-	#include "SDL\\SDL_ttf.h"
 	#undef main
 #else
 	#include <unistd.h>
-	#include <SDL/SDL.h>
-	#include <SDL/SDL_image.h>
-	#include <SDL/SDL_ttf.h>
+	#ifndef USE_SDL2
+		#include <SDL/SDL.h>
+		#include <SDL/SDL_image.h>
+		#include <SDL/SDL_ttf.h>
+	#else
+		#include <SDL2/SDL.h>
+		#include <SDL2/SDL_image.h>
+		#include <SDL2/SDL_ttf.h>
+	#endif
 #endif
 
 #include <iostream>
@@ -22,8 +35,10 @@
 	#include "light_engine/light.hpp"
 #endif
 
-#include "gamescreen.hpp" // contÃ©m todos os headers do jogo
-#include "gamevideo.hpp"
+#include "gamescreen.hpp" // contém todos os headers do jogo
+#ifndef USE_SDL2
+	#include "gamevideo.hpp"
+#endif
 
 
 #define TILESIZE 48
@@ -46,7 +61,13 @@ int main ( int argc, char **argv )
 {
 	try
 	{
-		SDL_putenv("SDL_VIDEO_CENTERED=center");
+		#ifndef USE_SDL2
+			SDL_putenv("SDL_VIDEO_CENTERED=center");
+		#else
+			#if _WIN32 || _WIN64 || __MINGW32__
+				    SDL_SetMainReady();
+			#endif
+		#endif
 
 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_JOYSTICK) < 0)
 			throw SDL_GetError();
@@ -57,30 +78,36 @@ int main ( int argc, char **argv )
 		if (IMG_Init(IMG_INIT_PNG) == 0)
 			throw "Erro na inicialização da sdl image\n";
 		
-		if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) < 0)
+		if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) < 0)
 			throw SDL_GetError();
 		
 		Mix_AllocateChannels(20); // aloca 20 canais para tocar sons
-		
-		SDL_Surface * screen;
+
 		SDL_Event event;
 
 		int fps;
-		// no tamanho aproximado do dangerous dave original
-		screen = set_screen(TILESIZE * 20, TILESIZE * 13, &fps);
-		SDL_PixelFormat * fmt = screen->format;
-		cout << "screen->bitsperpixel = " << fmt->BitsPerPixel << endl;
-		
-		if (!screen)
-			throw SDL_GetError();
+		#ifndef USE_SDL2
+			// no tamanho aproximado do dangerous dave original
+			SDL_Surface * screen = set_screen(TILESIZE * 20, TILESIZE * 13, &fps);
+			if (!screen)
+				throw SDL_GetError();
+		#else
+			SDL_Window * window = SDL_CreateWindow("Dangerous Tux!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, SDL_WINDOW_MINIMIZED | SDL_WINDOW_MAXIMIZED);// | SDL_WINDOW_FULLSCREEN_DESKTOP);
+			SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+			
+			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // em fase de testes
+			SDL_RenderSetLogicalSize(renderer, TILESIZE * 20, TILESIZE * 13);
+			fps = 40;
+		#endif
 
-		CPlayer player;
-		
 		CCamera cam((SDL_Rect){0,TILESIZE, TILESIZE * 20,TILESIZE * 10}, (SDL_Rect){0,0,0,0});
-		
-		cam.set_focus(SVect(screen->w/2, TILESIZE));
-
-		CGameScreen gamescreen(screen, &cam, &player, TILESIZE);
+		#ifndef USE_SDL2
+			CPlayer player;
+			CGameScreen gamescreen(screen, &cam, &player, TILESIZE);
+		#else
+			CPlayer player(renderer);
+			CGameScreen gamescreen(window, renderer, &cam, &player, TILESIZE);
+		#endif
 		
 		srand(time(0));
 		
@@ -104,8 +131,14 @@ int main ( int argc, char **argv )
 			if (control_fps(time_now, fps))
 			{
 				gamescreen.update();
-				gamescreen.draw();
-				SDL_UpdateRect(screen, 0,0,0,0);
+				#ifndef USE_SDL2
+					gamescreen.draw();
+					SDL_UpdateRect(screen, 0,0,0,0);
+				#else
+					SDL_RenderClear(renderer);
+					gamescreen.draw();
+					SDL_RenderPresent(renderer);
+				#endif
 			}
 		}
 	}

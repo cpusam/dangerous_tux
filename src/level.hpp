@@ -30,19 +30,37 @@ class CLevel: public CStateMachine
 		CExitSignal exit_signal;
 		static CWidget * widget; // os widgets do level
 		static CPlayer * player;
-		static SDL_Surface * screen;
+		#ifndef USE_SDL2
+			static SDL_Surface * screen;
+		#endif
 		static CCamera * cam;
+		#if USE_SDL2
+			static SDL_Renderer * renderer;
+		#endif
 
 	public:
-		CLevel ( int tilesize, int i )
-		{
-			if (!widget)
-				widget = new CWidget("level_window");
+		#ifndef USE_SDL2
+			CLevel ( int tilesize, int i )
+			{
+				if (!widget)
+					widget = new CWidget("level_window");
 
-			id = i;
-			map = new CTileMapView(tilesize);
-			bg = 0;
-		}
+				id = i;
+				map = new CTileMapView(tilesize);
+				bg = 0;
+			}
+		#else
+			CLevel ( SDL_Renderer * r, int tilesize, int i ): kernel_signal(r), exit_signal(r)
+			{
+				renderer = r;
+				if (!widget)
+					widget = new CWidget("level_window");
+
+				id = i;
+				map = new CTileMapView(tilesize);
+				bg = 0;
+			}
+		#endif
 		
 		~CLevel (  )
 		{
@@ -105,24 +123,49 @@ class CLevel: public CStateMachine
 		void draw (  )
 		{
 			if (bg)
-				bg->draw(cam, screen);
+			{
+				#ifndef USE_SDL2
+					bg->draw(cam, screen);
+				#else
+					bg->draw(cam, renderer);
+				#endif
+			}
 			else
 			{
 				SDL_Rect r = cam->get_dimension();
-				SDL_FillRect(screen, &r, SDL_MapRGB(screen->format, 0xb6,0xb6,0xb6));
+				#ifndef USE_SDL2
+					SDL_FillRect(screen, &r, SDL_MapRGB(screen->format, 0xb6,0xb6,0xb6));
+				#else
+					SDL_SetRenderDrawColor(renderer, 0xb6,0xb6,0xb6, 0xff);
+					SDL_RenderFillRect(renderer, &r);
+				#endif
 			}
-
-			map->draw(cam, screen);
-			player->gun.draw(cam, screen);
-			player->draw(cam, screen);
-			kernel_signal.draw(screen);
-			exit_signal.draw(screen);
 			
-			for (vector <CGameEntity *>::iterator i = aliens.begin(); i != aliens.end(); i++)
-				(*i)->draw(cam, screen);
+			#ifndef USE_SDL2
+				map->draw(cam, screen);
+				player->gun.draw(cam, screen);
+				player->draw(cam, screen);
+				kernel_signal.draw(screen);
+				exit_signal.draw(screen);
 			
-			if (widget)
-				widget->draw(screen);
+				for (vector <CGameEntity *>::iterator i = aliens.begin(); i != aliens.end(); i++)
+					(*i)->draw(cam, screen);
+			
+				if (widget)
+					widget->draw(screen);
+			#else
+				map->draw(cam, renderer);
+				player->gun.draw(cam, renderer);
+				player->draw(cam, renderer);
+				kernel_signal.draw(renderer);
+				exit_signal.draw(renderer);
+			
+				for (vector <CGameEntity *>::iterator i = aliens.begin(); i != aliens.end(); i++)
+					(*i)->draw(cam, renderer);
+			
+				if (widget)
+					widget->draw(renderer);
+			#endif
 		}
 	
 		void input ( SDL_Event & event )
@@ -137,6 +180,8 @@ class CLevel: public CStateMachine
 			{
 				case INIT: // inicializando
 				{
+					SDL_Surface * aux = 0;
+					
 					#if _WIN32 || _WIN64 || __MINGW32__
 						char path[FILENAME_MAX];
 						char pimage[FILENAME_MAX];
@@ -169,13 +214,24 @@ class CLevel: public CStateMachine
 					sprintf(path, "%s%s", pimage, nimage.c_str());
 					
 					bg_path = path;
-					bg = new CBackground(optimize_surface_alpha(IMG_Load(path)));
-					if (!bg->surface)
-					{
-						sprintf(path, "CLevel: não foi possível abrir background %s%s\n", pimage, nimage.c_str());
-						throw path;
-					}
-					
+					#ifndef USE_SDL2
+						bg = new CBackground(optimize_surface_alpha(IMG_Load(path)));
+						if (!bg->get_surface())
+						{
+							sprintf(path, "CLevel: não foi possível abrir background %s%s\n", pimage, nimage.c_str());
+							throw path;
+						}
+					#else
+						aux = IMG_Load(path);
+						bg = new CBackground(SDL_CreateTextureFromSurface(renderer, aux));
+						SDL_FreeSurface(aux);
+						if (!bg->get_texture())
+						{
+							sprintf(path, "CLevel: não foi possível abrir background %s%s\n", pimage, nimage.c_str());
+							throw path;
+						}
+					#endif
+
 					vector <int> tileset;
 					string line;
 					int i;
@@ -214,7 +270,11 @@ class CLevel: public CStateMachine
 					player->set_map(map);
 					
 					// verifica se já não foi carregado a imagem dos tiles
-					if (!map->surface)
+					#ifndef USE_SDL2
+						if (!map->surface)
+					#else
+						if (!map->texture)
+					#endif
 					{
 						#if _WIN32 || _WIN64 || __MINGW32__
 							#ifndef PREFIX
@@ -229,9 +289,18 @@ class CLevel: public CStateMachine
 								sprintf(path, "%s/share/games/dangeroustux/images/tiles.png", PREFIX);
 							#endif
 						#endif
-						map->surface = optimize_surface_alpha(IMG_Load(path));
-						if (!map->surface)
-							throw SDL_GetError();
+						
+						#ifndef USE_SDL2
+							map->surface = optimize_surface_alpha(IMG_Load(path));
+							if (!map->surface)
+								throw SDL_GetError();
+						#else
+							aux = IMG_Load(path);
+							map->texture = SDL_CreateTextureFromSurface(renderer, aux);
+							SDL_FreeSurface(aux);
+							if (!map->texture)
+								throw SDL_GetError();
+						#endif
 					}
 
 					// procura o caractere P no mapa e reinicia o player
@@ -261,7 +330,11 @@ class CLevel: public CStateMachine
 							SVect ip;
 							ip.x = (i % map->get_width()) * map->get_tilesize();
 							ip.y = (i / map->get_width()) * map->get_tilesize();
-							CGameEntity * walker = new CWalkerAlien(player, 8 * map->get_tilesize(), ip);
+							#ifndef USE_SDL2
+								CGameEntity * walker = new CWalkerAlien(player, 8 * map->get_tilesize(), ip);
+							#else
+								CGameEntity * walker = new CWalkerAlien(renderer, player, 8 * map->get_tilesize(), ip);
+							#endif
 							aliens.push_back(walker);
 							player->gun.shot.add_target(walker);
 						}
@@ -270,7 +343,11 @@ class CLevel: public CStateMachine
 							SVect ip;
 							ip.x = (i % map->get_width()) * map->get_tilesize();
 							ip.y = (i / map->get_width()) * map->get_tilesize();
-							CGameEntity * flyer = new CFlyerAlien(player, 2.5 * map->get_tilesize(), ip);
+							#ifndef USE_SDL2
+								CGameEntity * flyer = new CFlyerAlien(player, 2.5 * map->get_tilesize(), ip);
+							#else
+								CGameEntity * flyer = new CFlyerAlien(renderer, player, 2.5 * map->get_tilesize(), ip);
+							#endif
 							aliens.push_back(flyer);
 							player->gun.shot.add_target(flyer);
 						}
@@ -297,8 +374,8 @@ class CLevel: public CStateMachine
 					int ts = map->get_tilesize();
 					map->remove_tile('.'); // remove o tile vazio da visão
 					map->remove_tile('P'); // remove o jogador da visão
-					map->remove_tile('F'); // remove o walker alien da visão
-					map->remove_tile('G'); // remove o flyer alien da visão
+					map->remove_tile('F'); // remove o flyer alien da visão
+					map->remove_tile('G'); // remove o walker alien da visão
 					map->set_source('a', (SDL_Rect){0,0,ts,ts});
 					map->set_source('b', (SDL_Rect){ts,0,ts,ts});
 					map->set_source('c', (SDL_Rect){ts*2,0,ts,ts});
@@ -318,44 +395,85 @@ class CLevel: public CStateMachine
 					map->set_source('u', (SDL_Rect){ts*6, ts*2,ts,ts});
 					
 					CAnimatedTile a;
-					a.add_frame((SDL_Rect){0,ts * 2,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts,ts * 2,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts * 2,ts * 2,ts,ts}, 4);
+					#ifndef USE_SDL2
+						a.add_frame((SDL_Rect){0,ts * 2,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts,ts * 2,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts * 2,ts * 2,ts,ts}, 4);
+					#else
+						a.add_frame(map->texture, (SDL_Rect){0,ts * 2,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts,ts * 2,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts * 2,ts * 2,ts,ts}, 4);
+					#endif
 					map->add_animation(a, 'o');
 
 					a.clear_frames();
-					a.add_frame((SDL_Rect){ts * 3,ts * 2,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts * 4,ts * 2,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts * 5,ts * 2,ts,ts}, 4);
+					#ifndef USE_SDL2
+						a.add_frame((SDL_Rect){ts * 3,ts * 2,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts * 4,ts * 2,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts * 5,ts * 2,ts,ts}, 4);
+					#else
+						a.add_frame(map->texture, (SDL_Rect){ts * 3,ts * 2,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts * 4,ts * 2,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts * 5,ts * 2,ts,ts}, 4);
+					#endif
 					map->add_animation(a, 'p');
 					
 					a.clear_frames();
-					a.add_frame((SDL_Rect){ts*8,ts,ts,ts}, 4); // início
-					a.add_frame((SDL_Rect){ts*9,ts,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
-					a.add_frame((SDL_Rect){ts*10,ts,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts*11,ts,ts,ts}, 4); // final
-					a.add_frame((SDL_Rect){ts*10,ts,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
-					a.add_frame((SDL_Rect){ts*9,ts,ts,ts}, 4);
+					#ifndef USE_SDL2
+						a.add_frame((SDL_Rect){ts*8,ts,ts,ts}, 4); // início
+						a.add_frame((SDL_Rect){ts*9,ts,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
+						a.add_frame((SDL_Rect){ts*10,ts,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts*11,ts,ts,ts}, 4); // final
+						a.add_frame((SDL_Rect){ts*10,ts,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
+						a.add_frame((SDL_Rect){ts*9,ts,ts,ts}, 4);
+					#else
+						a.add_frame(map->texture, (SDL_Rect){ts*8,ts,ts,ts}, 4); // início
+						a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
+						a.add_frame(map->texture, (SDL_Rect){ts*10,ts,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts*11,ts,ts,ts}, 4); // final
+						a.add_frame(map->texture, (SDL_Rect){ts*10,ts,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
+						a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 4);
+					#endif
 					map->add_animation(a, 'q');
 
 					a.clear_frames();
-					a.add_frame((SDL_Rect){ts*8,ts*2,ts,ts}, 4); // início
-					a.add_frame((SDL_Rect){ts*9,ts*2,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
-					a.add_frame((SDL_Rect){ts*10,ts*2,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts*11,ts*2,ts,ts}, 4); // final
-					a.add_frame((SDL_Rect){ts*10,ts*2,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
-					a.add_frame((SDL_Rect){ts*9,ts*2,ts,ts}, 4);
+					#ifndef USE_SDL2
+						a.add_frame((SDL_Rect){ts*8,ts*2,ts,ts}, 4); // início
+						a.add_frame((SDL_Rect){ts*9,ts*2,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
+						a.add_frame((SDL_Rect){ts*10,ts*2,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts*11,ts*2,ts,ts}, 4); // final
+						a.add_frame((SDL_Rect){ts*10,ts*2,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
+						a.add_frame((SDL_Rect){ts*9,ts*2,ts,ts}, 4);
+					#else
+						a.add_frame(map->texture, (SDL_Rect){ts*8,ts*2,ts,ts}, 4); // início
+						a.add_frame(map->texture, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
+						a.add_frame(map->texture, (SDL_Rect){ts*10,ts*2,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts*11,ts*2,ts,ts}, 4); // final
+						a.add_frame(map->texture, (SDL_Rect){ts*10,ts*2,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
+						a.add_frame(map->texture, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
+					#endif
 					map->add_animation(a, 'r');
 					
 					a.clear_frames();
-					a.add_frame((SDL_Rect){0,ts*3,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts,ts*3,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts*2,ts*3,ts,ts}, 4);
-					a.add_frame((SDL_Rect){ts*3,ts*3,ts,ts}, 4);
+					#ifndef USE_SDL2
+						a.add_frame((SDL_Rect){0,ts*3,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts,ts*3,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts*2,ts*3,ts,ts}, 4);
+						a.add_frame((SDL_Rect){ts*3,ts*3,ts,ts}, 4);
+					#else
+						a.add_frame(map->texture, (SDL_Rect){0,ts*3,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts,ts*3,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts*2,ts*3,ts,ts}, 4);
+						a.add_frame(map->texture, (SDL_Rect){ts*3,ts*3,ts,ts}, 4);
+					#endif
 					map->add_animation(a, 'K');
 
 					#if _WIN32 || _WIN64 || __MINGW32__
@@ -375,6 +493,9 @@ class CLevel: public CStateMachine
 					if (CWriter::instance()->set_font(path, 55) == 0)
 						throw "CLevel: Não conseguiu abrir fonte\n";
 					
+					#if USE_SDL2
+						CWriter::instance()->set_renderer(renderer);
+					#endif
 					// verifica se já foi adicionado algum widget
 					if (widget && widget->child_size() > 0) // se sim, pula adicionar de novo
 					{
@@ -425,7 +546,11 @@ class CLevel: public CStateMachine
 
 					CLabel * gun_img = new CLabel(" ", (SDL_Color){0,0,0,0});
 					widget->add_child(gun_img);
-					gun_img->set_pos(SVect(gun->get_pos().x + gun->get_surface()->w, 11 * map->get_tilesize()));
+					#ifndef USE_SDL2
+						gun_img->set_pos(SVect(gun->get_pos().x + gun->get_surface()->w, 11 * map->get_tilesize()));
+					#else
+						gun_img->set_pos(SVect(gun->get_pos().x + gun->get_texture_width(), 11 * map->get_tilesize()));
+					#endif
 					gun_img->set_id("gun_img");
 					#if _WIN32 || _WIN64 || __MINGW32__
 						#ifndef PREFIX
@@ -440,31 +565,58 @@ class CLevel: public CStateMachine
 							sprintf(path, "%s/share/games/dangeroustux/images/gun.png", PREFIX);
 						#endif
 					#endif
-					gun_img->set_surface(optimize_surface_alpha(IMG_Load(path)));
-					if (!gun_img->get_surface())
-						throw SDL_GetError();
+					
+					#ifndef USE_SDL2
+						gun_img->set_surface(optimize_surface_alpha(IMG_Load(path)));
+						if (!gun_img->get_surface())
+							throw SDL_GetError();
+					#else
+						aux = IMG_Load(path);
+						gun_img->set_texture(SDL_CreateTextureFromSurface(renderer, aux));
+						SDL_FreeSurface(aux);
+						if (!gun_img->get_texture())
+							throw SDL_GetError();
+					#endif
 
 					CBar * bar = new CBar(100.0, 384,25);
 					widget->add_child(bar);
-					bar->color_bg = SDL_MapRGB(screen->format, 255, 255, 255);
-					bar->color_bar = SDL_MapRGB(screen->format, 255, 0, 0);
-					bar->set_pos(SVect(jetpack->get_pos().x + jetpack->get_surface()->w,540));
+					#ifndef USE_SDL2
+						bar->color_bg = SDL_MapRGB(screen->format, 255, 255, 255);
+						bar->color_bar = SDL_MapRGB(screen->format, 255, 0, 0);
+						bar->set_pos(SVect(jetpack->get_pos().x + jetpack->get_surface()->w,540));
+					#else
+						bar->color_bg = 0xFFFFFFFF;
+						bar->color_bar = 0xFF000000;
+						bar->set_pos(SVect(jetpack->get_pos().x + jetpack->get_texture_width(),540));
+					#endif
 					bar->set_id("jetpack_bar");
 
 					CLabelNumber * num_score = new CLabelNumber(0, (SDL_Color){0,255,0,0}, 6);
 					widget->add_child(num_score);
 					num_score->set_id("num_score");
-					num_score->set_pos(SVect(score->get_pos().x + score->get_surface()->w, 0));
-
+					#ifndef USE_SDL2
+						num_score->set_pos(SVect(score->get_pos().x + score->get_surface()->w, 0));
+					#else
+						num_score->set_pos(SVect(score->get_pos().x + score->get_texture_width(), 0));
+					#endif
+					
 					CLabelNumber * num_lives = new CLabelNumber(player->get_lives(), (SDL_Color){0,255,0,0}, 2);
 					widget->add_child(num_lives);
 					num_lives->set_id("num_lives");
-					num_lives->set_pos(SVect(lives->get_pos().x + lives->get_surface()->w, 0));
+					#ifndef USE_SDL2
+						num_lives->set_pos(SVect(lives->get_pos().x + lives->get_surface()->w, 0));
+					#else
+						num_lives->set_pos(SVect(lives->get_pos().x + lives->get_texture_width(), 0));
+					#endif
 	
 					CLabelNumber * num_level = new CLabelNumber(id, (SDL_Color){0,255,0,0}, 2);
 					widget->add_child(num_level);
 					num_level->set_id("num_level");
-					num_level->set_pos(SVect(level->get_pos().x + level->get_surface()->w, 0));
+					#ifndef USE_SDL2
+						num_level->set_pos(SVect(level->get_pos().x + level->get_surface()->w, 0));
+					#else
+						num_level->set_pos(SVect(level->get_pos().x + level->get_texture_width(), 0));
+					#endif
 
 					widget->set_id("main_window");
 					widget->show();
@@ -588,9 +740,14 @@ class CLevel: public CStateMachine
 
 
 CPlayer * CLevel::player = 0;
-SDL_Surface * CLevel::screen = 0;
+#ifndef USE_SDL2
+	SDL_Surface * CLevel::screen = 0;
+#endif
 CWidget * CLevel::widget = 0;
 CCamera * CLevel::cam = 0;
+#if USE_SDL2
+	SDL_Renderer * CLevel::renderer = 0;
+#endif
 
 #endif
 

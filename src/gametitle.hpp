@@ -4,8 +4,13 @@
 class CGameTitle: public CStateMachine
 {
 	protected:
-		SDL_Surface * background;
-		SDL_Surface * title_name;
+		#ifndef USE_SDL2
+			SDL_Surface * background;
+			SDL_Surface * title_name;
+		#else
+			SDL_Texture * background;
+			SDL_Texture * title_name;
+		#endif
 		CAnimation tux_rocket;
 		CLabel * press_enter;
 		CLabel * version;
@@ -18,8 +23,16 @@ class CGameTitle: public CStateMachine
 		float tn_vel;
 	
 	public:
-		CGameTitle (  )
+		#ifndef USE_SDL2
+			CGameTitle (  )
+		#else
+			CGameTitle ( SDL_Renderer * r )
+		#endif
 		{
+			#if USE_SDL2
+				SDL_Texture * texture = 0;
+				SDL_Surface * aux = 0;
+			#endif
 			press_enter = 0;
 			version = 0;
 			
@@ -44,11 +57,19 @@ class CGameTitle: public CStateMachine
 					sprintf(path, "%s/share/games/dangeroustux/images/gametitle_BG.jpg", PREFIX);
 				#endif
 			#endif
-			background = optimize_surface_alpha(IMG_Load(path));
-		
-			if (!background)
-				throw "CGameTitle: não conseguiu carregar imagem de background\n";
-		
+			
+			#ifndef USE_SDL2
+				background = optimize_surface_alpha(IMG_Load(path));
+				if (!background)
+					throw "CGameTitle: não conseguiu carregar imagem de background\n";
+			#else
+				aux = IMG_Load(path);
+				background = SDL_CreateTextureFromSurface(r, aux);
+				SDL_FreeSurface(aux);
+				if (!background)
+					throw "CGameTitle: não conseguiu carregar imagem de background\n";
+			#endif
+			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\gametitle_name.png", p2);
@@ -62,40 +83,105 @@ class CGameTitle: public CStateMachine
 					sprintf(path, "%s/share/games/dangeroustux/images/gametitle_name.png", PREFIX);
 				#endif
 			#endif
-			title_name = optimize_surface_alpha(IMG_Load(path));
-		
-			if (!title_name)
-				throw "CGameTitle: não conseguiu carregar imagem de título\n";
+
+			#ifndef USE_SDL2
+				title_name = optimize_surface_alpha(IMG_Load(path));
+				if (!title_name)
+					throw "CGameTitle: não conseguiu carregar imagem de título\n";
+			#else
+				aux = IMG_Load(path);
+				title_name = SDL_CreateTextureFromSurface(r, aux);
+				SDL_FreeSurface(aux);
+				if (!title_name)
+					throw "CGameTitle: não conseguiu carregar imagem de título\n";
+			#endif
 		
 			#if _WIN32 || _WIN64 || __MINGW32__
 				#ifndef PREFIX
-					sprintf(path, "%s\\images\\tux_rocket_sprites.png", p2);
+					#ifndef USE_SDL2
+						sprintf(path, "%s\\images\\tux_rocket_sprites_full.png", p2);
+					#else
+						sprintf(path, "%s\\images\\tux_rocket_sprites.png", p2);
+					#endif
 				#else
-					sprintf(path, "%s\\dangeroustux\\images\\tux_rocket_sprites.png", PREFIX);
+					#ifndef USE_SDL2
+						sprintf(path, "%s\\dangeroustux\\images\\tux_rocket_sprites_full.png", PREFIX);
+					#else
+						sprintf(path, "%s\\dangeroustux\\images\\tux_rocket_sprites.png", PREFIX);
+					#endif
 				#endif
 			#else
 				#ifndef PREFIX
-					sprintf(path, "./images/tux_rocket_sprites.png");
+					#ifndef USE_SDL2
+						sprintf(path, "./images/tux_rocket_sprites_full.png");
+					#else
+						sprintf(path, "./images/tux_rocket_sprites.png");
+					#endif
 				#else
-					sprintf(path, "%s/share/games/dangeroustux/images/tux_rocket_sprites.png", PREFIX);
+					#ifndef USE_SDL2
+						sprintf(path, "%s/share/games/dangeroustux/images/tux_rocket_sprites_full.png", PREFIX);
+					#else
+						sprintf(path, "%s/share/games/dangeroustux/images/tux_rocket_sprites.png", PREFIX);
+					#endif
 				#endif
 			#endif
-			tux_rocket.surface = optimize_surface_alpha(IMG_Load(path));
-
-			if (!tux_rocket.surface)
-				throw "CGameTitle: não conseguiu carregar imagem do tux no foguete\n";
-
+			
+			#ifndef USE_SDL2
+				tux_rocket.surface = optimize_surface_alpha(IMG_Load(path));
+				if (!tux_rocket.surface)
+					throw "CGameTitle: não conseguiu carregar imagem do tux no foguete\n";
+				
+				tux_rocket.add_frame((SDL_Rect){0,0,319,599}, 3);
+				tux_rocket.add_frame((SDL_Rect){0,599,319,599}, 3);
+				tux_rocket.add_frame((SDL_Rect){0,599*2,319,599}, 3);
+				tux_rocket.add_frame((SDL_Rect){0,599*3,319,599}, 3);
+				tux_rocket.add_frame((SDL_Rect){0,599*4,319,599}, 3);
+				tux_rocket.add_frame((SDL_Rect){0,599*5,319,599}, 3);
+			#else
+				aux = IMG_Load(path);
+				texture = SDL_CreateTextureFromSurface(r, aux);
+				SDL_FreeSurface(aux);
+				if (!texture)
+					throw "CGameTitle: não conseguiu carregar imagem do tux no foguete\n";
+				
+				tux_rocket.add_frame(texture, (SDL_Rect){0,0,319,599}, 3);
+				tux_rocket.add_frame(texture, (SDL_Rect){0,599,319,599}, 3);
+				tux_rocket.add_frame(texture, (SDL_Rect){0,599*2,319,599}, 3);
+				
+				#if _WIN32 || _WIN64 || __MINGW32__
+					#ifndef PREFIX
+						sprintf(path, "%s\\images\\tux_rocket_sprites2.png", p2);
+					#else
+						sprintf(path, "%s\\dangeroustux\\images\\tux_rocket_sprites2.png", PREFIX);
+					#endif
+				#else
+					#ifndef PREFIX
+						sprintf(path, "./images/tux_rocket_sprites2.png");
+					#else
+						sprintf(path, "%s/share/games/dangeroustux/images/tux_rocket_sprites2.png", PREFIX);
+					#endif
+				#endif
+				
+				aux = IMG_Load(path);
+				texture = SDL_CreateTextureFromSurface(r, aux);
+				SDL_FreeSurface(aux);
+				if (!texture)
+					throw "CGameTitle: não conseguiu carregar segunda imagem do tux no foguete\n";
+				
+				tux_rocket.add_frame(texture, (SDL_Rect){0,0,319,599}, 3);
+				tux_rocket.add_frame(texture, (SDL_Rect){0,599,319,599}, 3);
+				tux_rocket.add_frame(texture, (SDL_Rect){0,599*2,319,599}, 3);
+			#endif
 		
 			tn_final = SVect(34,60);
-			tn_init = tn_pos = SVect(-title_name->w, tn_final.y);
+			#ifndef USE_SDL2
+				tn_init = tn_pos = SVect(-title_name->w, tn_final.y);
+			#else
+				tn_init = tn_pos = SVect(-texture_width(title_name), tn_final.y);
+			#endif
 			tn_vel = 10;
 			tr_pos.x = 600;
-			tux_rocket.add_frame((SDL_Rect){0,0,319,599}, 3);
-			tux_rocket.add_frame((SDL_Rect){0,599,319,599}, 3);
-			tux_rocket.add_frame((SDL_Rect){0,599*2,319,599}, 3);
-			tux_rocket.add_frame((SDL_Rect){0,599*3,319,599}, 3);
-			tux_rocket.add_frame((SDL_Rect){0,599*4,319,599}, 3);
-			tux_rocket.add_frame((SDL_Rect){0,599*5,319,599}, 3);
+			
 			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				#ifndef PREFIX
@@ -113,31 +199,47 @@ class CGameTitle: public CStateMachine
 			if (!CWriter::instance()->set_font(path, 70))
 				throw "CGameTitle: não foi possível carregar fonte\n";
 			
+			#if USE_SDL2
+				CWriter::instance()->set_renderer(r);
+			#endif
+			
 			press_enter = new CLabel("PRESS ENTER!", (SDL_Color){0,0,0,0});
 			press_enter->set_pos(SVect(188,439));
 			version = new CLabel("BETA VERSION - 2014", (SDL_Color){255,255,0,0});
-			version->set_pos(SVect((960 - version->get_surface()->w)/2, 624 - version->get_surface()->h));
-			p_enter.add_frame((SDL_Rect){0,0,0,0}, 25);
-			p_enter.add_frame((SDL_Rect){0,0,0,0}, 25);
+			#ifndef USE_SDL2
+				version->set_pos(SVect((960 - version->get_surface()->w)/2, 624 - version->get_surface()->h));
+				p_enter.add_frame((SDL_Rect){0,0,0,0}, 25);
+				p_enter.add_frame((SDL_Rect){0,0,0,0}, 25);
+
+			#else
+				version->set_pos(SVect((960 - version->get_texture_width())/2, 624 - version->get_texture_height()));
+				p_enter.add_frame(0, (SDL_Rect){0,0,0,0}, 25);
+				p_enter.add_frame(0, (SDL_Rect){0,0,0,0}, 25);
+			#endif
 		}
 		
 		~CGameTitle (  )
 		{
-			if (background)
-				SDL_FreeSurface(background);
+			#ifndef USE_SDL2
+				if (background)
+					SDL_FreeSurface(background);
 		
-			if (title_name)
-				SDL_FreeSurface(title_name);
+				if (title_name)
+					SDL_FreeSurface(title_name);
 		
-			if (tux_rocket.surface)
-				SDL_FreeSurface(tux_rocket.surface);
+				if (tux_rocket.surface)
+					SDL_FreeSurface(tux_rocket.surface);
+			#else
+				if (background)
+					SDL_DestroyTexture(background);
+		
+				if (title_name)
+					SDL_DestroyTexture(title_name);
+		
+				tux_rocket.destroy_textures();
+			#endif
 		}
-	
-		void load (  )
-		{
-			
-		}
-
+		
 		void reset (  )
 		{
 			tn_pos = tn_init;
@@ -161,23 +263,43 @@ class CGameTitle: public CStateMachine
 			return get_state();
 		}
 	
-		void draw ( CCamera * cam, SDL_Surface * screen )
-		{
-			SDL_BlitSurface(background, NULL, screen, NULL);
+		#ifndef USE_SDL2
+			void draw ( CCamera * cam, SDL_Surface * screen )
+			{
+				SDL_BlitSurface(background, NULL, screen, NULL);
 		
-			SDL_Rect d;
+				SDL_Rect d;
 		
-			d.x = tn_pos.x;
-			d.y = tn_pos.y;
-			d.w = title_name->w;
-			d.h = title_name->h;
+				d.x = tn_pos.x;
+				d.y = tn_pos.y;
+				d.w = title_name->w;
+				d.h = title_name->h;
 		
-			SDL_BlitSurface(title_name, NULL, screen, &d);
+				SDL_BlitSurface(title_name, NULL, screen, &d);
 		
-			tux_rocket.draw(tr_pos.x, tr_pos.y, screen);
-			press_enter->draw(screen);
-			version->draw(screen);
-		}
+				tux_rocket.draw(tr_pos.x, tr_pos.y, screen);
+				press_enter->draw(screen);
+				version->draw(screen);
+			}
+		#else
+			void draw ( CCamera * cam, SDL_Renderer * renderer )
+			{
+				SDL_RenderCopy(renderer, background, NULL, NULL);
+		
+				SDL_Rect d;
+		
+				d.x = tn_pos.x;
+				d.y = tn_pos.y;
+				d.w = texture_width(title_name);
+				d.h = texture_height(title_name);
+		
+				SDL_RenderCopy(renderer, title_name, NULL, &d);
+		
+				tux_rocket.draw(tr_pos.x, tr_pos.y, renderer);
+				press_enter->draw(renderer);
+				version->draw(renderer);
+			}
+		#endif
 };
 
 #endif

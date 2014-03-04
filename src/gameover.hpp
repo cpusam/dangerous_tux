@@ -4,16 +4,30 @@
 class CGameOver: public CStateMachine
 {
 	protected:
-		SDL_Surface * background;
-		SDL_Surface * title;
+		#ifndef USE_SDL2
+			SDL_Surface * background;
+			SDL_Surface * title;
+		#else
+			SDL_Texture * background;
+			SDL_Texture * title;
+		#endif
 		CAnimation stars;
 		
 		SVect t_pos;
 		SVect s_pos;
 	
 	public:
-		CGameOver (  )
+		#ifndef USE_SDL2
+			CGameOver (  )
+		#else
+			CGameOver ( SDL_Renderer * r )
+		#endif
 		{
+			#if USE_SDL2
+				SDL_Texture * texture = 0;
+				SDL_Surface * aux = 0;
+			#endif
+			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
@@ -35,7 +49,14 @@ class CGameOver: public CStateMachine
 					sprintf(path, "%s/share/games/dangeroustux/images/gameover_BG.png", PREFIX);
 				#endif
 			#endif
-			background = optimize_surface_alpha(IMG_Load(path));
+			
+			#ifndef USE_SDL2
+				background = optimize_surface_alpha(IMG_Load(path));
+			#else
+				aux = IMG_Load(path);
+				background = SDL_CreateTextureFromSurface(r, aux);
+				SDL_FreeSurface(aux);
+			#endif
 			
 			if (!background)
 				throw "SGameOver: não conseguiu abrir gameover_BG\n";
@@ -53,7 +74,14 @@ class CGameOver: public CStateMachine
 					sprintf(path, "%s/share/games/dangeroustux/images/gameover_title.png", PREFIX);
 				#endif
 			#endif
-			title = optimize_surface_alpha(IMG_Load(path));
+			
+			#ifndef USE_SDL2
+				title = optimize_surface_alpha(IMG_Load(path));
+			#else
+				aux = IMG_Load(path);
+				title = SDL_CreateTextureFromSurface(r, aux);
+				SDL_FreeSurface(aux);
+			#endif
 			
 			if (!title)
 				throw "SGameOver: não conseguiu abrir gameover_title\n";
@@ -71,33 +99,61 @@ class CGameOver: public CStateMachine
 					sprintf(path, "%s/share/games/dangeroustux/images/gameover_stars.png", PREFIX);
 				#endif
 			#endif
-			stars.surface = optimize_surface_alpha(IMG_Load(path));
 			
-			if (!stars.surface)
-				throw "SGameOver: não conseguiu abrir gameover_stars\n";
-			
-			t_pos.x = (background->w - title->w)/2.0f;
+			#ifndef USE_SDL2
+				stars.surface = optimize_surface_alpha(IMG_Load(path));
+				if (!stars.surface)
+					throw "SGameOver: não conseguiu abrir gameover_stars\n";
+			#else
+				aux = IMG_Load(path);
+				texture = SDL_CreateTextureFromSurface(r, aux);
+				SDL_FreeSurface(aux);
+				if (!texture)
+					throw "SGameOver: não conseguiu abrir gameover_stars\n";
+			#endif
+
+			#ifndef USE_SDL2
+				t_pos.x = (background->w - title->w)/2.0f;
+				stars.add_frame((SDL_Rect){0,0,296,184}, 3);
+				stars.add_frame((SDL_Rect){0,184,296,184}, 3);
+				stars.add_frame((SDL_Rect){0,184*2,296,184}, 3);
+				stars.add_frame((SDL_Rect){0,184*3,296,184}, 3);
+				stars.add_frame((SDL_Rect){0,184*4,296,184}, 3);
+				stars.add_frame((SDL_Rect){0,184*5,296,184}, 3);
+				stars.add_frame((SDL_Rect){0,184*6,296,184}, 3);
+			#else
+				t_pos.x = (texture_width(background) - texture_width(title))/2.0f;
+				stars.add_frame(texture, (SDL_Rect){0,0,296,184}, 3);
+				stars.add_frame(texture, (SDL_Rect){0,184,296,184}, 3);
+				stars.add_frame(texture, (SDL_Rect){0,184*2,296,184}, 3);
+				stars.add_frame(texture, (SDL_Rect){0,184*3,296,184}, 3);
+				stars.add_frame(texture, (SDL_Rect){0,184*4,296,184}, 3);
+				stars.add_frame(texture, (SDL_Rect){0,184*5,296,184}, 3);
+				stars.add_frame(texture, (SDL_Rect){0,184*6,296,184}, 3);
+			#endif
 			s_pos = SVect(254,220);
-			
-			stars.add_frame((SDL_Rect){0,0,296,184}, 3);
-			stars.add_frame((SDL_Rect){0,184,296,184}, 3);
-			stars.add_frame((SDL_Rect){0,184*2,296,184}, 3);
-			stars.add_frame((SDL_Rect){0,184*3,296,184}, 3);
-			stars.add_frame((SDL_Rect){0,184*4,296,184}, 3);
-			stars.add_frame((SDL_Rect){0,184*5,296,184}, 3);
-			stars.add_frame((SDL_Rect){0,184*6,296,184}, 3);
 		}
 		
 		~CGameOver (  )
 		{
-			if (background)
-				SDL_FreeSurface(background);
+			#ifndef USE_SDL2
+				if (background)
+					SDL_FreeSurface(background);
 			
-			if (title)
-				SDL_FreeSurface(title);
+				if (title)
+					SDL_FreeSurface(title);
 			
-			if (stars.surface)
-				SDL_FreeSurface(stars.surface);
+				if (stars.surface)
+					SDL_FreeSurface(stars.surface);
+			#else
+				if (background)
+					SDL_DestroyTexture(background);
+			
+				if (title)
+					SDL_DestroyTexture(title);
+			
+				stars.destroy_textures();
+			#endif
 		}
 		
 		void reset (  )
@@ -111,20 +167,37 @@ class CGameOver: public CStateMachine
 			return get_state();
 		}
 		
-		void draw ( CCamera * cam, SDL_Surface * screen )
-		{
-			SDL_Rect d;
+		#ifndef USE_SDL2
+			void draw ( CCamera * cam, SDL_Surface * screen )
+			{
+				SDL_Rect d;
 			
-			SDL_BlitSurface(background, NULL, screen, NULL);
+				SDL_BlitSurface(background, NULL, screen, NULL);
 			
-			d.x = t_pos.x;
-			d.y = t_pos.y;
-			d.w = title->w;
-			d.h = title->h;
-			SDL_BlitSurface(title, NULL, screen, &d);
+				d.x = t_pos.x;
+				d.y = t_pos.y;
+				d.w = title->w;
+				d.h = title->h;
+				SDL_BlitSurface(title, NULL, screen, &d);
 			
-			stars.draw(s_pos.x, s_pos.y, screen);
-		}
+				stars.draw(s_pos.x, s_pos.y, screen);
+			}
+		#else
+			void draw ( CCamera * cam, SDL_Renderer * renderer )
+			{
+				SDL_Rect d;
+			
+				SDL_RenderCopy(renderer, background, NULL, NULL);
+			
+				d.x = t_pos.x;
+				d.y = t_pos.y;
+				d.w = texture_width(title);
+				d.h = texture_height(title);
+				SDL_RenderCopy(renderer, title, NULL, &d);
+			
+				stars.draw(s_pos.x, s_pos.y, renderer);
+			}
+		#endif
 };
 
 #endif

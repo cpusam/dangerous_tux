@@ -40,7 +40,11 @@ class CGameEntity: public CStateMachine, public CMovable
 				return get_state();
 			}
 		
-			virtual void draw ( CCamera * cam, SDL_Surface * screen )
+			#ifndef USE_SDL2
+				virtual void draw ( CCamera * cam, SDL_Surface * screen )
+			#else
+				virtual void draw ( CCamera * cam, SDL_Renderer * renderer )
+			#endif
 			{
 			}
 };

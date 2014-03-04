@@ -10,9 +10,9 @@
 struct SPlayerConfig
 {
 	SVect vel_max; // velocidades máximas em pé em pixels
-	SVect acc; // aceleração ao se movimentar
-	SVect acc_jetpack; // aceleração ao se movimentar com o jetpack
-	float gravity; // aceleração da gravidade quando pulando ou caindo
+	SVect acc; // aceleraç�o ao se movimentar
+	SVect acc_jetpack; // aceleraç�o ao se movimentar com o jetpack
+	float gravity; // aceleraç�o da gravidade quando pulando ou caindo
 	float vel_max_jump; // velocidade maxima ao começar a pular
 	float vel_max_tree; // velocidade máxima na árvore
 	float vel_max_jetpack; // velocidade máxima usando o jetpack
@@ -62,24 +62,24 @@ enum EPlayerDirection
 class CPlayer: public CGameEntity
 {
 	protected:
-		int dir; // direção, 0 - esquerda e 1 - direita
+		int dir; // direç�o, 0 - esquerda e 1 - direita
 		int up_key, down_key, left_key, right_key;
 		int jump_key, gun_key, jetpack_key;
 		int lives; // quantidade de vidas
 		bool kernel; // se tem o ítem "chave" da porta
 		bool shot_at; // se foi baleado pelos aliens
 		bool touched_alien; // se tocou um alien
-		bool has_joystick; // se tem ou não joystick
-		float final_pos; // posição final em X na tela de transição
+		bool has_joystick; // se tem ou n�o joystick
+		float final_pos; // posiç�o final em X na tela de transiç�o
 		SDL_Joystick * joystick; // o joystick propriamente dito
 		SDL_Rect limit; // limites de movimento do jogador
 		SVect respawn; // ponto onde deve reaparecer quando morrer
-		CAnimation * curr_anim; // animação atual
+		CAnimation * curr_anim; // animaç�o atual
 		vector <CAnimation> anim; // animações
-		vector <int> item; // tiles que são itens de coletar
-		vector <int> coll_tiles; // tiles de colisão completa
-		vector <SVect> c_point; // pontos de colisão
-		CTileMap * map; // mapa para colisão
+		vector <int> item; // tiles que s�o itens de coletar
+		vector <int> coll_tiles; // tiles de colis�o completa
+		vector <SVect> c_point; // pontos de colis�o
+		CTileMap * map; // mapa para colis�o
 		
 	public:
 		CGun gun;
@@ -88,8 +88,16 @@ class CPlayer: public CGameEntity
 		SPlayerConfig config;
 
 	public:
-		CPlayer (  ): jetpack(100.0f, 0.1f, false)
+		#ifndef USE_SDL2
+			CPlayer (  ): jetpack(100.0f, 0.1f, false)
+		#else
+			CPlayer ( SDL_Renderer * r ): jetpack(100.0f, 0.1f, false)
+		#endif
 		{
+			#if USE_SDL2
+				SDL_Texture * tright = 0, * tleft = 0;
+				SDL_Surface * aux = 0;
+			#endif
 			dir = RIGHT_PLAYER;
 			up_key = down_key = left_key = right_key = 0;
 			jump_key = gun_key = jetpack_key = 0;
@@ -129,83 +137,29 @@ class CPlayer: public CGameEntity
 			coll_tiles.push_back('c');
 			coll_tiles.push_back('s');
 			
-			// pontos de colisão
-			// colisão a direita
+			// pontos de colis�o
+			// colis�o a direita
 			c_point.push_back(SVect(31,6));
 			c_point.push_back(SVect(31,43));
-			// colisão a esquerda
+			// colis�o a esquerda
 			c_point.push_back(SVect(15,6));
 			c_point.push_back(SVect(15,43));
-			// colisão abaixo
+			// colis�o abaixo
 			c_point.push_back(SVect(15,43));
 			c_point.push_back(SVect(31,43));
-			// colisão acima
+			// colis�o acima
 			c_point.push_back(SVect(15,6));
 			c_point.push_back(SVect(31,6));
-			// centro da colisão
+			// centro da colis�o
 			c_point.push_back(SVect(24,22));
 			
-			// seta rect de colisão
+			// seta rect de colis�o
 			dim.x = 15;
 			dim.y = 6;
 			dim.w = 16;
 			dim.h = 37;
 			
 			anim.resize(16);
-			// virado para direita
-			// parado
-			anim[0].add_frame((SDL_Rect){48 * 3,0,48,48}, 1);
-			// caminhando
-			anim[1].add_frame((SDL_Rect){0,0,48,48}, 3);
-			anim[1].add_frame((SDL_Rect){48,0,48,48}, 5);
-			anim[1].add_frame((SDL_Rect){48*2,0,48,48}, 3);
-			// pulando ou caindo
-			anim[2].add_frame((SDL_Rect){0,48*2,48,48}, 1);
-			// parado nas árvores
-			anim[3].add_frame((SDL_Rect){48*2,48,48,48}, 1);
-			// caminhando nas árvores
-			anim[4].add_frame((SDL_Rect){0,48,48,48}, 4);
-			anim[4].add_frame((SDL_Rect){48,48,48,48}, 4);
-			// no jetpack
-			anim[5].add_frame((SDL_Rect){0,48*3,48,48}, 2);
-			anim[5].add_frame((SDL_Rect){48,48*3,48,48}, 2);
-			anim[5].add_frame((SDL_Rect){48*2,48*3,48,48}, 2);
-			// atirando
-			anim[14].add_frame((SDL_Rect){0,48*6,48,48}, 3);
-			anim[14].add_frame((SDL_Rect){48,48*6,48,48}, 3);
-			anim[14].add_frame((SDL_Rect){48*2,48*6,48,48}, 3);
-
-			// virado para esquerda
-			// parado
-			anim[6].add_frame((SDL_Rect){48 * 3,0,48,48}, 1);
-			// caminhando
-			anim[7].add_frame((SDL_Rect){0,0,48,48}, 3);
-			anim[7].add_frame((SDL_Rect){48,0,48,48}, 5);
-			anim[7].add_frame((SDL_Rect){48*2,0,48,48}, 3);
-			// pulando ou caindo
-			anim[8].add_frame((SDL_Rect){0,48*2,48,48}, 1);
-			// parado nas árvores
-			anim[9].add_frame((SDL_Rect){48*2,48,48,48}, 1);
-			// caminhando nas árvores
-			anim[10].add_frame((SDL_Rect){0,48,48,48}, 4);
-			anim[10].add_frame((SDL_Rect){48,48,48,48}, 4);
-			// no jetpack
-			anim[11].add_frame((SDL_Rect){0,48*3,48,48}, 2);
-			anim[11].add_frame((SDL_Rect){48,48*3,48,48}, 2);
-			anim[11].add_frame((SDL_Rect){48*2,48*3,48,48}, 2);
-			// atirando
-			anim[15].add_frame((SDL_Rect){0,48*6,48,48}, 3);
-			anim[15].add_frame((SDL_Rect){48,48*6,48,48}, 3);
-			anim[15].add_frame((SDL_Rect){48*2,48*6,48,48}, 3);
-			
-			// morrendo
-			anim[12].add_frame((SDL_Rect){0,48*4,48,48}, 6);
-			anim[12].add_frame((SDL_Rect){48,48*4,48,48}, 6);
-			anim[12].add_frame((SDL_Rect){48*2,48*4,48,48}, 10);
-			// esperando ser controlado
-			anim[13].add_frame((SDL_Rect){0,48*5,48,48}, 8);
-			anim[13].add_frame((SDL_Rect){0,0,0,0}, 4);
-			curr_anim = &anim[13];
 			
 			#if _WIN32 || _WIN64 || __MINGW32__
 				char path[FILENAME_MAX];
@@ -213,56 +167,228 @@ class CPlayer: public CGameEntity
 				_getcwd(p2, sizeof(p2));
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\tux_right.png", p2);
-					anim[0].surface = IMG_Load(path);
+					#ifndef USE_SDL2
+						anim[0].surface = optimize_surface_alpha(IMG_Load(path));
+					#else
+						aux = IMG_Load(path);
+						tright = SDL_CreateTextureFromSurface(r, aux);
+						SDL_FreeSurface(aux);
+					#endif
+					
 					sprintf(path, "%s\\images\\tux_left.png", p2);
-					anim[6].surface = IMG_Load(path);
+					#ifndef USE_SDL2
+						anim[6].surface = optimize_surface_alpha(IMG_Load(path));
+					#else
+						aux = IMG_Load(path);
+						tleft = SDL_CreateTextureFromSurface(r, aux);
+						SDL_FreeSurface(aux);
+					#endif
 				#else
 					sprintf(path, "%s\\dangeroustux\\images\\tux_right.png", PREFIX);
-					anim[0].surface = IMG_Load(path);
+					#ifndef USE_SDL2
+						anim[0].surface = optimize_surface_alpha(IMG_Load(path));
+					#else
+						aux = IMG_Load(path);
+						tright = SDL_CreateTextureFromSurface(r, aux);
+						SDL_FreeSurface(aux);
+					#endif
+					
 					sprintf(path, "%s\\dangeroustux\\images\\tux_left.png", PREFIX);
-					anim[6].surface = IMG_Load(path);
+					#ifndef USE_SDL2
+						anim[6].surface = optimize_surface_alpha(IMG_Load(path));
+					#else
+						aux = IMG_Load(path);
+						tleft = SDL_CreateTextureFromSurface(r, aux);
+						SDL_FreeSurface(aux);
+					#endif
 				#endif	
 			#else
 				char path[1024];
 				#ifndef PREFIX
 					sprintf(path, "./images/tux_right.png");
-					anim[0].surface = IMG_Load(path);
+					#ifndef USE_SDL2
+						anim[0].surface = optimize_surface_alpha(IMG_Load(path));
+					#else
+						aux = IMG_Load(path);
+						tright = SDL_CreateTextureFromSurface(r, aux);
+						SDL_FreeSurface(aux);
+					#endif
+					
 					sprintf(path, "./images/tux_left.png");
-					anim[6].surface = IMG_Load(path);
+					#ifndef USE_SDL2
+						anim[6].surface = optimize_surface_alpha(IMG_Load(path));
+					#else
+						aux = IMG_Load(path);
+						tleft = SDL_CreateTextureFromSurface(r, aux);
+						SDL_FreeSurface(aux);
+					#endif
 				#else
 					sprintf(path, "%s/share/games/dangeroustux/images/tux_right.png", PREFIX);
-					anim[0].surface = IMG_Load(path);
+					#ifndef USE_SDL2
+						anim[0].surface = optimize_surface_alpha(IMG_Load(path));
+					#else
+						aux = IMG_Load(path);
+						tright = SDL_CreateTextureFromSurface(r, aux);
+						SDL_FreeSurface(aux);
+					#endif
+
 					sprintf(path, "%s/share/games/dangeroustux/images/tux_left.png", PREFIX);
-					anim[6].surface = IMG_Load(path);
+					#ifndef USE_SDL2
+						anim[6].surface = optimize_surface_alpha(IMG_Load(path));
+					#else
+						aux = IMG_Load(path);
+						tleft = SDL_CreateTextureFromSurface(r, aux);
+						SDL_FreeSurface(aux);
+					#endif
 				#endif			
 			#endif
-
-			anim[0].surface = optimize_surface_alpha(anim[0].surface);
-			anim[6].surface = optimize_surface_alpha(anim[6].surface);
 			
-			if (!anim[0].surface)
+			#ifndef USE_SDL2
+				// virado para direita
+				// parado
+				anim[0].add_frame((SDL_Rect){48 * 3,0,48,48}, 1);
+				// caminhando
+				anim[1].add_frame((SDL_Rect){0,0,48,48}, 3);
+				anim[1].add_frame((SDL_Rect){48,0,48,48}, 5);
+				anim[1].add_frame((SDL_Rect){48*2,0,48,48}, 3);
+				// pulando ou caindo
+				anim[2].add_frame((SDL_Rect){0,48*2,48,48}, 1);
+				// parado nas árvores
+				anim[3].add_frame((SDL_Rect){48*2,48,48,48}, 1);
+				// caminhando nas árvores
+				anim[4].add_frame((SDL_Rect){0,48,48,48}, 4);
+				anim[4].add_frame((SDL_Rect){48,48,48,48}, 4);
+				// no jetpack
+				anim[5].add_frame((SDL_Rect){0,48*3,48,48}, 2);
+				anim[5].add_frame((SDL_Rect){48,48*3,48,48}, 2);
+				anim[5].add_frame((SDL_Rect){48*2,48*3,48,48}, 2);
+				// atirando
+				anim[14].add_frame((SDL_Rect){0,48*6,48,48}, 3);
+				anim[14].add_frame((SDL_Rect){48,48*6,48,48}, 3);
+				anim[14].add_frame((SDL_Rect){48*2,48*6,48,48}, 3);
+
+				// virado para esquerda
+				// parado
+				anim[6].add_frame((SDL_Rect){48 * 3,0,48,48}, 1);
+				// caminhando
+				anim[7].add_frame((SDL_Rect){0,0,48,48}, 3);
+				anim[7].add_frame((SDL_Rect){48,0,48,48}, 5);
+				anim[7].add_frame((SDL_Rect){48*2,0,48,48}, 3);
+				// pulando ou caindo
+				anim[8].add_frame((SDL_Rect){0,48*2,48,48}, 1);
+				// parado nas árvores
+				anim[9].add_frame((SDL_Rect){48*2,48,48,48}, 1);
+				// caminhando nas árvores
+				anim[10].add_frame((SDL_Rect){0,48,48,48}, 4);
+				anim[10].add_frame((SDL_Rect){48,48,48,48}, 4);
+				// no jetpack
+				anim[11].add_frame((SDL_Rect){0,48*3,48,48}, 2);
+				anim[11].add_frame((SDL_Rect){48,48*3,48,48}, 2);
+				anim[11].add_frame((SDL_Rect){48*2,48*3,48,48}, 2);
+				// atirando
+				anim[15].add_frame((SDL_Rect){0,48*6,48,48}, 3);
+				anim[15].add_frame((SDL_Rect){48,48*6,48,48}, 3);
+				anim[15].add_frame((SDL_Rect){48*2,48*6,48,48}, 3);
+			
+				// morrendo
+				anim[12].add_frame((SDL_Rect){0,48*4,48,48}, 6);
+				anim[12].add_frame((SDL_Rect){48,48*4,48,48}, 6);
+				anim[12].add_frame((SDL_Rect){48*2,48*4,48,48}, 10);
+				// esperando ser controlado
+				anim[13].add_frame((SDL_Rect){0,48*5,48,48}, 8);
+				anim[13].add_frame((SDL_Rect){0,0,0,0}, 4);
+				
+				if (!anim[0].surface)
+						throw SDL_GetError();
+			
+				if (!anim[6].surface)
 					throw SDL_GetError();
 			
-			if (!anim[6].surface)
-				throw SDL_GetError();
+				for (int i(1); i < 6; i++)
+						anim[i].surface = anim[0].surface;
+				for (int i(7); i < 12; i++)
+						anim[i].surface = anim[6].surface;
 			
-			for (int i(1); i < 6; i++)
-					anim[i].surface = anim[0].surface;
-			for (int i(7); i < 12; i++)
-					anim[i].surface = anim[6].surface;
+				anim[12].surface = anim[13].surface = anim[0].surface;
+				anim[14].surface = anim[0].surface;
+				anim[15].surface = anim[6].surface;
+			#else
+				if (!tright)
+						throw SDL_GetError();
 			
-			anim[12].surface = anim[13].surface = anim[0].surface;
-			anim[14].surface = anim[0].surface;
-			anim[15].surface = anim[6].surface;
+				if (!tleft)
+					throw SDL_GetError();
+				
+				// virado para direita
+				// parado
+				anim[0].add_frame(tright, (SDL_Rect){48 * 3,0,48,48}, 1);
+				// caminhando
+				anim[1].add_frame(tright, (SDL_Rect){0,0,48,48}, 3);
+				anim[1].add_frame(tright, (SDL_Rect){48,0,48,48}, 5);
+				anim[1].add_frame(tright, (SDL_Rect){48*2,0,48,48}, 3);
+				// pulando ou caindo
+				anim[2].add_frame(tright, (SDL_Rect){0,48*2,48,48}, 1);
+				// parado nas árvores
+				anim[3].add_frame(tright, (SDL_Rect){48*2,48,48,48}, 1);
+				// caminhando nas árvores
+				anim[4].add_frame(tright, (SDL_Rect){0,48,48,48}, 4);
+				anim[4].add_frame(tright, (SDL_Rect){48,48,48,48}, 4);
+				// no jetpack
+				anim[5].add_frame(tright, (SDL_Rect){0,48*3,48,48}, 2);
+				anim[5].add_frame(tright, (SDL_Rect){48,48*3,48,48}, 2);
+				anim[5].add_frame(tright, (SDL_Rect){48*2,48*3,48,48}, 2);
+				// atirando
+				anim[14].add_frame(tright, (SDL_Rect){0,48*6,48,48}, 3);
+				anim[14].add_frame(tright, (SDL_Rect){48,48*6,48,48}, 3);
+				anim[14].add_frame(tright, (SDL_Rect){48*2,48*6,48,48}, 3);
+
+				// virado para esquerda
+				// parado
+				anim[6].add_frame(tleft, (SDL_Rect){48 * 3,0,48,48}, 1);
+				// caminhando
+				anim[7].add_frame(tleft, (SDL_Rect){0,0,48,48}, 3);
+				anim[7].add_frame(tleft, (SDL_Rect){48,0,48,48}, 5);
+				anim[7].add_frame(tleft, (SDL_Rect){48*2,0,48,48}, 3);
+				// pulando ou caindo
+				anim[8].add_frame(tleft, (SDL_Rect){0,48*2,48,48}, 1);
+				// parado nas árvores
+				anim[9].add_frame(tleft, (SDL_Rect){48*2,48,48,48}, 1);
+				// caminhando nas árvores
+				anim[10].add_frame(tleft, (SDL_Rect){0,48,48,48}, 4);
+				anim[10].add_frame(tleft, (SDL_Rect){48,48,48,48}, 4);
+				// no jetpack
+				anim[11].add_frame(tleft, (SDL_Rect){0,48*3,48,48}, 2);
+				anim[11].add_frame(tleft, (SDL_Rect){48,48*3,48,48}, 2);
+				anim[11].add_frame(tleft, (SDL_Rect){48*2,48*3,48,48}, 2);
+				// atirando
+				anim[15].add_frame(tleft, (SDL_Rect){0,48*6,48,48}, 3);
+				anim[15].add_frame(tleft, (SDL_Rect){48,48*6,48,48}, 3);
+				anim[15].add_frame(tleft, (SDL_Rect){48*2,48*6,48,48}, 3);
+			
+				// morrendo
+				anim[12].add_frame(tright, (SDL_Rect){0,48*4,48,48}, 6);
+				anim[12].add_frame(tright, (SDL_Rect){48,48*4,48,48}, 6);
+				anim[12].add_frame(tright, (SDL_Rect){48*2,48*4,48,48}, 10);
+				// esperando ser controlado
+				anim[13].add_frame(tright, (SDL_Rect){0,48*5,48,48}, 8);
+				anim[13].add_frame(tright, (SDL_Rect){0,0,0,0}, 4);
+			#endif
+			
+			curr_anim = &anim[13];
 		}
 		
 		~CPlayer (  )
 		{
-			if (anim[0].surface)
-				SDL_FreeSurface(anim[0].surface);
+			#ifndef USE_SDL2
+				if (anim[0].surface)
+					SDL_FreeSurface(anim[0].surface);
 			
-			if (anim[6].surface)
-				SDL_FreeSurface(anim[6].surface);
+				if (anim[6].surface)
+					SDL_FreeSurface(anim[6].surface);
+			#else
+				anim[0].destroy_textures();
+				anim[6].destroy_textures();
+			#endif
 			
 			if (has_joystick)
 				SDL_JoystickClose(joystick);
@@ -315,7 +441,7 @@ class CPlayer: public CGameEntity
 			acc.zero();
 			pos = respawn;
 			shot_at = touched_alien = false;
-			curr_anim = &anim[13]; // animação de esperando controle
+			curr_anim = &anim[13]; // animaç�o de esperando controle
 			left_key = right_key = up_key = down_key = 0;
 			jump_key = gun_key = jetpack_key = 0;
 			set_state(WAITING);
@@ -381,7 +507,7 @@ class CPlayer: public CGameEntity
 				{
 					if (i < 2)
 					{
-						// colisão à direita
+						// colis�o à direita
 						p = int(pos.x + c_point[i].x + vel.x) / map->get_tilesize();
 						p *= map->get_tilesize();
 						pos.x = p - c_point[i].x - 1;
@@ -390,7 +516,7 @@ class CPlayer: public CGameEntity
 					}
 					else
 					{
-						// colisão à esquerda
+						// colis�o à esquerda
 						p = int(pos.x + c_point[i].x + vel.x) / map->get_tilesize();
 						p += 1;
 						p *= map->get_tilesize();
@@ -416,7 +542,7 @@ class CPlayer: public CGameEntity
 				{
 					if (i < 6)
 					{
-						// colisão em baixo
+						// colis�o em baixo
 						p = int(pos.y + c_point[i].y + vel.y) / map->get_tilesize();
 						p *= map->get_tilesize();
 						pos.y = p - c_point[i].y - 1;
@@ -425,7 +551,7 @@ class CPlayer: public CGameEntity
 					}
 					else
 					{
-						// colisão em cima
+						// colis�o em cima
 						p = int(pos.y + c_point[i].y + vel.y) / map->get_tilesize();
 						p += 1;
 						p *= map->get_tilesize();
@@ -467,7 +593,7 @@ class CPlayer: public CGameEntity
 		}
 		
 		/*
-			Função que verifca e coleta itens
+			Funç�o que verifca e coleta itens
 		*/
 		bool collect_items (  )
 		{
@@ -475,7 +601,7 @@ class CPlayer: public CGameEntity
 				for (int j(0); j < c_point.size(); j++)
 					if (map->get_tile(pos.x + c_point[j].x, pos.y + c_point[j].y) == item[i])
 					{
-						// verifica qual item foi coletado e dá a pontuação
+						// verifica qual item foi coletado e dá a pontuaç�o
 						switch (item[i])
 						{
 							case 'd':
@@ -513,7 +639,7 @@ class CPlayer: public CGameEntity
 		}
 		
 		/*
-			função que verifica e faz entrar na porta se tiver a chave
+			funç�o que verifica e faz entrar na porta se tiver a chave
 		*/
 		bool enter_door (  )
 		{
@@ -651,8 +777,6 @@ class CPlayer: public CGameEntity
 						break;
 						
 					default:
-						int num = event.jbutton.button;
-						cout << "CPlayer: joystick button = " << num << endl;
 						break;
 				}
 			}
@@ -678,11 +802,19 @@ class CPlayer: public CGameEntity
 			}
 		}
 		
+		#ifndef USE_SDL2
 		void draw ( CCamera * cam, SDL_Surface * screen )
 		{
 			if (curr_anim)
 				curr_anim->draw(pos.x, pos.y, cam, screen);
 		}
+		#else
+		void draw ( CCamera * cam, SDL_Renderer * renderer )
+		{
+			if (curr_anim)
+				curr_anim->draw(pos.x, pos.y, cam, renderer);
+		}
+		#endif
 		
 		int update (  )
 		{
@@ -1199,7 +1331,7 @@ class CPlayer: public CGameEntity
 					if (pos.y > limit.y + limit.h) // se passou por baixo da tela
 						pos.y = limit.y - map->get_tilesize(); // volte lá pra cima da fase
 					else if (pos.y < limit.y - map->get_tilesize()) // se passar por cima
-						pos.y = limit.y - map->get_tilesize(); // mantenha a posição
+						pos.y = limit.y - map->get_tilesize(); // mantenha a posiç�o
 					
 					process();
 					

@@ -23,12 +23,18 @@ class CWriter
 		int size; // tamanho da fonte
 		string path; // caminho para a fonte
 		TTF_Font * font;
+		#if USE_SDL2
+			SDL_Renderer * renderer;
+		#endif
 		static CWriter * singleton;
 		
 		CWriter (  )
 		{
 			font = 0;
 			size = 0;
+			#if USE_SDL2
+				renderer = 0;
+			#endif
 			
 			if (!TTF_WasInit())
 				throw "CWriter: SDL_ttf não inicializada\n";
@@ -78,7 +84,7 @@ class CWriter
 		{
 			return font;
 		}
-		
+
 		bool resize_font ( int s )
 		{
 			if (!font || s <= 0)
@@ -93,10 +99,49 @@ class CWriter
 			return true;
 		}
 		
-		SDL_Surface * render_text ( string text, SDL_Color c, int type=SOLID_TEXT )
+		#if USE_SDL2
+			void set_renderer ( SDL_Renderer * r )
+			{
+				renderer = r;
+			}
+		
+			SDL_Renderer * get_renderer (  )
+			{
+				return renderer;
+			}
+		
+		
+			SDL_Texture * render_text ( string text, SDL_Color c, int type=SOLID_TEXT )
+			{
+				if (text == "")
+					throw "CWriter: não é possível renderizar uma string vazia\n";
+
+				if (renderer == 0)
+					throw "CWriter: nenhum renderer usado\n";
+
+				SDL_Surface * surface = render_text_surface(text, c, type);
+				SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
+				SDL_FreeSurface(surface);
+				
+					if (!texture)
+					{
+						char * e = new char[256];
+						sprintf(e, "CWriter: erro %s\n", SDL_GetError());
+						throw (char *)e; // c++ é esquisito
+					}
+
+				return texture;
+			}
+		#endif
+		
+		#ifndef USE_SDL2
+			SDL_Surface * render_text ( string text, SDL_Color c, int type=SOLID_TEXT )
+		#else
+			SDL_Surface * render_text_surface ( string text, SDL_Color c, int type=SOLID_TEXT )
+		#endif
 		{
 			if (font == 0)
-				throw "Nenhuma fonte usada\n";
+				throw "CWriter: Nenhuma fonte usada\n";
 
 			string str;
 			vector <SDL_Surface *> tmp;
@@ -207,8 +252,10 @@ class CWriter
 				SDL_BlitSurface(tmp[i], NULL, surf, &d);
 				SDL_FreeSurface(tmp[i]);
 			}
-
-			surf = optimize_surface_alpha(surf);
+			
+			#ifndef USE_SDL2
+				surf = optimize_surface_alpha(surf);
+			#endif
 			
 			if (!surf)
 				throw "CWriter: surface de retorno nula\n";

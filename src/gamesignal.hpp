@@ -10,8 +10,13 @@ class CKernelSignal: public CGameEntity
 		bool visible;
 	
 	public:
-		CKernelSignal (  )
+		#ifndef USE_SDL2
+			CKernelSignal (  )
+		#else
+			CKernelSignal ( SDL_Renderer * r )
+		#endif
 		{
+			SDL_Surface * aux = 0;
 			#if _WIN32 || _WIN64 || __MINGW32__
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
@@ -30,22 +35,40 @@ class CKernelSignal: public CGameEntity
 				#endif
 			#endif
 
-			anim.surface = optimize_surface_alpha(IMG_Load(path));
-			if (!anim.surface)
-				throw "CKernelSignal: não foi possível abrir kernel_signal.png\n";
-			
-			anim.add_frame((SDL_Rect){0,0,48,48}, 6);
-			anim.add_frame((SDL_Rect){0,48,48,48}, 6);
-			anim.add_frame((SDL_Rect){0,48*2,48,48}, 6);
-			anim.add_frame((SDL_Rect){0,48*3,48,48}, 6);
+			#ifndef USE_SDL2
+				anim.surface = optimize_surface_alpha(IMG_Load(path));
+				if (!anim.surface)
+					throw "CKernelSignal: não foi possível abrir kernel_signal.png\n";
+			#else
+				aux = IMG_Load(path);
+				SDL_Texture * texture = SDL_CreateTextureFromSurface(r, aux);
+				SDL_FreeSurface(aux);
+				if (!texture)
+					throw "CKernelSignal: não foi possível abrir kernel_signal.png\n";
+			#endif
+			#ifndef USE_SDL2
+				anim.add_frame((SDL_Rect){0,0,48,48}, 6);
+				anim.add_frame((SDL_Rect){0,48,48,48}, 6);
+				anim.add_frame((SDL_Rect){0,48*2,48,48}, 6);
+				anim.add_frame((SDL_Rect){0,48*3,48,48}, 6);
+			#else
+				anim.add_frame(texture, (SDL_Rect){0,0,48,48}, 6);
+				anim.add_frame(texture, (SDL_Rect){0,48,48,48}, 6);
+				anim.add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
+				anim.add_frame(texture, (SDL_Rect){0,48*3,48,48}, 6);
+			#endif
 			show(false);
 			cam = 0;
 		}
 		
 		~CKernelSignal (  )
 		{
-			if (anim.surface)
-				SDL_FreeSurface(anim.surface);
+			#ifndef USE_SDL2
+				if (anim.surface)
+					SDL_FreeSurface(anim.surface);
+			#else
+				anim.destroy_textures();
+			#endif
 		}
 			
 		void set_cam ( CCamera * c )
@@ -67,13 +90,21 @@ class CKernelSignal: public CGameEntity
 			set_state(2);
 		}
 		
-		void draw ( SDL_Surface * screen )
+		#ifndef USE_SDL2
+			void draw ( SDL_Surface * screen )
+		#else
+			void draw ( SDL_Renderer * renderer )
+		#endif
 		{
 			if (!cam)
 				throw "CKernelSignal: camera nula\n";
 
 			if (visible)
-				anim.draw(pos.x, pos.y, cam, screen);
+				#ifndef USE_SDL2
+					anim.draw(pos.x, pos.y, cam, screen);
+				#else
+					anim.draw(pos.x, pos.y, cam, renderer);
+				#endif
 		}
 		
 		int update (  )
@@ -147,8 +178,13 @@ class CExitSignal: public CGameEntity
 		bool visible;
 	
 	public:
-		CExitSignal (  )
+		#ifndef USE_SDL2
+			CExitSignal (  )
+		#else
+			CExitSignal ( SDL_Renderer * r )
+		#endif
 		{
+			SDL_Surface * aux = 0;
 			#if _WIN32 || _WIN64 || __MINGW32__
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
@@ -167,22 +203,41 @@ class CExitSignal: public CGameEntity
 				#endif
 			#endif
 
-			anim.surface = optimize_surface_alpha(IMG_Load(path));
-			if (!anim.surface)
-				throw "CExitSignal: não foi possível abrir exit_signal.png\n";
-				
-			anim.add_frame((SDL_Rect){0,0,48,48}, 6);
-			anim.add_frame((SDL_Rect){0,48,48,48}, 6);
-			anim.add_frame((SDL_Rect){0,48*2,48,48}, 6);
-			anim.add_frame((SDL_Rect){0,48*3,48,48}, 6);
+			#ifndef USE_SDL2
+				anim.surface = optimize_surface_alpha(IMG_Load(path));
+				if (!anim.surface)
+					throw "CExitSignal: não foi possível abrir exit_signal.png\n";
+			#else
+				aux = IMG_Load(path);
+				SDL_Texture * texture = SDL_CreateTextureFromSurface(r, aux);
+				SDL_FreeSurface(aux);
+				if (!texture)
+					throw "CExitSignal: não foi possível abrir exit_signal.png\n";
+			#endif
+			
+			#ifndef USE_SDL2
+				anim.add_frame((SDL_Rect){0,0,48,48}, 6);
+				anim.add_frame((SDL_Rect){0,48,48,48}, 6);
+				anim.add_frame((SDL_Rect){0,48*2,48,48}, 6);
+				anim.add_frame((SDL_Rect){0,48*3,48,48}, 6);
+			#else
+				anim.add_frame(texture, (SDL_Rect){0,0,48,48}, 6);
+				anim.add_frame(texture, (SDL_Rect){0,48,48,48}, 6);
+				anim.add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
+				anim.add_frame(texture, (SDL_Rect){0,48*3,48,48}, 6);
+			#endif
 			show(false);
 			cam = 0;
 		}
 		
 		~CExitSignal (  )
 		{
-			if (anim.surface)
-				SDL_FreeSurface(anim.surface);
+			#ifndef USE_SDL2
+				if (anim.surface)
+					SDL_FreeSurface(anim.surface);
+			#else
+				anim.destroy_textures();
+			#endif
 		}
 		
 		void set_cam ( CCamera * c )
@@ -203,13 +258,21 @@ class CExitSignal: public CGameEntity
 			set_state(2);
 		}
 		
-		void draw ( SDL_Surface * screen )
+		#ifndef USE_SDL2
+			void draw ( SDL_Surface * screen )
+		#else
+			void draw ( SDL_Renderer * renderer )
+		#endif
 		{
 			if (!cam)
 				throw "CExitSignal: camera nula\n";
 
 			if (visible)
-				anim.draw(pos.x, pos.y, cam, screen);
+				#ifndef USE_SDL2
+					anim.draw(pos.x, pos.y, cam, screen);
+				#else
+					anim.draw(pos.x, pos.y, cam, renderer);
+				#endif
 		}
 		
 		int update (  )

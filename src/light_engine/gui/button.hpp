@@ -21,8 +21,8 @@ class CSimpleButton: public CWidget
 		{
 			label = 0;
 			callback = 0;
-			color1 = 0xFFFF0000;
-			color2 = 0x00FFFF00;
+			color1 = 0xFFFF00FF;
+			color2 = 0x00FFFFFF;
 			color3 = 0xFF0000FF;
 			pos.x = d.x, pos.y = d.y;
 			// dimensão padrão
@@ -34,8 +34,8 @@ class CSimpleButton: public CWidget
 		{
 			label = 0;
 			callback = 0;
-			color1 = 0xFFFF0000;
-			color2 = 0x00FFFF00;
+			color1 = 0xFFFF00FF;
+			color2 = 0x00FFFFFF;
 			color3 = 0xFF0000FF;
 			pos.x = d.x, pos.y = d.y;
 			// dimensão padrão
@@ -175,26 +175,58 @@ class CSimpleButton: public CWidget
 			return get_state();
 		}
 		
-		void draw ( SDL_Surface * screen )
+		#ifndef USE_SDL2
+			void draw ( SDL_Surface * screen )
+		#else
+			void draw ( SDL_Renderer * renderer )
+		#endif
 		{
 			SDL_Rect d = dim;
 			switch (get_state())
 			{
 				case 1:
-					SDL_FillRect(screen, &d, color1);
+					#ifndef USE_SDL2
+						SDL_FillRect(screen, &d, color1);
+					#else
+						SDL_SetRenderDrawColor(renderer, (color1 & 0xFF000000) >> 24, (color1 & 0x00FF0000) >> 16, (color1 & 0x0000FF00) >> 8, (color1 & 0x000000FF));
+						
+						SDL_RenderFillRect(renderer, &d);
+					#endif
 					break;
 				case 2:
-					SDL_FillRect(screen, &d, color2);
+					#ifndef USE_SDL2
+						SDL_FillRect(screen, &d, color2);
+					#else
+						SDL_SetRenderDrawColor(renderer, (color2 & 0xFF000000) >> 24, (color2 & 0x00FF0000) >> 16, (color2 & 0x0000FF00) >> 8, (color2 & 0x000000FF));
+						
+						SDL_RenderFillRect(renderer, &d);
+					#endif
 					break;
 				case 3:
-					SDL_FillRect(screen, &d, color3);
+					#ifndef USE_SDL2
+						SDL_FillRect(screen, &d, color3);
+					#else
+						SDL_SetRenderDrawColor(renderer, (color3 & 0xFF000000) >> 24, (color3 & 0x00FF0000) >> 16, (color3 & 0x0000FF00) >> 8, (color3 & 0x000000FF));
+						
+						SDL_RenderFillRect(renderer, &d);
+					#endif
 					break;
 				default:
-					SDL_FillRect(screen, &d, color1);
+					#ifndef USE_SDL2
+						SDL_FillRect(screen, &d, color1);
+					#else
+						SDL_SetRenderDrawColor(renderer, (color1 & 0xFF000000) >> 24, (color1 & 0x00FF0000) >> 16, (color1 & 0x0000FF00) >> 8, (color1 & 0x000000FF));
+						
+						SDL_RenderFillRect(renderer, &d);
+					#endif
 					break;
 			}
 			
-			child_draw(screen);
+			#ifndef USE_SDL2
+				child_draw(screen);
+			#else
+				child_draw(renderer);
+			#endif
 		}
 };
 

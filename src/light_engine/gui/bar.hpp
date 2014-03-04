@@ -20,8 +20,8 @@ class CBar: public CWidget
 		CBar ( float s_max, int w, int h )
 		{
 			size = full_size = s_max;
-			color_bg = 0x000000;
-			color_bar = 0xFFFFFF;
+			color_bg = 0x000000FF;
+			color_bar = 0xFFFFFFFF;
 			dim.w = w;
 			dim.h = h;
 			ori = 0;
@@ -62,7 +62,11 @@ class CBar: public CWidget
 				size = full_size;
 		}
 		
-		void draw ( SDL_Surface * screen )
+		#ifndef USE_SDL2
+			void draw ( SDL_Surface * screen )
+		#else
+			void draw ( SDL_Renderer * renderer )
+		#endif
 		{
 			if (!visible)
 				return;
@@ -73,8 +77,14 @@ class CBar: public CWidget
 			d.y = pos.y;
 			d.w = dim.w;
 			d.h = dim.h;
+			
+			#ifndef USE_SDL2
+				SDL_FillRect(screen, &d, color_bg);
+			#else
+				SDL_SetRenderDrawColor(renderer, (color_bg & 0xFF000000) >> 24, (color_bg & 0x00FF0000) >> 16, (color_bg & 0x0000FF00) >> 8, (color_bg & 0x000000FF));
 				
-			SDL_FillRect(screen, &d, color_bg);
+				SDL_RenderFillRect(renderer, &d);
+			#endif
 			
 			if (ori == 0)
 			{
@@ -111,7 +121,13 @@ class CBar: public CWidget
 				}
 			}
 			
-			SDL_FillRect(screen, &d, color_bar);
+			#ifndef USE_SDL2
+				SDL_FillRect(screen, &d, color_bar);
+			#else
+				SDL_SetRenderDrawColor(renderer, (color_bar & 0xFF000000) >> 24, (color_bar & 0x00FF0000) >> 16, (color_bar & 0x0000FF00) >> 8, (color_bar & 0x000000FF));
+				
+				SDL_RenderFillRect(renderer, &d);
+			#endif
 		}
 };
 

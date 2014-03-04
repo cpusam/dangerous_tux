@@ -50,9 +50,14 @@ class CAnimation: protected CStateMachine
 		vector <int> delay;
 		vector <SDL_Rect> frames;
 
-	public:
-		SDL_Surface * surface;
-		
+		#ifndef USE_SDL2
+			public:
+				SDL_Surface * surface;
+		#else
+			protected:
+				vector <SDL_Texture *> texture;
+		#endif
+
 	public:
 		CAnimation (  )
 		{
@@ -60,7 +65,9 @@ class CAnimation: protected CStateMachine
 			repeat = true;
 			index = 0;
 			timer.start();
-			surface = 0;
+			#ifndef USE_SDL2
+				surface = 0;
+			#endif
 		}
 		
 		void play (  )
@@ -106,18 +113,88 @@ class CAnimation: protected CStateMachine
 				delay[i] = d;
 		}
 		
-		void clear_frames (  )
+		void clear_frames ( bool destroy=false )
 		{
 			frames.clear();
 			delay.clear();
+			#if USE_SDL2
+				if (destroy)
+					destroy_textures();
+				texture.clear();
+			#endif
 		}
 
-		void add_frame ( SDL_Rect src, int d )
-		{
-			index = 0;
-			frames.push_back(src);
-			set_delay(delay.size() + 1, d);
-		}
+		#ifndef USE_SDL2
+			void add_frame ( SDL_Rect src, int d )
+			{
+				index = 0;
+				frames.push_back(src);
+				set_delay(delay.size() + 1, d);
+			}
+		#else
+			SDL_Texture * get_texture ( int i )
+			{
+				if (texture.size() > 0 && i < texture.size())
+					return texture[i];
+				
+				return NULL;
+			}
+			
+			void destroy_textures (  )
+			{
+				vector <SDL_Texture *> t;
+				
+				for (int i(0); i < texture.size(); i++)
+				{
+					SDL_Texture * aux = texture[i];
+					int count = 0;
+					for (int j(0); j < texture.size(); j++)
+						if (j != i && aux == texture[j])
+							count++;
+					
+					if (count == 0)
+					{
+						if (aux)
+							t.push_back(aux);
+					}
+					else
+					{
+						count = 0;
+						for (int j(0); j < t.size(); j++)
+							if (t.at(j) == aux)
+								count++;
+						
+						if (count > 0)
+							if (aux)
+								t.push_back(aux);
+					}
+				}
+				
+				for (int i(0); i < t.size(); i++)
+					if (t.at(i))
+						SDL_DestroyTexture(t.at(i));
+				
+				texture.clear();
+				t.clear();
+			}
+			
+			bool has_texture ( SDL_Texture * t )
+			{
+				for (int i(0); i < texture.size(); i++)
+					if (t == texture.at(i))
+						return true;
+				
+				return false;
+			}
+			
+			void add_frame ( SDL_Texture * t, SDL_Rect src, int d )
+			{
+				index = 0;
+				texture.push_back(t);
+				frames.push_back(src);
+				set_delay(delay.size() + 1, d);
+			}
+		#endif
 		
 		bool set_index ( int i )
 		{
@@ -149,20 +226,34 @@ class CAnimation: protected CStateMachine
 			return frames[index];
 		}
 		
-		void draw ( int x, int y, SDL_Surface * screen )
+		#ifndef USE_SDL2
+			void draw ( int x, int y, SDL_Surface * screen )
+		#else
+			void draw ( int x, int y, SDL_Renderer * renderer )
+		#endif
 		{
 			SDL_Rect dest, source;
 			dest.x = x;
 			dest.y = y;
 			source = frames[index];
+			
 			dest.w = source.w;
 			dest.h = source.h;
 			
-			if (surface)
-				SDL_BlitSurface(surface, &source, screen, &dest);
+			#ifndef USE_SDL2
+				if (surface)
+					SDL_BlitSurface(surface, &source, screen, &dest);
+			#else
+				if (texture.size() > 0 && texture.at(get_index()))
+					SDL_RenderCopy(renderer, texture.at(get_index()), &source, &dest);
+			#endif
 		}
 		
-		void draw ( int x, int y, CCamera * cam, SDL_Surface * screen )
+		#ifndef USE_SDL2
+			void draw ( int x, int y, CCamera * cam, SDL_Surface * screen )
+		#else
+			void draw ( int x, int y, CCamera * cam, SDL_Renderer * renderer )
+		#endif
 		{
 			SDL_Rect dest, source;
 			source = frames[index];
@@ -226,8 +317,13 @@ class CAnimation: protected CStateMachine
 			dest.w = source.w;
 			dest.h = source.h;
 			
-			if (surface)
-				SDL_BlitSurface(surface, &source, screen, &dest);
+			#ifndef USE_SDL2
+				if (surface)
+					SDL_BlitSurface(surface, &source, screen, &dest);
+			#else
+				if (texture.size() > 0 && texture.at(get_index()))
+					SDL_RenderCopy(renderer, texture.at(get_index()), &source, &dest);
+			#endif
 		}
 		
 		int update (  )

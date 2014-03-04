@@ -35,12 +35,22 @@ class CHighScore: public CWidget
 		CLabel * name;
 		CLabel * score;
 		CLabel * level;
+		#if USE_SDL2
+			SDL_Renderer * renderer;
+		#endif
 		bool can_set_widgets;
 		int nscore; // novo score posição em ps + 1
 
 	public:
-		CHighScore (  )
+		#ifndef USE_SDL2
+			CHighScore (  )
+		#else
+			CHighScore ( SDL_Renderer * r )
+		#endif
 		{
+			#if USE_SDL2
+				renderer = r;
+			#endif
 			id = "high_score";
 			nscore = 0;
 			can_set_widgets = true;
@@ -71,21 +81,6 @@ class CHighScore: public CWidget
 			delete_child();
 		}
 
-		/*
-		void input ( SDL_Event & event )
-		{
-			if (event.type == SDL_MOUSEBUTTONDOWN)
-			{
-				SVect p;
-				p.x = event.button.x;
-				//name->set_pos(p);
-				score->set_pos(SVect(name->get_pos().x + 180,0));
-				level->set_pos(SVect(score->get_pos().x + score->get_surface()->w + 50,0));
-				cout << "p.x = " << score->get_pos().x - name->get_pos().x << endl;
-			}
-		}
-		*/
-		
 		void delete_child (  )
 		{
 			CWidget * w;
@@ -148,6 +143,10 @@ class CHighScore: public CWidget
 			if (CWriter::instance()->set_font(path, 60) == 0)
 				throw "CHighScore: não conseguiu abrir fonte\n";
 			
+			#if USE_SDL2
+				CWriter::instance()->set_renderer(renderer);
+			#endif
+			
 			name = new CLabel("NAME", (SDL_Color){0,255,0,0});
 			score = new CLabel("SCORE", (SDL_Color){0,255,0,0});
 			level = new CLabel("LEVEL", (SDL_Color){0,255,0,0});
@@ -179,15 +178,24 @@ class CHighScore: public CWidget
 				score->add_child(cscore);
 				level->add_child(clevel);
 				
-				cname->set_rel_pos(SVect((name->get_surface()->w - cname->get_surface()->w)/2, i * cname->get_surface()->h + 60));
-				cscore->set_rel_pos(SVect((score->get_surface()->w - cscore->get_surface()->w)/2, i * cscore->get_surface()->h + 60));
-				clevel->set_rel_pos(SVect((level->get_surface()->w - clevel->get_surface()->w)/2, i * clevel->get_surface()->h + 60));
-
+				#ifndef USE_SDL2
+					cname->set_rel_pos(SVect((name->get_surface()->w - cname->get_surface()->w)/2, i * cname->get_surface()->h + 60));
+					cscore->set_rel_pos(SVect((score->get_surface()->w - cscore->get_surface()->w)/2, i * cscore->get_surface()->h + 60));
+					clevel->set_rel_pos(SVect((level->get_surface()->w - clevel->get_surface()->w)/2, i * clevel->get_surface()->h + 60));
+				#else
+					cname->set_rel_pos(SVect((name->get_texture_width() - cname->get_texture_width())/2, i * cname->get_texture_height() + 60));
+					cscore->set_rel_pos(SVect((score->get_texture_width() - cscore->get_texture_height())/2, i * cscore->get_texture_height() + 60));
+					clevel->set_rel_pos(SVect((level->get_texture_width() - clevel->get_texture_width())/2, i * clevel->get_texture_height() + 60));
+				#endif
 			}
 			
 			name->set_pos(SVect(250,0));
 			score->set_pos(SVect(name->get_pos().x + 180,0));
-			level->set_pos(SVect(score->get_pos().x + score->get_surface()->w + 50,0));
+			#ifndef USE_SDL2
+				level->set_pos(SVect(score->get_pos().x + score->get_surface()->w + 50,0));
+			#else
+				level->set_pos(SVect(score->get_pos().x + score->get_texture_width() + 50,0));
+			#endif
 			
 			add_child(name);
 			add_child(score);

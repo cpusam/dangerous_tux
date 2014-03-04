@@ -225,11 +225,19 @@ class CWidget: public CStateMachine
 					(*i)->update();
 		}
 		
-		void child_draw ( SDL_Surface * screen )
+		#ifndef USE_SDL2
+			void child_draw ( SDL_Surface * screen )
+		#else
+			void child_draw ( SDL_Renderer * renderer )
+		#endif
 		{
 			for (vector <CWidget *>::iterator i = child.begin(); i != child.end(); i++)
 				if ((*i)->is_visible() && visible)
-					(*i)->draw(screen);
+					#ifndef USE_SDL2
+						(*i)->draw(screen);
+					#else
+						(*i)->draw(renderer);
+					#endif
 		}
 		
 		
@@ -245,10 +253,17 @@ class CWidget: public CStateMachine
 			return get_state();
 		}
 		
-		virtual void draw ( SDL_Surface * screen )
-		{
-			child_draw(screen);
-		}
+		#ifndef USE_SDL2
+			virtual void draw ( SDL_Surface * screen )
+			{
+				child_draw(screen);
+			}
+		#else
+			virtual void draw ( SDL_Renderer * renderer )
+			{
+				child_draw(renderer);
+			}
+		#endif
 };
 
 #endif

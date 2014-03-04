@@ -5,21 +5,35 @@ class CLabel: public CWidget
 {
 	private:
 		SDL_Color color;
-		SDL_Surface * surface;
+		#ifndef USE_SDL2
+			SDL_Surface * surface;
+		#else
+			SDL_Texture * texture;
+		#endif
+		
 	protected:
 		string str;
 
 	protected:
 		CLabel (  )
 		{
-			color = (SDL_Color){0,0,0,0};
-			surface = 0;
+			color = (SDL_Color){0,0,0,255};
+			#ifndef USE_SDL2
+				surface = 0;
+			#else
+				texture = 0;
+			#endif
 		}
 	public:
 		CLabel ( string s, SDL_Color c )
 		{
 			color = c;
-			surface = 0;
+			
+			#ifndef USE_SDL2
+				surface = 0;
+			#else
+				texture = 0;
+			#endif
 			if (s != "")
 				set_str(s);
 			else
@@ -28,22 +42,53 @@ class CLabel: public CWidget
 		
 		~CLabel (  )
 		{
-			if (surface)
-				SDL_FreeSurface(surface);
+			#ifndef USE_SDL2
+				if (surface)
+					SDL_FreeSurface(surface);
+			#else
+				if (texture)
+					SDL_DestroyTexture(texture);
+			#endif
 		}
 		
 		protected:
 			void str_to_surface ( string s )
 			{
-				if (surface)
-					SDL_FreeSurface(surface);
+				int w, h;
+				#ifndef USE_SDL2
+					if (surface)
+						SDL_FreeSurface(surface);
 
-				surface = CWriter::instance()->render_text(s, color, UTF8_TEXT);
-				if (!surface)
-					throw SDL_GetError();
+					surface = CWriter::instance()->render_text(s, color, UTF8_TEXT);
+					if (!surface)
+						throw SDL_GetError();
+					
+					w = surface->w;
+					h = surface->h;
+				#else
+					if (texture)
+						SDL_DestroyTexture(texture);
+					
+					if (s != "")
+						texture = CWriter::instance()->render_text(s, color, UTF8_TEXT);
+					else
+					{
+						texture = 0;
+						return;
+					}
+					
+					if (!texture)
+					{
+						char * e = new char[256];
+						sprintf(e, "CLabel: erro %s\n", SDL_GetError());
+						throw (char *)e; // c++ esquisito
+					}
+					
+					SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+				#endif
 				
 				dim.x = pos.x + rel_pos.x, dim.y = pos.y + rel_pos.y;
-				dim.w = surface->w, dim.h = surface->h;
+				dim.w = w, dim.h = h;
 			}
 		
 		public:
@@ -62,36 +107,95 @@ class CLabel: public CWidget
 			
 				str_to_surface(s);
 			}
-
-			void set_surface ( SDL_Surface * s )
-			{
-				if (surface)
-					SDL_FreeSurface(surface);
 			
-				surface = s;
-				dim.w = surface->w;
-				dim.h = surface->h;
-			}
+			#ifndef USE_SDL2
+				SDL_Surface * get_surface (  )
+				{
+					return surface;
+				}
+
+				void set_surface ( SDL_Surface * s )
+				{
+					if (surface)
+						SDL_FreeSurface(surface);
+			
+					surface = s;
+					dim.w = surface->w;
+					dim.h = surface->h;
+				}
+			#else
+				SDL_Texture * get_texture (  )
+				{
+					return texture;
+				}
+				
+				void set_texture ( SDL_Texture * t )
+				{
+					if (texture)
+						SDL_DestroyTexture(texture);
+					
+					texture = t;
+					
+					if (texture)
+					{
+						int w, h;
+						SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+						dim.w = w;
+						dim.h = h;
+					}
+					else
+					{
+						dim.w = dim.h = 0;
+					}
+				}
+				
+				int get_texture_width (  )
+				{
+					int w;
+					
+					if (!texture)
+						return 0;
+						
+					SDL_QueryTexture(texture, NULL, NULL, &w, NULL);
+					return w;
+				}
+				
+				int get_texture_height (  )
+				{
+					int h;
+					
+					if (!texture)
+						return 0;
+					
+					SDL_QueryTexture(texture, NULL, NULL, NULL, &h);
+					return h;
+				}
+			#endif
 
 			string get_str (  )
 			{
 				return str;
 			}
 
-			SDL_Surface * get_surface (  )
-			{
-				return surface;
-			}
-
-			void draw ( SDL_Surface * screen )
+			#ifndef USE_SDL2
+				void draw ( SDL_Surface * screen )
+			#else
+				void draw ( SDL_Renderer * renderer )
+			#endif
 			{
 				if (!visible)
 					return;
 
 				SDL_Rect d = dim;
-				if (surface)
-					SDL_BlitSurface(surface, NULL, screen, &d);
-				child_draw(screen);
+				#ifndef USE_SDL2
+					if (surface)
+						SDL_BlitSurface(surface, NULL, screen, &d);
+					child_draw(screen);
+				#else
+					if (texture)
+						SDL_RenderCopy(renderer, texture, NULL, &d);
+					child_draw(renderer);
+				#endif
 			}
 };
 
@@ -210,7 +314,11 @@ class CTextInput: public CLabel
 			count = 0;
 			
 			str_to_surface("a");
-			textsize = get_surface()->w;
+			#ifndef USE_SDL2
+				textsize = get_surface()->w;
+			#else
+				textsize = get_texture_width();
+			#endif
 			str_to_surface("");
 			
 			strsize = ss;
@@ -218,11 +326,7 @@ class CTextInput: public CLabel
 			cursor.y = pos.y + rel_pos.y;
 			cursor.w = 5;
 			cursor.h = fontsize;
-			#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-				cursor_color = 0x0000FF;
-			#else
-				cursor_color = 0xFF0000;
-			#endif
+			cursor_color = 0xFF0000FF;
 		}
 		
 		/*
@@ -237,14 +341,22 @@ class CTextInput: public CLabel
 		void set_pos ( SVect p )
 		{
 			CWidget::set_pos(p);
-			cursor.x = pos.x + rel_pos.x + get_surface()->w;
+			#ifndef USE_SDL2
+				cursor.x = pos.x + rel_pos.x + get_surface()->w;
+			#else
+				cursor.x = pos.x + rel_pos.x + get_texture_width();
+			#endif
 			cursor.y = pos.y + rel_pos.y;
 		}
 		
 		void set_rel_pos ( SVect p )
 		{
 			CWidget::set_rel_pos(p);
-			cursor.x = pos.x + rel_pos.x + get_surface()->w;
+			#ifndef USE_SDL2
+				cursor.x = pos.x + rel_pos.x + get_surface()->w;
+			#else
+				cursor.x = pos.x + rel_pos.x + get_texture_width();
+			#endif
 			cursor.y = pos.y + rel_pos.y;
 		}
 		
@@ -261,7 +373,11 @@ class CTextInput: public CLabel
 					{
 						str.erase(str.end() - 1);
 						str_to_surface(str);
-						cursor.x = pos.x + rel_pos.x + get_surface()->w;
+						#ifndef USE_SDL2
+							cursor.x = pos.x + rel_pos.x + get_surface()->w;
+						#else
+							cursor.x = pos.x + rel_pos.x + get_texture_width();
+						#endif
 					}
 				}
 				else if (event.key.keysym.sym == SDLK_CAPSLOCK)
@@ -294,7 +410,13 @@ class CTextInput: public CLabel
 					
 						str = s.str();
 						str_to_surface(str);
-						cursor.x = pos.x + rel_pos.x + get_surface()->w;
+						#ifndef USE_SDL2
+							cursor.x = pos.x + rel_pos.x + get_surface()->w;
+						#else
+							int w;
+							SDL_QueryTexture(get_texture(), NULL, NULL, &w, NULL);
+							cursor.x = pos.x + rel_pos.x + w;
+						#endif
 					}
 				}
 			}
@@ -308,23 +430,40 @@ class CTextInput: public CLabel
 			child_input(event);
 		}
 		
-		void draw ( SDL_Surface * screen )
-		{
-			if (!visible)
-				return;
-
-			SDL_Rect d;
-
-			CLabel::draw(screen);
-			
-			if ((++count) % 10 < 5)
+		#ifndef USE_SDL2
+			void draw ( SDL_Surface * screen )
 			{
-				d = cursor;
-				SDL_FillRect(screen, &d, cursor_color);
-			}
+				if (!visible)
+					return;
+
+				SDL_Rect d;
+
+				if ((++count) % 10 < 5)
+				{
+					d = cursor;
+					SDL_FillRect(screen, &d, cursor_color);
+				}
 			
-			child_draw(screen);
-		}
+				CLabel::draw(screen);
+			}
+		#else
+			void draw ( SDL_Renderer * renderer )
+			{
+				if (!visible)
+					return;
+
+				SDL_Rect d;
+
+				if ((++count) % 10 < 5)
+				{
+					d = cursor;
+					SDL_SetRenderDrawColor(renderer, (cursor_color & 0xFF000000) >> 24, (cursor_color & 0x00FF0000) >> 16, (cursor_color & 0x0000FF00) >> 8, (cursor_color & 0x000000FF));
+					SDL_RenderFillRect(renderer, &d);
+				}
+			
+				CLabel::draw(renderer);
+			}
+		#endif
 };
 
 #endif

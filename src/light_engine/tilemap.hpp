@@ -229,7 +229,11 @@ class CAnimatedTile: public CAnimation
 {
 	protected:
 		int tile;
-		using CAnimation::surface;
+		#ifndef USE_SDL2
+			using CAnimation::surface;
+		#else
+			using CAnimation::texture;
+		#endif
 
 	public:
 		CAnimatedTile (  )
@@ -242,15 +246,25 @@ class CAnimatedTile: public CAnimation
 			return frames.size();
 		}
 		
-		SDL_Surface * get_surface (  )
-		{
-			return surface;
-		}
+		#ifndef USE_SDL2
+			SDL_Surface * get_surface (  )
+			{
+				return surface;
+			}
 		
-		void set_surface ( SDL_Surface * s )
-		{
-			surface = s;
-		}
+			void set_surface ( SDL_Surface * s )
+			{
+				if (surface)
+					SDL_FreeSurface(surface);
+
+				surface = s;
+			}
+		#else
+			vector <SDL_Texture *> get_texture (  )
+			{
+				return texture;
+			}
+		#endif
 		
 		int get_tile (  )
 		{
@@ -269,18 +283,34 @@ class CTileMapView: public CTileMap
 		map <int, SDL_Rect> source; // par <tile, rect_sourcee>
 		map <int, CAnimatedTile> animation;
 	public:
-		SDL_Surface * surface;
+		#ifndef USE_SDL2
+			SDL_Surface * surface;
+		#else
+			SDL_Texture * texture;
+		#endif
 	
 	public:
-		CTileMapView ( int ts, SDL_Surface * s=0 ): CTileMap(ts)
-		{
-			surface = s;
-		}
+		#ifndef USE_SDL2
+			CTileMapView ( int ts, SDL_Surface * s=0 ): CTileMap(ts)
+			{
+				surface = s;
+			}
+		#else
+			CTileMapView ( int ts, SDL_Texture * t=0 ): CTileMap(ts)
+			{
+				texture = t;
+			}
+		#endif
 
 		~CTileMapView (  )
 		{
+			#ifndef USE_SDL2
 			if (surface)
 				SDL_FreeSurface(surface);
+			#else
+				if (texture)
+					SDL_DestroyTexture(texture);
+			#endif
 		}
 		
 		void clear_source (  )
@@ -295,7 +325,9 @@ class CTileMapView: public CTileMap
 		
 		void add_animation ( CAnimatedTile a, int t )
 		{
-			a.set_surface(surface);
+			#ifndef USE_SDL2
+				a.set_surface(surface);
+			#endif
 			a.set_tile(t);
 			add_tile(t);
 			animation[t] = a;
@@ -315,7 +347,11 @@ class CTileMapView: public CTileMap
 			}
 		}
 		
-		void draw ( CCamera * cam, SDL_Surface * screen )
+		#ifndef USE_SDL2
+			void draw ( CCamera * cam, SDL_Surface * screen )
+		#else
+			void draw ( CCamera * cam, SDL_Renderer * renderer )
+		#endif
 		{
 			int i, j, t;
 			static int ts = get_tilesize();
@@ -338,7 +374,11 @@ class CTileMapView: public CTileMap
 
 					if (is_animated(t))
 					{
-						animation[t].draw(i * ts, j * ts, cam, screen);
+						#ifndef USE_SDL2
+							animation[t].draw(i * ts, j * ts, cam, screen);
+						#else
+							animation[t].draw(i * ts, j * ts, cam, renderer);
+						#endif
 						continue;
 					}
 					
@@ -376,12 +416,21 @@ class CTileMapView: public CTileMap
 						dest.y = dim.y + (j - pos.y) * ts - (int(p.y) % ts);
 					}
 					
-					if (surface)
-					{
-						dest.w = src.w;
-						dest.h = src.h;
-						SDL_BlitSurface(surface, &src, screen, &dest);
-					}
+					#ifndef USE_SDL2
+						if (surface)
+						{
+							dest.w = src.w;
+							dest.h = src.h;
+							SDL_BlitSurface(surface, &src, screen, &dest);
+						}
+					#else
+						if (texture)
+						{
+							dest.w = src.w;
+							dest.h = src.h;
+							SDL_RenderCopy(renderer, texture, &src, &dest);
+						}
+					#endif
 				}
 		}
 };
