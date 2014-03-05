@@ -65,7 +65,7 @@ int main ( int argc, char **argv )
 			SDL_putenv("SDL_VIDEO_CENTERED=center");
 		#else
 			#if _WIN32 || _WIN64 || __MINGW32__
-				    SDL_SetMainReady();
+				SDL_SetMainReady();
 			#endif
 		#endif
 
@@ -92,9 +92,10 @@ int main ( int argc, char **argv )
 			if (!screen)
 				throw SDL_GetError();
 		#else
-			SDL_Window * window = SDL_CreateWindow("Dangerous Tux!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, SDL_WINDOW_MINIMIZED | SDL_WINDOW_MAXIMIZED);// | SDL_WINDOW_FULLSCREEN_DESKTOP);
+			int fullscreen = 0;
+			SDL_Window * window = SDL_CreateWindow("Dangerous Tux! BETA version", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, 0);//SDL_WINDOW_MINIMIZED | SDL_WINDOW_MAXIMIZED);// | SDL_WINDOW_FULLSCREEN);
 			SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-			
+
 			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // em fase de testes
 			SDL_RenderSetLogicalSize(renderer, TILESIZE * 20, TILESIZE * 13);
 			fps = 40;
@@ -122,8 +123,23 @@ int main ( int argc, char **argv )
 					done = 1;
 				
 				if (event.type == SDL_KEYDOWN)
+				{
 					if (event.key.keysym.sym == SDLK_ESCAPE)
 						done = 1;
+					
+					#if USE_SDL2
+						else if (event.key.keysym.sym == SDLK_f)
+						{
+							if (fullscreen == SDL_WINDOW_FULLSCREEN)
+								fullscreen = 0;
+							else
+								fullscreen = SDL_WINDOW_FULLSCREEN;
+							
+							SDL_SetWindowFullscreen(window, fullscreen);
+						}
+					#endif
+						
+				}
 
 				gamescreen.input(event);
 			}
@@ -141,6 +157,11 @@ int main ( int argc, char **argv )
 				#endif
 			}
 		}
+		
+		#ifdef USE_SDL2
+			SDL_DestroyWindow(window);
+			SDL_DestroyRenderer(renderer);
+		#endif
 	}
 	catch (const char * e)
 	{
@@ -158,7 +179,7 @@ int main ( int argc, char **argv )
 		cout << e.what() << endl;
 		return 1;
 	}
-	
+
 	SDL_Quit();
 	IMG_Quit();
 	TTF_Quit();
