@@ -86,14 +86,14 @@ int main ( int argc, char **argv )
 		SDL_Event event;
 
 		int fps;
+		int fullscreen = 0;
 		#ifndef USE_SDL2
 			// no tamanho aproximado do dangerous dave original
 			SDL_Surface * screen = set_screen(TILESIZE * 20, TILESIZE * 13, &fps);
 			if (!screen)
 				throw SDL_GetError();
 		#else
-			int fullscreen = 0;
-			SDL_Window * window = SDL_CreateWindow("Dangerous Tux! BETA version", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, 0);//SDL_WINDOW_MINIMIZED | SDL_WINDOW_MAXIMIZED);// | SDL_WINDOW_FULLSCREEN);
+			SDL_Window * window = SDL_CreateWindow("Dangerous Tux! BETA version", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
 			SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
 			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // em fase de testes
@@ -126,18 +126,23 @@ int main ( int argc, char **argv )
 				{
 					if (event.key.keysym.sym == SDLK_ESCAPE)
 						done = 1;
-					
-					#if USE_SDL2
-						else if (event.key.keysym.sym == SDLK_f)
-						{
-							if (fullscreen == SDL_WINDOW_FULLSCREEN)
-								fullscreen = 0;
-							else
-								fullscreen = SDL_WINDOW_FULLSCREEN;
-							
-							SDL_SetWindowFullscreen(window, fullscreen);
-						}
-					#endif
+					else if (event.key.keysym.sym == SDLK_f)
+					{
+						#ifndef USE_SDL2
+							fullscreen = screen->flags;
+							fullscreen ^= SDL_FULLSCREEN;
+							screen = SDL_SetVideoMode(screen->w, screen->h, screen->format->BitsPerPixel, fullscreen);
+							if (!screen)
+								throw SDL_GetError();
+						#else
+							#if _WIN32 || _WIN64 || __MINGW32__ || !__linux__
+								fullscreen ^= SDL_WINDOW_FULLSCREEN;
+								SDL_SetWindowFullscreen(window, fullscreen);
+							#else
+								cout << "Fullscreen desativado para seu sistema, sorry!\n";
+							#endif
+						#endif
+					}
 						
 				}
 

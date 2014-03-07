@@ -11,8 +11,8 @@
 
 enum ELevelState
 {
-	INIT,
-	RUNNING,
+	INIT_LEVEL,
+	RUNNING_LEVEL,
 	NEXT_LEVEL
 };
 
@@ -80,7 +80,7 @@ class CLevel: public CStateMachine
 				widget = 0;
 			}
 		}
-		
+			
 		void unload (  )
 		{
 			if (map)
@@ -178,7 +178,7 @@ class CLevel: public CStateMachine
 		{
 			switch (get_state())
 			{
-				case INIT: // inicializando
+				case INIT_LEVEL: // inicializando
 				{
 					SDL_Surface * aux = 0;
 					
@@ -625,11 +625,11 @@ class CLevel: public CStateMachine
 					bar->show(false);
 					gun_img->show(false);
 					go_exit->show(false);
-					set_state(RUNNING); // vai para executando a fase
+					set_state(RUNNING_LEVEL); // vai para executando a fase
 					break;
 				}
 
-				case RUNNING: // executando a fase
+				case RUNNING_LEVEL: // executando a fase
 					cam->lookat(player->get_pos());
 					
 					// se passou de fase

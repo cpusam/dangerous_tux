@@ -4,13 +4,20 @@ project(DangerousTux)
 
 add_definitions(-DPREFIX="${CMAKE_INSTALL_PREFIX}")
 
+option(USE_SDL2 "Usar SDL2 ao invés de SDL1.2" OFF)
+
 if(NOT CMAKE_BUILD_TYPE)
-  SET(CMAKE_BUILD_TYPE Release CACHE STRING "Escolha o tipo de build" FORCE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Escolha o tipo de build" FORCE)
 endif()
 
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	add_executable(DangerousTux.exe src/dangerous_tux.cpp)
-	target_link_libraries(DangerousTux.exe SDLmain SDL SDL_ttf SDL_image SDL_mixer)
+	IF (USE_SDL2)
+		add_definitions(-DUSE_SDL2)
+		target_link_libraries(DangerousTux.exe SDL2main SDL2 SDL2_ttf SDL2_image SDL2_mixer)
+	ELSE (USE_SDL2)
+		target_link_libraries(DangerousTux.exe SDLmain SDL SDL_ttf SDL_image SDL_mixer)
+	ENDIF (USE_SDL2)
 	
 	IF (MSVC)
     set_source_files_properties(src/dangerous_tux.cpp PROPERTIES LANGUAGE CXX)
@@ -24,13 +31,13 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	install(DIRECTORY sounds DESTINATION ${CMAKE_INSTALL_PREFIX}/dangeroustux)
 
 ELSE (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	FIND_LIBRARY(SDL_LIBRARY SDL /usr/lib)
-	FIND_LIBRARY(SDL_IMAGE_LIBRARY SDL_image /usr/lib)
-	FIND_LIBRARY(SDL_MIXER_LIBRARY SDL_mixer /usr/lib)
-	FIND_LIBRARY(SDL_TTF_LIBRARY SDL_ttf /usr/lib)
-
 	add_executable(DangerousTux src/dangerous_tux.cpp)
-	target_link_libraries(DangerousTux m SDL SDL_ttf SDL_image SDL_mixer)
+	IF (USE_SDL2)
+		add_definitions(-DUSE_SDL2)
+		target_link_libraries(DangerousTux SDL2 SDL2_ttf SDL2_image SDL2_mixer)
+	ELSE (USE_SDL2)
+		target_link_libraries(DangerousTux SDL SDL_ttf SDL_image SDL_mixer)
+	ENDIF (USE_SDL2)
 
 	install(TARGETS DangerousTux DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 	install(DIRECTORY levels DESTINATION ${CMAKE_INSTALL_PREFIX}/share/games/dangeroustux)

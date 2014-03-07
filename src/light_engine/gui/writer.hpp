@@ -142,7 +142,10 @@ class CWriter
 		{
 			if (font == 0)
 				throw "CWriter: Nenhuma fonte usada\n";
-
+			
+			if (text == "")
+				text = " "; // para evitar surface sem tamanho
+			
 			string str;
 			vector <SDL_Surface *> tmp;
 			SDL_Surface * surf = 0;
