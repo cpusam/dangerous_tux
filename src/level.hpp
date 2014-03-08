@@ -23,6 +23,7 @@ class CLevel: public CStateMachine
 		CTileMapView * map;
 		CBackground * bg;
 		string bg_path;
+		vector <SVect> jetpacks; // posição de cada jetpack no mapa
 
 	public:
 		vector <CGameEntity *> aliens;
@@ -363,11 +364,18 @@ class CLevel: public CStateMachine
 						else if (tile == 'E')
 						{
 							SVect p;
-							p.x = (i % map->get_width()) * map->get_tilesize();
-							p.y = (i / map->get_width()) * map->get_tilesize();
+							p.x = i % map->get_width();
+							p.y = i / map->get_width();
 							exit_signal.set_exit_pos(p);
 							exit_signal.show(false);
 							exit_signal.set_cam(cam);
+						}
+						else if (tile == 'q') // se é o jetpack
+						{
+							SVect p;
+							p.x = (i % map->get_width()) * map->get_tilesize();
+							p.y = (i / map->get_width()) * map->get_tilesize();
+							jetpacks.push_back(p);
 						}
 					}
 					
@@ -726,7 +734,21 @@ class CLevel: public CStateMachine
 						}
 					}
 					else
+					{
+						for (int i(0); i < jetpacks.size(); i++)
+							if (map->get_tile(int(jetpacks[i].x), int(jetpacks[i].y)) == '.')
+								map->set_tile(int(jetpacks[i].x), int(jetpacks[i].y), 'q');
+						
+						
+						CBar * jetpack_bar = static_cast<CBar *>(widget->get_child("jetpack_bar"));
+						CLabel * jetpack = static_cast<CLabel *>(widget->get_child("jetpack"));
+
+						jetpack_bar->show(false);
+						jetpack->show(false);
+						
+						player->jetpack.set_jetpack(false);
 						player->update();
+					}
 
 					break;
 

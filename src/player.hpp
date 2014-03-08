@@ -394,6 +394,11 @@ class CPlayer: public CGameEntity
 				SDL_JoystickClose(joystick);
 		}
 		
+		SVect get_center (  )
+		{
+			return c_point[8];
+		}
+		
 		void set_kernel ( bool h )
 		{
 			kernel = h;

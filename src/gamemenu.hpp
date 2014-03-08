@@ -4,7 +4,8 @@
 enum CGameMenuState
 {
 	INIT_GAMEMENU,
-	RUNNING_GAMEMENU
+	RUNNING_GAMEMENU,
+	END_GAMEMENU
 };
 
 class CGameMenu: public CStateMachine
@@ -14,13 +15,14 @@ class CGameMenu: public CStateMachine
 		CCamera * cam;
 		CTileMapView * map;
 		CBackground * bg;
+		CWidget widget;
 		#if USE_SDL2
 			SDL_Renderer * renderer;
 		#endif
 		
 	public:
 		#ifndef USE_SDL2
-			CGameMenu ( CPlayer * p, ts )
+			CGameMenu ( CPlayer * p, int ts )
 		#else
 			CGameMenu ( SDL_Renderer * r, CPlayer * p, int ts )
 		#endif
@@ -34,6 +36,37 @@ class CGameMenu: public CStateMachine
 			#endif
 			set_state(INIT_GAMEMENU);
 		}
+		
+		~CGameMenu (  )
+		{
+			if (cam)
+				delete cam;
+		
+			if (map)
+				delete map;
+			
+			if (bg)
+				delete bg;
+		}
+		
+		void input ( SDL_Event & event )
+		{
+		}
+		
+		#ifndef USE_SDL2
+			void draw ( SDL_Surface * screen )
+			{
+				widget.draw(screen);
+				player->draw(cam, screen);
+			}
+		#else
+			void draw (  )
+			{
+				widget.draw(renderer);
+				player->draw(cam, renderer);
+			}
+		#endif
+		
 		
 		int update (  )
 		{
@@ -179,6 +212,8 @@ class CGameMenu: public CStateMachine
 							p.y = (i / map->get_width()) * map->get_tilesize();
 							player->set_respawn(p);
 							player->reset();
+							player->set_state(STANDING);
+							player->set_kernel(true);
 							player->gun.shot.clear_targets();
 							player->gun.set_gun(false);
 							player->jetpack.set_jetpack(false);
@@ -200,6 +235,9 @@ class CGameMenu: public CStateMachine
 					map->remove_tile('.'); // remove o tile vazio da visão
 					map->remove_tile('P'); // remove o jogador da visão
 					map->remove_tile('K'); // remove o kernel da visão
+					map->set_source('A', (SDL_Rect){ts*8,0,ts,ts}); // controles
+					map->set_source('B', (SDL_Rect){ts*8,0,ts,ts}); // 
+					map->set_source('C', (SDL_Rect){ts*8,0,ts,ts});
 					map->set_source('a', (SDL_Rect){0,0,ts,ts});
 					map->set_source('b', (SDL_Rect){ts,0,ts,ts});
 					map->set_source('c', (SDL_Rect){ts*2,0,ts,ts});
@@ -221,6 +259,17 @@ class CGameMenu: public CStateMachine
 				}
 				
 				case RUNNING_GAMEMENU:
+					if (player->get_state() != FINISHED_LEVEL)
+					{
+						cam->lookat(player->get_pos());
+						player->update();
+						
+						
+					}
+					else
+					{
+						set_state(END_GAMEMENU);
+					}
 					break;
 				
 				default:
@@ -229,18 +278,6 @@ class CGameMenu: public CStateMachine
 			}
 			
 			return get_state();
-		}
-		
-		~CGameMenu (  )
-		{
-			if (cam)
-				delete cam;
-		
-			if (map)
-				delete map;
-			
-			if (bg)
-				delete bg;
 		}
 };
 
