@@ -10,10 +10,10 @@
 struct SPlayerConfig
 {
 	SVect vel_max; // velocidades mÃ¡ximas em pÃ© em pixels
-	SVect acc; // aceleraÃ§ão ao se movimentar
-	SVect acc_jetpack; // aceleraÃ§ão ao se movimentar com o jetpack
-	float gravity; // aceleraÃ§ão da gravidade quando pulando ou caindo
-	float vel_max_jump; // velocidade maxima ao comeÃ§ar a pular
+	SVect acc; // aceleração ao se movimentar
+	SVect acc_jetpack; // aceleração ao se movimentar com o jetpack
+	float gravity; // aceleração da gravidade quando pulando ou caindo
+	float vel_max_jump; // velocidade maxima ao começar a pular
 	float vel_max_tree; // velocidade mÃ¡xima na Ã¡rvore
 	float vel_max_jetpack; // velocidade mÃ¡xima usando o jetpack
 	float shot_vel;
@@ -62,7 +62,7 @@ enum EPlayerDirection
 class CPlayer: public CGameEntity
 {
 	protected:
-		int dir; // direÃ§ão, 0 - esquerda e 1 - direita
+		int dir; // direção, 0 - esquerda e 1 - direita
 		int up_key, down_key, left_key, right_key;
 		int jump_key, gun_key, jetpack_key;
 		int lives; // quantidade de vidas
@@ -70,12 +70,12 @@ class CPlayer: public CGameEntity
 		bool shot_at; // se foi baleado pelos aliens
 		bool touched_alien; // se tocou um alien
 		bool has_joystick; // se tem ou não joystick
-		float final_pos; // posiÃ§ão final em X na tela de transiÃ§ão
+		float final_pos; // posição final em X na tela de transição
 		SDL_Joystick * joystick; // o joystick propriamente dito
 		SDL_Rect limit; // limites de movimento do jogador
 		SVect respawn; // ponto onde deve reaparecer quando morrer
-		CAnimation * curr_anim; // animaÃ§ão atual
-		vector <CAnimation> anim; // animaÃ§Ãµes
+		CAnimation * curr_anim; // animação atual
+		vector <CAnimation> anim; // animaçÃµes
 		vector <int> item; // tiles que são itens de coletar
 		vector <int> coll_tiles; // tiles de colisão completa
 		vector <SVect> c_point; // pontos de colisão
@@ -440,13 +440,26 @@ class CPlayer: public CGameEntity
 			set_state(DYING_PLAYER);
 		}
 		
+		void reset_gamemenu (  )
+		{
+			vel.zero();
+			acc.zero();
+			dir = RIGHT_PLAYER;
+			pos = respawn;
+			shot_at = touched_alien = false;
+			curr_anim = &anim[0]; // animação de parado para direita
+			left_key = right_key = up_key = down_key = 0;
+			jump_key = gun_key = jetpack_key = 0;
+			set_state(STANDING);
+		}
+		
 		void reset (  )
 		{
 			vel.zero();
 			acc.zero();
 			pos = respawn;
 			shot_at = touched_alien = false;
-			curr_anim = &anim[13]; // animaÃ§ão de esperando controle
+			curr_anim = &anim[13]; // animação de esperando controle
 			left_key = right_key = up_key = down_key = 0;
 			jump_key = gun_key = jetpack_key = 0;
 			set_state(WAITING);
@@ -598,7 +611,7 @@ class CPlayer: public CGameEntity
 		}
 		
 		/*
-			FunÃ§ão que verifca e coleta itens
+			Função que verifca e coleta itens
 		*/
 		bool collect_items (  )
 		{
@@ -606,7 +619,7 @@ class CPlayer: public CGameEntity
 				for (int j(0); j < c_point.size(); j++)
 					if (map->get_tile(pos.x + c_point[j].x, pos.y + c_point[j].y) == item[i])
 					{
-						// verifica qual item foi coletado e dÃ¡ a pontuaÃ§ão
+						// verifica qual item foi coletado e dÃ¡ a pontuação
 						switch (item[i])
 						{
 							case 'd':
@@ -644,7 +657,7 @@ class CPlayer: public CGameEntity
 		}
 		
 		/*
-			funÃ§ão que verifica e faz entrar na porta se tiver a chave
+			função que verifica e faz entrar na porta se tiver a chave
 		*/
 		bool enter_door (  )
 		{
@@ -1336,7 +1349,7 @@ class CPlayer: public CGameEntity
 					if (pos.y > limit.y + limit.h) // se passou por baixo da tela
 						pos.y = limit.y - map->get_tilesize(); // volte lÃ¡ pra cima da fase
 					else if (pos.y < limit.y - map->get_tilesize()) // se passar por cima
-						pos.y = limit.y - map->get_tilesize(); // mantenha a posiÃ§ão
+						pos.y = limit.y - map->get_tilesize(); // mantenha a posição
 					
 					process();
 					

@@ -14,12 +14,13 @@
 #include "gamemenu.hpp"
 
 
-// enumera√ß√£o das telas
+// enumeraÁ„o das telas
 enum EScreenState
 {
 	CREDITS_SCREEN,
 	INTRODUCTION,
 	TITLE_SCREEN,
+	GAMEMENU_SCREEN,
 	LOAD_GAME,
 	SAVE_GAME,
 	LOAD_LEVELS_SCREEN,
@@ -54,6 +55,7 @@ class CGameScreen: public CStateMachine
 		CGameTitle title;
 		CGameCredits credits;
 		CGameIntroduction introduction;
+		CGameMenu menu;
 		CGameTransition transition;
 		CSaveGame save;
 		CHighScore highscore;
@@ -65,9 +67,9 @@ class CGameScreen: public CStateMachine
 
 	public:
 		#ifndef USE_SDL2
-			CGameScreen ( SDL_Surface * s, CCamera * c, CPlayer * p, int ts )
+			CGameScreen ( SDL_Surface * s, CCamera * c, CPlayer * p, int ts ): menu(s, p, ts)
 		#else
-			CGameScreen ( SDL_Window * w, SDL_Renderer * r, CCamera * c, CPlayer * p, int ts ): gameover(r), highscore(r), title(r), credits(r), transition(r), introduction(r)
+			CGameScreen ( SDL_Window * w, SDL_Renderer * r, CCamera * c, CPlayer * p, int ts ): gameover(r), highscore(r), title(r), credits(r), transition(r), introduction(r), menu(r, p, ts)
 		#endif
 		{
 			curr_level = -1;
@@ -194,6 +196,8 @@ class CGameScreen: public CStateMachine
 
 			if (get_state() == MAIN_LOOP || get_state() == PAUSE_SCREEN)
 				levels[curr_level]->input(event);
+			else if (get_state() == GAMEMENU_SCREEN)
+				menu.input(event);
 			
 			if (event.type == SDL_KEYDOWN)
 			{
@@ -297,6 +301,10 @@ class CGameScreen: public CStateMachine
 						title.draw(cam, renderer);
 					#endif
 					break;
+				
+				case GAMEMENU_SCREEN:
+					menu.draw();
+					break;
 
 				case TRANSITION:
 					#ifndef USE_SDL2
@@ -342,7 +350,28 @@ class CGameScreen: public CStateMachine
 					}
 					break;
 
-				case INTRODUCTION: // tela de introdu√ß√£o do jogo
+				case TITLE_SCREEN:
+					if (enter_key)
+					{
+						menu.reset();
+						set_state(GAMEMENU_SCREEN);
+						break;
+					}
+					
+					title.update();
+					break;
+				
+				case GAMEMENU_SCREEN:
+					if (menu.update() == END_GAMEMENU)
+					{
+						any_key = 0;
+						enter_key = 0;
+						set_state(LOAD_GAME);
+						cout << "CGameScreen indo para LOAD_GAME\n";
+					}
+					break;
+				
+				case INTRODUCTION: // tela de introduÁ„o do jogo
 					if (enter_key || introduction.get_state() == INACTIVE_INTRODUCTION)
 					{
 						any_key = 0;
@@ -353,17 +382,6 @@ class CGameScreen: public CStateMachine
 					}
 					
 					introduction.update();
-					break;
-
-				case TITLE_SCREEN:
-					if (enter_key)
-					{
-						any_key = 0;
-						enter_key = 0;
-						set_state(LOAD_GAME);
-					}
-					
-					title.update();
 					break;
 				
 				case LOAD_GAME:
@@ -383,7 +401,7 @@ class CGameScreen: public CStateMachine
 					}
 					else
 					{
-						curr_level = -1; // fase '0' ser√° a primeira
+						curr_level = -1; // fase '0' ser· a primeira
 						player->set_lives(10); // seta as vidas do jogador
 						introduction.reset();
 						set_state(INTRODUCTION);
@@ -396,7 +414,7 @@ class CGameScreen: public CStateMachine
 				case SAVE_GAME:
 					if (player->get_state() != GAMEOVER)
 					{
-						// n√£o salva na √∫ltima fase
+						// n„o salva na √∫ltima fase
 						if (curr_level + 1 < levels.size())
 						{
 							SSaveData d;
@@ -439,7 +457,7 @@ class CGameScreen: public CStateMachine
 					#else
 						char path[1024]; // o bom e velho char []
 					#endif
-					for (int i(0); i < 100; i++) // para no m√°ximo 100 levels
+					for (int i(0); i < 100; i++) // para no m·ximo 100 levels
 					{
 						#if _WIN32 || _WIN64 || __MINGW32__
 							#ifndef PREFIX
@@ -532,7 +550,7 @@ class CGameScreen: public CStateMachine
 				case PAUSE_SCREEN:
 					break;
 				
-				case TRANSITION: // transi√ß√£o de fase
+				case TRANSITION: // transiÁ„o de fase
 					if (transition.update() == 0)
 					{
 						widget.show_child(false);
@@ -569,7 +587,7 @@ class CGameScreen: public CStateMachine
 							#endif
 							// … preciso redefinir a fonte
 							if (CWriter::instance()->set_font(path, 80) == 0)
-								throw "CGameScreen: n√£o conseguiu abrir fonte\n";
+								throw "CGameScreen: n„o conseguiu abrir fonte\n";
 							
 							#if USE_SDL2
 								CWriter::instance()->set_renderer(renderer);
@@ -611,7 +629,7 @@ class CGameScreen: public CStateMachine
 							#endif
 							// … preciso redefinir a fonte
 							if (CWriter::instance()->set_font(path, 80) == 0)
-								throw "CGameScreen: n√£o conseguiu abrir fonte\n";
+								throw "CGameScreen: n„o conseguiu abrir fonte\n";
 							
 							#if USE_SDL2
 								CWriter::instance()->set_renderer(renderer);

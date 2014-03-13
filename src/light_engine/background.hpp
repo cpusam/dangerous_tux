@@ -77,7 +77,7 @@ class CBackground
 			int w, h;
 			
 			#ifndef USE_SDL2
-				if (!surface)
+				if (surface == 0)
 					return;
 				
 				w = surface->w;

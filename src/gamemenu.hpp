@@ -16,13 +16,16 @@ class CGameMenu: public CStateMachine
 		CTileMapView * map;
 		CBackground * bg;
 		CWidget widget;
-		#if USE_SDL2
+		SVect player_pos;
+		#ifndef USE_SDL2
+			SDL_Surface * screen;
+		#else
 			SDL_Renderer * renderer;
 		#endif
 		
 	public:
 		#ifndef USE_SDL2
-			CGameMenu ( CPlayer * p, int ts )
+			CGameMenu ( SDL_Surface * s, CPlayer * p, int ts )
 		#else
 			CGameMenu ( SDL_Renderer * r, CPlayer * p, int ts )
 		#endif
@@ -31,7 +34,9 @@ class CGameMenu: public CStateMachine
 			cam = new CCamera((SDL_Rect){0,0,ts * 20,ts * 13}, (SDL_Rect){0,0,0,0});
 			player = p;
 			bg = 0;
-			#if USE_SDL2
+			#ifndef USE_SDL2
+				screen = s;
+			#else
 				renderer = r;
 			#endif
 			set_state(INIT_GAMEMENU);
@@ -51,17 +56,39 @@ class CGameMenu: public CStateMachine
 		
 		void input ( SDL_Event & event )
 		{
+			player->input(event);
+		}
+		
+		void reset (  )
+		{
+			if (get_state() != INIT_GAMEMENU)
+			{
+				player->set_map(map);
+				player->set_respawn(player_pos);
+				player->reset_gamemenu();
+				set_state(RUNNING_GAMEMENU);
+			}
 		}
 		
 		#ifndef USE_SDL2
-			void draw ( SDL_Surface * screen )
+			void draw (  )
 			{
+				if (get_state() == INIT_GAMEMENU)
+					return;
+
+				bg->draw(cam, screen);
+				map->draw(cam, screen);
 				widget.draw(screen);
 				player->draw(cam, screen);
 			}
 		#else
 			void draw (  )
 			{
+				if (get_state() == INIT_GAMEMENU)
+					return;
+				
+				bg->draw(cam, renderer);
+				map->draw(cam, renderer);
 				widget.draw(renderer);
 				player->draw(cam, renderer);
 			}
@@ -132,7 +159,7 @@ class CGameMenu: public CStateMachine
 					string line;
 					int i;
 		
-					for (i = 0; i < 10; i++)
+					for (i = 0; i < 13; i++)
 					{
 						if (!file.eof())
 						{
@@ -155,12 +182,15 @@ class CGameMenu: public CStateMachine
 							break;
 					}
 					file.close();
-		
-					if (i < 13)
-						throw "CGameMenu: falha ao ler linhas do mapa, lido menos de 13 linhas\n";
-		
+
 					if (!map->read(tileset))
 						throw "CGameMenu: não foi possível iniciar o mapa\n";
+					
+					if (map->get_width() < 20)
+						throw "CGameMenu: falha ao ler o mapa, lido menos de 20 colunas\n";
+					
+					if (map->get_height() < 13)
+						throw "CGameMenu: falha ao ler o mapa, lido menos de 13 linhas\n";
 
 					cam->set_limit(map->get_dimension());
 					player->set_map(map);
@@ -210,9 +240,9 @@ class CGameMenu: public CStateMachine
 							SVect p;
 							p.x = (i % map->get_width()) * map->get_tilesize();
 							p.y = (i / map->get_width()) * map->get_tilesize();
+							player_pos = p;
 							player->set_respawn(p);
-							player->reset();
-							player->set_state(STANDING);
+							player->reset_gamemenu();
 							player->set_kernel(true);
 							player->gun.shot.clear_targets();
 							player->gun.set_gun(false);
@@ -255,6 +285,7 @@ class CGameMenu: public CStateMachine
 					map->set_source('s', (SDL_Rect){ts*6,ts*2,ts,ts});
 					map->set_source('t', (SDL_Rect){ts*7,ts*2,ts,ts});
 					map->set_source('u', (SDL_Rect){ts*6, ts*2,ts,ts});
+					set_state(RUNNING_GAMEMENU);
 					break;
 				}
 				
@@ -263,15 +294,14 @@ class CGameMenu: public CStateMachine
 					{
 						cam->lookat(player->get_pos());
 						player->update();
-						
-						
 					}
 					else
-					{
 						set_state(END_GAMEMENU);
-					}
 					break;
-				
+
+				case END_GAMEMENU:
+					break;
+
 				default:
 					set_state(INIT_GAMEMENU);
 					break;
