@@ -364,8 +364,8 @@ class CLevel: public CStateMachine
 						else if (tile == 'E')
 						{
 							SVect p;
-							p.x = i % map->get_width();
-							p.y = i / map->get_width();
+							p.x = (i % map->get_width()) * map->get_tilesize();
+							p.y = (i / map->get_width()) * map->get_tilesize();
 							exit_signal.set_exit_pos(p);
 							exit_signal.show(false);
 							exit_signal.set_cam(cam);

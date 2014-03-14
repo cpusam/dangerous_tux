@@ -87,6 +87,8 @@ class CTileMap
 		void set_position ( SVect p )
 		{
 			position = p;
+			dimension.x = p.x;
+			dimension.y = p.y;
 		}
 		
 		SVect get_position (  )

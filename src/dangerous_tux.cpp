@@ -128,6 +128,7 @@ int main ( int argc, char **argv )
 						done = 1;
 					else if (event.key.keysym.sym == SDLK_f)
 					{
+						/*
 						#ifndef USE_SDL2
 							fullscreen = screen->flags;
 							fullscreen ^= SDL_FULLSCREEN;
@@ -135,6 +136,8 @@ int main ( int argc, char **argv )
 							if (!screen)
 								throw SDL_GetError();
 						#else
+						*/
+						#if USE_SDL2
 							#if _WIN32 || _WIN64 || __MINGW32__ || !__linux__
 								fullscreen ^= SDL_WINDOW_FULLSCREEN;
 								SDL_SetWindowFullscreen(window, fullscreen);

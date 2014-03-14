@@ -9,13 +9,13 @@
 
 struct SPlayerConfig
 {
-	SVect vel_max; // velocidades mÃ¡ximas em pÃ© em pixels
+	SVect vel_max; // velocidades máximas em pÃ© em pixels
 	SVect acc; // aceleração ao se movimentar
 	SVect acc_jetpack; // aceleração ao se movimentar com o jetpack
 	float gravity; // aceleração da gravidade quando pulando ou caindo
 	float vel_max_jump; // velocidade maxima ao começar a pular
-	float vel_max_tree; // velocidade mÃ¡xima na Ã¡rvore
-	float vel_max_jetpack; // velocidade mÃ¡xima usando o jetpack
+	float vel_max_tree; // velocidade máxima na árvore
+	float vel_max_jetpack; // velocidade máxima usando o jetpack
 	float shot_vel;
 
 	SPlayerConfig (  )
@@ -253,9 +253,9 @@ class CPlayer: public CGameEntity
 				anim[1].add_frame((SDL_Rect){48*2,0,48,48}, 3);
 				// pulando ou caindo
 				anim[2].add_frame((SDL_Rect){0,48*2,48,48}, 1);
-				// parado nas Ã¡rvores
+				// parado nas árvores
 				anim[3].add_frame((SDL_Rect){48*2,48,48,48}, 1);
-				// caminhando nas Ã¡rvores
+				// caminhando nas árvores
 				anim[4].add_frame((SDL_Rect){0,48,48,48}, 4);
 				anim[4].add_frame((SDL_Rect){48,48,48,48}, 4);
 				// no jetpack
@@ -276,9 +276,9 @@ class CPlayer: public CGameEntity
 				anim[7].add_frame((SDL_Rect){48*2,0,48,48}, 3);
 				// pulando ou caindo
 				anim[8].add_frame((SDL_Rect){0,48*2,48,48}, 1);
-				// parado nas Ã¡rvores
+				// parado nas árvores
 				anim[9].add_frame((SDL_Rect){48*2,48,48,48}, 1);
-				// caminhando nas Ã¡rvores
+				// caminhando nas árvores
 				anim[10].add_frame((SDL_Rect){0,48,48,48}, 4);
 				anim[10].add_frame((SDL_Rect){48,48,48,48}, 4);
 				// no jetpack
@@ -328,9 +328,9 @@ class CPlayer: public CGameEntity
 				anim[1].add_frame(tright, (SDL_Rect){48*2,0,48,48}, 3);
 				// pulando ou caindo
 				anim[2].add_frame(tright, (SDL_Rect){0,48*2,48,48}, 1);
-				// parado nas Ã¡rvores
+				// parado nas árvores
 				anim[3].add_frame(tright, (SDL_Rect){48*2,48,48,48}, 1);
-				// caminhando nas Ã¡rvores
+				// caminhando nas árvores
 				anim[4].add_frame(tright, (SDL_Rect){0,48,48,48}, 4);
 				anim[4].add_frame(tright, (SDL_Rect){48,48,48,48}, 4);
 				// no jetpack
@@ -351,9 +351,9 @@ class CPlayer: public CGameEntity
 				anim[7].add_frame(tleft, (SDL_Rect){48*2,0,48,48}, 3);
 				// pulando ou caindo
 				anim[8].add_frame(tleft, (SDL_Rect){0,48*2,48,48}, 1);
-				// parado nas Ã¡rvores
+				// parado nas árvores
 				anim[9].add_frame(tleft, (SDL_Rect){48*2,48,48,48}, 1);
-				// caminhando nas Ã¡rvores
+				// caminhando nas árvores
 				anim[10].add_frame(tleft, (SDL_Rect){0,48,48,48}, 4);
 				anim[10].add_frame(tleft, (SDL_Rect){48,48,48,48}, 4);
 				// no jetpack
@@ -446,6 +446,7 @@ class CPlayer: public CGameEntity
 			acc.zero();
 			dir = RIGHT_PLAYER;
 			pos = respawn;
+			kernel = true;
 			shot_at = touched_alien = false;
 			curr_anim = &anim[0]; // animação de parado para direita
 			left_key = right_key = up_key = down_key = 0;
@@ -495,9 +496,18 @@ class CPlayer: public CGameEntity
 		
 		bool ground (  )
 		{
+			SVect cp;
+			int tile;
+			
 			for (int i = 4; i < 6; i++)
 			{
-				int tile = map->get_tile(pos.x + c_point[i].x, pos.y + c_point[i].y + 1);
+				cp.x = pos.x + c_point[i].x;
+				cp.y = pos.y + c_point[i].y + 1;
+				
+				if (!pointbox(cp, map->get_dimension()))
+					continue;
+				
+				tile = map->get_tile(cp.x, cp.y);
 				if (has_coll_tile(tile))
 					return true;
 			}
@@ -516,12 +526,21 @@ class CPlayer: public CGameEntity
 		{
 			int ret = 0;
 			float p;
+			SVect cp;
+			SDL_Rect d = map->get_dimension();
 
 			if (vel.x == 0)
 				return ret;
 			
 			for (int i = 0; i < 4; i++)
-				if (has_coll_tile(map->get_tile(pos.x + c_point[i].x + vel.x, pos.y + c_point[i].y)))
+			{
+				cp.x = pos.x + c_point[i].x + vel.x;
+				cp.y = pos.y + c_point[i].y;
+				
+				if (!pointbox(cp, d))
+					continue;
+
+				if (has_coll_tile(map->get_tile(cp.x, cp.y)))
 				{
 					if (i < 2)
 					{
@@ -543,6 +562,7 @@ class CPlayer: public CGameEntity
 						ret = -1;
 					}
 				}
+			}
 
 			return 0;
 		}
@@ -551,12 +571,21 @@ class CPlayer: public CGameEntity
 		{
 			int ret = 0;
 			float p;
+			SVect cp;
+			SDL_Rect d = map->get_dimension();
 			
 			if (vel.y == 0)
 				return ret;
 
 			for (int i = 4; i < 8; i++)
-				if (has_coll_tile(map->get_tile(pos.x + c_point[i].x, pos.y + c_point[i].y + vel.y)))
+			{
+				cp.x = pos.x + c_point[i].x;
+				cp.y = pos.y + c_point[i].y + vel.y;
+				
+				if (!pointbox(cp, d))
+					continue;
+				
+				if (has_coll_tile(map->get_tile(cp.x, cp.y)))
 				{
 					if (i < 6)
 					{
@@ -578,6 +607,7 @@ class CPlayer: public CGameEntity
 						ret = -1;
 					}
 				}
+			}
 			
 			return ret;
 		}
@@ -590,7 +620,7 @@ class CPlayer: public CGameEntity
 			for (int i(0); i < 8; i++)
 				if ((i >= 4 && i < 6) || i == 1 || i == 3)
 				{
-					switch (map->get_tile(pos.x + c_point[i].x, pos.y + c_point[i].y - 20.0))
+					switch (map->get_tile(pos.x + c_point[i].x, pos.y + c_point[i].y - 18.0))
 					{
 						case 'o':
 						case 'p':
@@ -619,15 +649,15 @@ class CPlayer: public CGameEntity
 				for (int j(0); j < c_point.size(); j++)
 					if (map->get_tile(pos.x + c_point[j].x, pos.y + c_point[j].y) == item[i])
 					{
-						// verifica qual item foi coletado e dÃ¡ a pontuação
+						// verifica qual item foi coletado e dá a pontuação
 						switch (item[i])
 						{
 							case 'd':
 							case 'e':
 							case 'f':
-							case 'g': // pegou o item chave
+							case 'g':
 							case 't':
-							case 'K':
+							case 'K': // pegou o item chave
 								if (item[i] == 'K')
 									kernel = true;
 								score.collect_item(item[i]);
@@ -882,9 +912,9 @@ class CPlayer: public CGameEntity
 								acc.zero();
 								vel.zero();
 								if (dir == RIGHT_PLAYER)
-									curr_anim = &anim[3]; // parado na Ã¡rvore para direita
+									curr_anim = &anim[3]; // parado na árvore para direita
 								else
-									curr_anim = &anim[9]; // parado na Ã¡rvore para esquerda
+									curr_anim = &anim[9]; // parado na árvore para esquerda
 								curr_anim->reset();
 								set_state(STANDING_TREE);
 								break;
@@ -1011,9 +1041,9 @@ class CPlayer: public CGameEntity
 								acc.zero();
 								vel.zero();
 								if (dir == RIGHT_PLAYER)
-									curr_anim = &anim[3]; // parado na Ã¡rvore para direita
+									curr_anim = &anim[3]; // parado na árvore para direita
 								else
-									curr_anim = &anim[9]; // parado na Ã¡rvore para esquerda
+									curr_anim = &anim[9]; // parado na árvore para esquerda
 								curr_anim->reset();
 								set_state(STANDING_TREE);
 								break;
@@ -1141,9 +1171,9 @@ class CPlayer: public CGameEntity
 							acc.zero();
 							vel.zero();
 							if (dir == RIGHT_PLAYER)
-								curr_anim = &anim[3]; // parado na Ã¡rvore para direita
+								curr_anim = &anim[3]; // parado na árvore para direita
 							else
-								curr_anim = &anim[9]; // parado na Ã¡rvore para esquerda
+								curr_anim = &anim[9]; // parado na árvore para esquerda
 							curr_anim->reset();
 							set_state(STANDING_TREE);
 							break;
@@ -1223,7 +1253,7 @@ class CPlayer: public CGameEntity
 					
 					// limita o movimento no eixo Y
 					if (pos.y > limit.y + limit.h) // se passou por baixo da tela
-						pos.y = limit.y - map->get_tilesize(); // volte lÃ¡ pra cima da fase
+						pos.y = limit.y - map->get_tilesize(); // volte lá pra cima da fase
 
 					process();
 					
@@ -1301,7 +1331,7 @@ class CPlayer: public CGameEntity
 						vel.y = 0;
 					}
 
-					// verifica se estÃ¡ sem combustÃ­vel
+					// verifica se está sem combustÃ­vel
 					if (jetpack.has_fuel() == false)
 					{
 						vel.zero();
@@ -1347,7 +1377,7 @@ class CPlayer: public CGameEntity
 					
 					// limita o movimento no eixo Y
 					if (pos.y > limit.y + limit.h) // se passou por baixo da tela
-						pos.y = limit.y - map->get_tilesize(); // volte lÃ¡ pra cima da fase
+						pos.y = limit.y - map->get_tilesize(); // volte lá pra cima da fase
 					else if (pos.y < limit.y - map->get_tilesize()) // se passar por cima
 						pos.y = limit.y - map->get_tilesize(); // mantenha a posição
 					
@@ -1374,13 +1404,13 @@ class CPlayer: public CGameEntity
 					curr_anim->update();
 					break;
 				
-				case STANDING_TREE: // parado na Ã¡rvore
+				case STANDING_TREE: // parado na árvore
 					if (left_key || right_key || up_key || down_key)
 					{
 						if (dir == RIGHT_PLAYER)
-							curr_anim = &anim[4]; // andando na Ã¡rvore para direita
+							curr_anim = &anim[4]; // andando na árvore para direita
 						else
-							curr_anim = &anim[10]; // andando na Ã¡rvore para esquerda
+							curr_anim = &anim[10]; // andando na árvore para esquerda
 						curr_anim->reset();
 						set_state(WALKING_TREE);
 						break;
@@ -1397,7 +1427,7 @@ class CPlayer: public CGameEntity
 					curr_anim->update();
 					break;
 
-				case WALKING_TREE: // andando na Ã¡rvore
+				case WALKING_TREE: // andando na árvore
 					if (!tree())
 					{
 						if (ground())
@@ -1443,9 +1473,9 @@ class CPlayer: public CGameEntity
 					if (!left_key && !right_key && !up_key && !down_key)
 					{
 						if (dir == RIGHT_PLAYER)
-							curr_anim = &anim[3]; // parado na Ã¡rvore para direita
+							curr_anim = &anim[3]; // parado na árvore para direita
 						else
-							curr_anim = &anim[9]; // parado na Ã¡rvore para esquerda
+							curr_anim = &anim[9]; // parado na árvore para esquerda
 						curr_anim->reset();
 						set_state(STANDING_TREE);
 						break;
@@ -1457,7 +1487,7 @@ class CPlayer: public CGameEntity
 						if (vel.x > 0)
 							vel.x = 0;
 						acc.x = -config.acc.x;
-						curr_anim = &anim[10]; // andando na Ã¡rvore para esquerda
+						curr_anim = &anim[10]; // andando na árvore para esquerda
 					}
 					else if (right_key)
 					{
@@ -1465,7 +1495,7 @@ class CPlayer: public CGameEntity
 						if (vel.x < 0)
 							vel.x = 0;
 						acc.x = config.acc.x;
-						curr_anim = &anim[4]; // andando na Ã¡rvore para direita
+						curr_anim = &anim[4]; // andando na árvore para direita
 					}
 					else
 					{
@@ -1575,9 +1605,9 @@ class CPlayer: public CGameEntity
 							acc.zero();
 							vel.zero();
 							if (dir == RIGHT_PLAYER)
-								curr_anim = &anim[3]; // parado na Ã¡rvore para direita
+								curr_anim = &anim[3]; // parado na árvore para direita
 							else
-								curr_anim = &anim[9]; // parado na Ã¡rvore para esquerda
+								curr_anim = &anim[9]; // parado na árvore para esquerda
 							curr_anim->reset();
 							set_state(STANDING_TREE);
 							break;
@@ -1651,9 +1681,9 @@ class CPlayer: public CGameEntity
 							acc.zero();
 							vel.zero();
 							if (dir == RIGHT_PLAYER)
-								curr_anim = &anim[3]; // parado na Ã¡rvore para direita
+								curr_anim = &anim[3]; // parado na árvore para direita
 							else
-								curr_anim = &anim[9]; // parado na Ã¡rvore para esquerda
+								curr_anim = &anim[9]; // parado na árvore para esquerda
 							curr_anim->reset();
 							set_state(STANDING_TREE);
 							break;
@@ -1724,7 +1754,7 @@ class CPlayer: public CGameEntity
 					
 					// limita o movimento no eixo Y
 					if (pos.y > limit.y + limit.h) // se passou por baixo da tela
-						pos.y = limit.y - map->get_tilesize(); // volte lÃ¡ pra cima da fase
+						pos.y = limit.y - map->get_tilesize(); // volte lá pra cima da fase
 					
 					process();
 					
@@ -1877,7 +1907,7 @@ class CPlayer: public CGameEntity
 					
 					// limita o movimento no eixo Y
 					if (pos.y > limit.y + limit.h) // se passou por baixo da tela
-						pos.y = limit.y - map->get_tilesize(); // volte lÃ¡ pra cima da fase
+						pos.y = limit.y - map->get_tilesize(); // volte lá pra cima da fase
 
 					if (pos.x > final_pos + c_point[0].x)
 					{

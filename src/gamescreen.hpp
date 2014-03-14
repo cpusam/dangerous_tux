@@ -367,7 +367,6 @@ class CGameScreen: public CStateMachine
 						any_key = 0;
 						enter_key = 0;
 						set_state(LOAD_GAME);
-						cout << "CGameScreen indo para LOAD_GAME\n";
 					}
 					break;
 				
