@@ -139,14 +139,13 @@ int main ( int argc, char **argv )
 						*/
 						#if USE_SDL2
 							#if _WIN32 || _WIN64 || __MINGW32__ || !__linux__
-								fullscreen ^= SDL_WINDOW_FULLSCREEN;
+								fullscreen ^= SDL_WINDOW_FULLSCREEN_DESKTOP;
 								SDL_SetWindowFullscreen(window, fullscreen);
 							#else
 								cout << "Fullscreen desativado para seu sistema, sorry!\n";
 							#endif
 						#endif
 					}
-						
 				}
 
 				gamescreen.input(event);

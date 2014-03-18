@@ -446,7 +446,7 @@ class CLevel: public CStateMachine
 						a.add_frame(map->texture, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
 						a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 4);
 					#endif
-					map->add_animation(a, 'q');
+					map->add_animation(a, 'q'); // jetpack
 
 					a.clear_frames();
 					#ifndef USE_SDL2
@@ -468,7 +468,7 @@ class CLevel: public CStateMachine
 						a.add_frame(map->texture, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
 						a.add_frame(map->texture, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
 					#endif
-					map->add_animation(a, 'r');
+					map->add_animation(a, 'r'); // arma laser
 					
 					a.clear_frames();
 					#ifndef USE_SDL2

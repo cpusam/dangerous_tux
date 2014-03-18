@@ -902,5 +902,34 @@ class CFlyerAlien: public CGameEntity
 		}
 };
 
+
+class CCircleAlien: public CGameEntity
+{
+	protected:
+		int dir;
+		bool touched_player;
+		SVect init_pos;
+		SVect c_point; // centro da animação
+		CPlayer * player;
+		CTileMap * map;
+		CAnimation * curr_anim;
+		vector <CAnimation> anim;
+	
+	public:
+		#ifndef USE_SDL2
+			CCircleAlien ( CPlayer * p, SVect i_p )
+		#else
+			CCircleAlien ( SDL_Renderer * r, CPlayer * p, SVect i_p )
+		#endif
+		{
+			dir = LEFT_ALIEN;
+			init_pos = i_p;
+			player = p;
+			map = player->get_map();
+			
+		}
+};
+
+
 #endif
 

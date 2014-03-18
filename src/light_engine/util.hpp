@@ -164,7 +164,7 @@
 		SDL_RenderFillRect(renderer, &d);
 	}
 
-	void draw_surface ( SDL_Texture * texture, int x, int y, CCamera * cam, SDL_Renderer * renderer )
+	void draw_texture ( SDL_Texture * texture, int x, int y, CCamera * cam, SDL_Renderer * renderer )
 	{
 		if (!texture)
 			return;
