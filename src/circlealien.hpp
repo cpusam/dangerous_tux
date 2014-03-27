@@ -85,7 +85,7 @@ class CCircleAlien: public CGameEntity
 					anim[i].surface = anim[0].surface;
 			#else
 				aux = IMG_Load(path);
-				SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, aux);
+				SDL_Texture * texture = SDL_CreateTextureFromSurface(r, aux);
 				if (!texture)
 					throw "CCircleAlien: não foi possível carregar circlealien.png\n";
 			#endif
@@ -161,10 +161,7 @@ class CCircleAlien: public CGameEntity
 					i_p = pos;
 					
 					if (player->get_pos().x < i_p.x)
-					{
 						dir_x = LEFT_ALIEN;
-						cout << "CircleAlien indo para LEFT_ALIEN\n";
-					}
 					else
 						dir_x = RIGHT_ALIEN;
 
@@ -552,44 +549,6 @@ class CCircleAlien: public CGameEntity
 					switch (dir)
 					{
 						case LEFT_ALIEN:
-							/*
-							acc.x = -config.circle_acc.x;
-							if (dir_y == DOWN_ALIEN) // se é para encostar na lateral de baixo
-								acc.y = config.circle_acc.y;
-							else if (dir_y == UP_ALIEN) // se é para encostar na lateral de cima
-								acc.y = -config.circle_acc.y;
-							
-							vel.x += acc.x;
-							if (vel.x > config.circle_vel_max.x)
-								vel.x = config.circle_vel_max.x;
-							else if (vel.x < -config.circle_vel_max.x)
-								vel.x = -config.circle_vel_max.x;
-							
-							coll_hor = collision_hor();
-							if (coll_hor == -1) // se tocou a lateral esquerda do alien
-							{
-								acc.zero();
-								vel.zero();
-								dir_x = LEFT_ALIEN;
-								if (dir_y == DOWN_ALIEN)
-									dir_y = UP_ALIEN;
-								else if (dir_y == UP_ALIEN)
-									dir_y = DOWN_ALIEN;
-								dir = dir_y;
-								break;
-							}
-							pos.x += vel.x;
-							
-							vel.y += acc.y;
-							if (vel.y > config.circle_vel_max.y)
-								vel.y = config.circle_vel_max.y;
-							else if (vel.y < -config.circle_vel_max.y)
-								vel.y = -config.circle_vel_max.y;
-							
-							coll_ver = collision_ver();
-							pos.x += vel.y;
-							*/
-							
 							acc.x = -config.circle_acc.x;
 							vel.x += acc.x;
 							if (vel.x > config.circle_vel_max.x)
@@ -601,7 +560,7 @@ class CCircleAlien: public CGameEntity
 							p.x = pos.x + dim.x;
 							p.y = pos.y + dim.y + dim.h/2;
 							
-							if (has_coll_tile(map->get_tile(p.x, p.y)))
+							if (pointbox(p, map->get_dimension()) && has_coll_tile(map->get_tile(p.x, p.y)))
 							{
 								acc.zero();
 								vel.zero();
@@ -631,7 +590,7 @@ class CCircleAlien: public CGameEntity
 								
 									dir_x = RIGHT_ALIEN;
 									dir = dir_y;
-									pos.x = x + (map->get_tilesize() - (dim.x + dim.w)) - 1;
+									pos.x = x + (map->get_tilesize() - (dim.x + dim.w));
 									pos.y = y + (map->get_tilesize() - (dim.y + dim.h));
 								}
 							}
@@ -649,8 +608,8 @@ class CCircleAlien: public CGameEntity
 								
 									dir_x = RIGHT_ALIEN;
 									dir = dir_y;
-									pos.x = x + (map->get_tilesize() - (dim.x + dim.w)) - 1;
-									pos.y = y - (dim.y + dim.h) + 1;
+									pos.x = x + (map->get_tilesize() - (dim.x + dim.w));
+									pos.y = y - dim.y;
 								}
 							}
 							break;
@@ -667,7 +626,7 @@ class CCircleAlien: public CGameEntity
 							pos.x += vel.x;
 							p.x = pos.x + dim.x + dim.w;
 							p.y = pos.y + dim.y + dim.h/2;
-							if (has_coll_tile(map->get_tile(p.x, p.y)))
+							if (pointbox(p, map->get_dimension()) && has_coll_tile(map->get_tile(p.x, p.y)))
 							{
 								acc.zero();
 								vel.zero();
@@ -732,7 +691,7 @@ class CCircleAlien: public CGameEntity
 							p.x = pos.x + dim.x + dim.w/2;
 							p.y = pos.y + dim.y + dim.h;
 							
-							if (has_coll_tile(map->get_tile(p.x, p.y)))
+							if (pointbox(p, map->get_dimension()) && has_coll_tile(map->get_tile(p.x, p.y)))
 							{
 								acc.zero();
 								vel.zero();
@@ -778,7 +737,7 @@ class CCircleAlien: public CGameEntity
 
 									dir_y = UP_ALIEN;
 									dir = dir_x;
-									pos.x = x + (map->get_tilesize() - (dim.x + dim.w)) - 1;
+									pos.x = x + (map->get_tilesize() - (dim.x + dim.w));
 									pos.y = y - dim.y;
 								}
 							}
@@ -797,7 +756,7 @@ class CCircleAlien: public CGameEntity
 							p.x = pos.x + dim.x + dim.w/2;
 							p.y = pos.y + dim.y;
 							
-							if (has_coll_tile(map->get_tile(p.x, p.y)))
+							if (pointbox(p, map->get_dimension()) && has_coll_tile(map->get_tile(p.x, p.y)))
 							{
 								acc.zero();
 								vel.zero();
