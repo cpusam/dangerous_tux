@@ -282,8 +282,6 @@ class CCircleAlien: public CGameEntity
 			#ifndef USE_SDL2
 				if (curr_anim)
 					curr_anim->draw(pos.x, pos.y, cam, screen);
-				SDL_Rect d = {pos.x + dim.x, pos.y + dim.y, dim.w, dim.h};
-				fill_rect(cam, screen, SDL_MapRGB(screen->format, 255, 0,0), d);
 			#else
 				if (curr_anim)
 					curr_anim->draw(pos.x, pos.y, cam, renderer);

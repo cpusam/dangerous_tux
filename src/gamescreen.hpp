@@ -162,8 +162,8 @@ class CGameScreen: public CStateMachine
 			
 			any_key = enter_key = pause_key = 0;
 			credits.reset();
-			//set_state(CREDITS_SCREEN); // tela de créditos
-			set_state(LOAD_GAME);
+			set_state(CREDITS_SCREEN); // tela de créditos
+			//set_state(LOAD_GAME);
 		}
 		
 		~CGameScreen (  )
