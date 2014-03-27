@@ -544,7 +544,7 @@ class CPlayer: public CGameEntity
 				{
 					if (i < 2)
 					{
-						// colisão Ã  direita
+						// colisão à direita
 						p = int(pos.x + c_point[i].x + vel.x) / map->get_tilesize();
 						p *= map->get_tilesize();
 						pos.x = p - c_point[i].x - 1;
@@ -553,7 +553,7 @@ class CPlayer: public CGameEntity
 					}
 					else
 					{
-						// colisão Ã  esquerda
+						// colisão à esquerda
 						p = int(pos.x + c_point[i].x + vel.x) / map->get_tilesize();
 						p += 1;
 						p *= map->get_tilesize();
@@ -564,7 +564,7 @@ class CPlayer: public CGameEntity
 				}
 			}
 
-			return 0;
+			return ret;
 		}
 				
 		int collision_ver (  )

@@ -6,7 +6,9 @@
 
 #include "gameentity.hpp"
 #include "player.hpp"
-#include "aliens.hpp"
+#include "walkeralien.hpp"
+#include "flyeralien.hpp"
+#include "circlealien.hpp"
 #include "gamesignal.hpp"
 
 enum ELevelState
@@ -173,6 +175,8 @@ class CLevel: public CStateMachine
 		{
 			widget->input(event);
 			player->input(event);
+			for (int i(0); i < aliens.size(); i++)
+				aliens[i]->input(event);
 		}
 	
 		int update (  )
@@ -351,6 +355,18 @@ class CLevel: public CStateMachine
 							#endif
 							aliens.push_back(flyer);
 							player->gun.shot.add_target(flyer);
+						}
+						else if (tile >= 'A' && tile <= 'D')
+						{
+							SVect p;
+							p.x = (i % map->get_width()) * map->get_tilesize();
+							p.y = (i / map->get_width()) * map->get_tilesize();
+							#ifndef USE_SDL2
+								CGameEntity * circle = new CCircleAlien(player, p, tile);
+							#else
+								CGameEntity * circle = new CCircleAlien(renderer, player, p, tile);
+							#endif
+							aliens.push_back(circle);
 						}
 						else if (tile == 'K')
 						{

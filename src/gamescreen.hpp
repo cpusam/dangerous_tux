@@ -92,10 +92,10 @@ class CGameScreen: public CStateMachine
 			#endif
 			
 			if (!player)
-				throw "CGameScreen: player Ã© nulo\n";
+				throw "CGameScreen: player é nulo\n";
 				
 			if (!cam)
-				throw "CGameScreen: cam Ã© nulo\n";
+				throw "CGameScreen: cam é nulo\n";
 
 			// pre seta a transição
 			#ifndef USE_SDL2
@@ -162,7 +162,8 @@ class CGameScreen: public CStateMachine
 			
 			any_key = enter_key = pause_key = 0;
 			credits.reset();
-			set_state(CREDITS_SCREEN); // tela de crÃ©ditos
+			//set_state(CREDITS_SCREEN); // tela de créditos
+			set_state(LOAD_GAME);
 		}
 		
 		~CGameScreen (  )
