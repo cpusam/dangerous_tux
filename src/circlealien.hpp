@@ -568,9 +568,17 @@ class CCircleAlien: public CGameEntity
 								int y = (int(p.y) / map->get_tilesize()) * map->get_tilesize();
 								
 								pos.x = x - dim.x;
-								pos.y = y + (map->get_tilesize() - (dim.y + dim.h));
+								if (dir_y == DOWN_ALIEN)
+								{
+									pos.y = y + (map->get_tilesize() - (dim.y + dim.h));
+									dir_y = UP_ALIEN;
+								}
+								else if (dir_y == UP_ALIEN)
+								{
+									pos.y = y - dim.y;
+									dir_y = DOWN_ALIEN;
+								}
 								
-								dir_y = UP_ALIEN;
 								dir_x = LEFT_ALIEN;
 								dir = dir_y;
 								break;
@@ -587,7 +595,6 @@ class CCircleAlien: public CGameEntity
 									int x = (int(p.x) / map->get_tilesize()) * map->get_tilesize();
 									int y = (int(p.y) / map->get_tilesize()) * map->get_tilesize();
 
-								
 									dir_x = RIGHT_ALIEN;
 									dir = dir_y;
 									pos.x = x + (map->get_tilesize() - (dim.x + dim.w));
@@ -605,7 +612,6 @@ class CCircleAlien: public CGameEntity
 									int x = (int(p.x) / map->get_tilesize()) * map->get_tilesize();
 									int y = (int(p.y) / map->get_tilesize()) * map->get_tilesize();
 
-								
 									dir_x = RIGHT_ALIEN;
 									dir = dir_y;
 									pos.x = x + (map->get_tilesize() - (dim.x + dim.w));
@@ -634,9 +640,17 @@ class CCircleAlien: public CGameEntity
 								int y = (int(p.y) / map->get_tilesize()) * map->get_tilesize();
 								
 								pos.x = x + (map->get_tilesize() - (dim.x + dim.w));
-								pos.y = y - dim.y;
+								if (dir_y == DOWN_ALIEN)
+								{
+									pos.y = y + (map->get_tilesize() - (dim.y + dim.h));
+									dir_y = UP_ALIEN;
+								}
+								else if (dir_y == UP_ALIEN)
+								{
+									pos.y = y - dim.y;
+									dir_y = DOWN_ALIEN;
+								}
 								
-								dir_y = DOWN_ALIEN;
 								dir_x = RIGHT_ALIEN;
 								dir = dir_y;
 								break;
@@ -698,10 +712,18 @@ class CCircleAlien: public CGameEntity
 								int x = (int(p.x) / map->get_tilesize()) * map->get_tilesize();
 								int y = (int(p.y) / map->get_tilesize() - 1) * map->get_tilesize();
 								
-								pos.x = x + (map->get_tilesize() - (dim.x + dim.w));
+								if (dir_x == LEFT_ALIEN)
+								{
+									pos.x = x - dim.x;
+									dir_x = RIGHT_ALIEN;
+								}
+								else if (dir_x == RIGHT_ALIEN)
+								{
+									pos.x = x + (map->get_tilesize() - (dim.x + dim.w));
+									dir_x = LEFT_ALIEN;
+								}
 								pos.y = y + (map->get_tilesize() - (dim.y + dim.h));
-								
-								dir_x = LEFT_ALIEN;
+
 								dir_y = DOWN_ALIEN;
 								dir = dir_x;
 								break;
@@ -763,10 +785,18 @@ class CCircleAlien: public CGameEntity
 								int x = (int(p.x) / map->get_tilesize()) * map->get_tilesize();
 								int y = (int(p.y) / map->get_tilesize() + 1) * map->get_tilesize();
 								
-								pos.x = x - dim.x;
+								if (dir_x == LEFT_ALIEN)
+								{
+									pos.x = x - dim.x;
+									dir_x = RIGHT_ALIEN;
+								}
+								else if (dir_x == RIGHT_ALIEN)
+								{
+									pos.x = x + (map->get_tilesize()  - (dim.x + dim.w));
+									dir_x = LEFT_ALIEN;
+								}
 								pos.y = y - dim.y;
 								
-								dir_x = RIGHT_ALIEN;
 								dir_y = UP_ALIEN;
 								dir = dir_x;
 								break;
