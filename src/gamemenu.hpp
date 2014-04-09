@@ -23,10 +23,361 @@ class CLabelCamera: public CLabel
 		#endif
 };
 
+class COption: public CWidget
+{
+	protected:
+		void (* callback) ( CWidget * b );
+		CLabel * label[3]; // 
+	
+	public:
+		COption ( string s, SDL_Color c[3], void (* cb) ( CWidget * b ) )
+		{
+			set_id(s);
+			callback = cb;
+			
+			label[0] = new CLabel(s, c[0]);
+			label[1] = new CLabel(s, c[1]);
+			label[2] = new CLabel(s, c[2]);
+			
+			add_child(label[0]);
+			add_child(label[1]);
+			add_child(label[2]);
+			set_dim(label[0]->get_dim());
+			set_state(1);
+		}
+		
+		~COption (  )
+		{
+			clear_child();
+			
+			delete label[0];
+			delete label[1];
+			delete label[2];
+		}
+		
+		int update (  )
+		{
+			switch (get_state())
+			{
+				case 1: // normal
+					label[0]->show(true);
+					label[1]->show(false);
+					label[2]->show(false);
+					break;
+					
+				case 2: // selecionado
+					label[0]->show(false);
+					label[1]->show(true);
+					label[2]->show(false);
+					break;
+					
+				case 3: // pressionado
+					label[0]->show(false);
+					label[1]->show(false);
+					label[2]->show(true);
+					break;
+					
+				case 4: // solto depois de pressionado
+					if (callback)
+						callback(this);
+					set_state(5);
+					break;
+				
+				case 5:
+					set_state(1);
+					break;
+					
+				default:
+					label[0]->show(true);
+					label[1]->show(false);
+					label[2]->show(false);
+					set_state(1);
+					break;
+			}
+			
+			return get_state();
+		}
+		
+		#ifndef USE_SDL2
+			void draw ( SDL_Surface * screen )
+			{
+				switch (get_state())
+				{
+					case 1:
+						label[0]->draw(screen);
+						break;
+					case 2:
+						label[1]->draw(screen);
+						break;
+					case 3:
+						label[2]->draw(screen);
+						break;
+					default:
+						label[0]->draw(screen);
+						break;
+				}
+			}
+		#else
+			void draw ( SDL_Renderer * renderer )
+			{
+				switch (get_state())
+				{
+					case 1:
+						label[0]->draw(renderer);
+						break;
+					case 2:
+						label[1]->draw(renderer);
+						break;
+					case 3:
+						label[2]->draw(renderer);
+						break;
+					default:
+						label[0]->draw(renderer);
+						break;
+				}
+			}
+		#endif
+};
+
+void option_callback ( CWidget * w )
+{
+}
+
+class CGameOptions: public CWidget
+{
+	protected:
+		COption * option[3];
+		COption * curr_option; // opção atual
+		CSaveGame * save[3]; // profiles de saves atuais
+		CSaveGame * curr_save; // profile atual sendo usado
+
+	public:
+		CGameOptions ( CSaveGame * s[3], void (* cb) ( CWidget * b ) )
+		{
+			#if _WIN32 || _WIN64 || __MINGW32__
+				char path[FILENAME_MAX];
+				char p2[FILENAME_MAX];
+				_getcwd(p2, sizeof(p2));
+				#ifndef PREFIX
+					sprintf(path, "%s\\fonts\\inhouseedition.ttf", p2);
+				#else
+					sprintf(path, "%s\\dangeroustux\\fonts\\inhouseedition.ttf", PREFIX);
+				#endif
+			#else
+				char path[1024];
+				#ifndef PREFIX
+					sprintf(path, "./fonts/inhouseedition.ttf");
+				#else
+					sprintf(path, "%s/share/games/dangeroustux/fonts/inhouseedition.ttf", PREFIX);
+				#endif
+			#endif
+
+			if (CWriter::instance()->set_font(path, 80) == 0)
+				throw "CGameOptions: não foi possí­vel carregar fonte\n";
+			
+			save[0] = s[0];
+			save[1] = s[1];
+			save[2] = s[2];
+			curr_save = save[0];
+			SSaveData data;
+			char str[256];
+			SDL_Color color[3] = {
+				{255,255,  0,255}, // normal
+				{  0,  0,255,255}, // selecionado
+				{255,  0,  0,255}  // apertando enter ou delete
+			};
+
+			if (save[0]->was_loaded())
+			{
+				data = save[0]->get_data();
+				sprintf(str, "LEVEL: %s - SCORE: %s", data.curr_level, data.score);
+			}
+			else
+			{
+				sprintf(str, "NEW GAME");
+			}
+			option[0] = new COption(str, color, cb);
+			
+			if (save[1]->was_loaded())
+			{
+				data = save[1]->get_data();
+				sprintf(str, "LEVEL: %s - SCORE: %s", data.curr_level, data.score);
+			}
+			else
+			{
+				sprintf(str, "NEW GAME");
+			}
+			option[1] = new COption(str, color, cb);
+			
+			if (save[2]->was_loaded())
+			{
+				data = save[2]->get_data();
+				sprintf(str, "LEVEL: %s - SCORE: %s", data.curr_level, data.score);
+			}
+			else
+			{
+				sprintf(str, "NEW GAME");
+			}
+			option[2] = new COption(str, color, cb);
+			
+			curr_option = option[0];
+			curr_option->set_state(2);
+			
+			option[0]->set_rel_pos(SVect(0,0));
+			option[1]->set_rel_pos(SVect(0,option[0]->get_dim().h));
+			option[2]->set_rel_pos(SVect(0,option[0]->get_dim().h * 2));
+			
+			SDL_Rect d;
+			d = option[0]->get_dim();
+			cout << "CGameOptions: dim[0] = {" << d.x << "," << d.y << "," << d.w << "," << d.h << endl;
+			d = option[1]->get_dim();
+			cout << "CGameOptions: dim[1] = {" << d.x << "," << d.y << "," << d.w << "," << d.h << endl;
+			d = option[2]->get_dim();
+			cout << "CGameOptions: dim[2] = {" << d.x << "," << d.y << "," << d.w << "," << d.h << endl;
+			
+			add_child(option[0]);
+			add_child(option[1]);
+			add_child(option[2]);
+			set_pos(SVect(960/2, 624/2));
+			show(false);
+			set_state(0);
+		}
+		
+		~CGameOptions (  )
+		{
+			clear_child();
+			
+			delete option[0];
+			delete option[1];
+			delete option[2];
+		}
+		
+		COption * get_curr_option (  )
+		{
+			return curr_option;
+		}
+		
+		CSaveGame * get_curr_save (  )
+		{
+			return curr_save;
+		}
+		
+		void input ( SDL_Event & event )
+		{
+			if (get_state() == 1)
+				if (event.type == SDL_KEYDOWN)
+					switch (event.key.keysym.sym)
+					{
+						case SDLK_DOWN:
+							if (curr_option == option[0])
+							{
+								curr_option->set_state(1);
+								curr_option = option[1];
+								curr_option->set_state(2);
+							}
+							else if (curr_option == option[1])
+							{
+								curr_option->set_state(1);
+								curr_option = option[2];
+								curr_option->set_state(2);
+							}
+							else if (curr_option == option[2])
+							{
+								curr_option->set_state(1);
+								curr_option = option[0];
+								curr_option->set_state(2);
+							}
+							break;
+					
+						case SDLK_UP:
+							if (curr_option == option[0])
+							{
+								curr_option->set_state(1);
+								curr_option = option[2];
+								curr_option->set_state(2);
+							}
+							else if (curr_option == option[1])
+							{
+								curr_option->set_state(1);
+								curr_option = option[0];
+								curr_option->set_state(2);
+							}
+							else if (curr_option == option[2])
+							{
+								curr_option->set_state(1);
+								curr_option = option[1];
+								curr_option->set_state(2);
+							}
+							break;
+					
+						case SDLK_DELETE: // apaga o profile antigo
+							if (curr_option == option[0])
+							{
+								save[0]->erase_profile();
+							}
+							else if (curr_option == option[1])
+							{
+								save[1]->erase_profile();
+							}
+							else if (curr_option == option[2])
+							{
+								save[2]->erase_profile();
+							}
+							break;
+					
+						case SDLK_RETURN:
+						case SDLK_KP_ENTER:
+							if (curr_option == option[0])
+							{
+								curr_save = save[0];
+							}
+							else if (curr_option == option[1])
+							{
+								curr_save = save[1];
+							}
+							else if (curr_option == option[2])
+							{
+								curr_save = save[2];
+							}
+							break;
+					
+						default:
+							break;
+					}
+		}
+		
+		int update (  )
+		{
+			option[0]->update();
+			option[1]->update();
+			option[2]->update();
+			
+			return get_state();
+		}
+		
+		
+		#ifndef USE_SDL2
+			void draw ( SDL_Surface * screen )
+			{
+				if (is_visible())
+					for (int i(0); i < 3; i++)
+						option[i]->draw(screen);
+			}
+		#else
+			void draw ( SDL_Renderer * renderer )
+			{
+				if (is_visible())
+					for (int i(0); i < 3; i++)
+						option[i]->draw(renderer);
+			}
+		#endif
+};
+
 enum CGameMenuState
 {
 	INIT_GAMEMENU,
 	RUNNING_GAMEMENU,
+	OPTION_MENU,
 	END_GAMEMENU
 };
 
@@ -46,12 +397,14 @@ class CGameMenu: public CStateMachine
 		#else
 			SDL_Renderer * renderer;
 		#endif
+	public:
+		CGameOptions options;
 		
 	public:
 		#ifndef USE_SDL2
-			CGameMenu ( SDL_Surface * s, CPlayer * p, int ts )
+			CGameMenu ( SDL_Surface * s, CPlayer * p, int ts, CSaveGame * save[3] ): options(save, option_callback)
 		#else
-			CGameMenu ( SDL_Renderer * r, CPlayer * p, int ts )
+			CGameMenu ( SDL_Renderer * r, CPlayer * p, int ts, CSaveGame * save[3] ): options(save, option_callback)
 		#endif
 		{
 			map = new CTileMapView(ts);
@@ -94,28 +447,29 @@ class CGameMenu: public CStateMachine
 		
 		~CGameMenu (  )
 		{
-			if (cam)
-				delete cam;
-		
-			if (map)
-				delete map;
-			
-			if (bg)
-				delete bg;
-			
-			if (controls)
-				delete controls;
-			
-			if (climbtree)
-				delete climbtree;
-			
-			if (tools)
-				delete tools;
+			delete cam;
+			delete map;
+			delete bg;
+			delete controls;
+			delete climbtree;
+			delete tools;
 		}
 		
 		void input ( SDL_Event & event )
 		{
-			player->input(event);
+			switch (get_state())
+			{
+				case RUNNING_GAMEMENU:
+					player->input(event);
+					break;
+				
+				case OPTION_MENU:
+					options.input(event);
+					break;
+				
+				default:
+					break;
+			}
 		}
 		
 		void reset (  )
@@ -134,18 +488,27 @@ class CGameMenu: public CStateMachine
 			{
 				if (get_state() == INIT_GAMEMENU)
 					return;
-
-				bg->draw(cam, screen);
-				map->draw(cam, screen);
-				player->gun.draw(cam, screen);
-				player->draw(cam, screen);
 				
-				if (controls->is_visible())
-					controls->draw(cam, screen);
-				else if (climbtree->is_visible())
-					climbtree->draw(cam, screen);
-				else if (tools->is_visible())
-					tools->draw(cam, screen);
+				if (get_state() == RUNNING_GAMEMENU)
+				{
+					bg->draw(cam, screen);
+					map->draw(cam, screen);
+					player->gun.draw(cam, screen);
+					player->draw(cam, screen);
+				
+					if (controls->is_visible())
+						controls->draw(cam, screen);
+					else if (climbtree->is_visible())
+						climbtree->draw(cam, screen);
+					else if (tools->is_visible())
+						tools->draw(cam, screen);
+				}
+				else if (get_state() == OPTION_MENU)
+				{
+					bg->draw(cam, screen);
+					map->draw(cam, screen);
+					options.draw(screen);
+				}
 			}
 		#else
 			void draw (  )
@@ -153,17 +516,26 @@ class CGameMenu: public CStateMachine
 				if (get_state() == INIT_GAMEMENU)
 					return;
 				
-				bg->draw(cam, renderer);
-				map->draw(cam, renderer);
-				player->gun.draw(cam, renderer);
-				player->draw(cam, renderer);
+				if (get_state() == RUNNING_GAMEMENU)
+				{
+					bg->draw(cam, renderer);
+					map->draw(cam, renderer);
+					player->gun.draw(cam, renderer);
+					player->draw(cam, renderer);
 				
-				if (controls->is_visible())
-					controls->draw(cam, renderer);
-				else if (climbtree->is_visible())
-					climbtree->draw(cam, renderer);
-				else if (tools->is_visible())
-					tools->draw(cam, renderer);
+					if (controls->is_visible())
+						controls->draw(cam, renderer);
+					else if (climbtree->is_visible())
+						climbtree->draw(cam, renderer);
+					else if (tools->is_visible())
+						tools->draw(cam, renderer);
+				}
+				else if (get_state() == OPTION_MENU)
+				{
+					bg->draw(cam, renderer);
+					map->draw(cam, renderer);
+					options.draw(renderer);
+				}
 			}
 		#endif
 		
@@ -518,7 +890,21 @@ class CGameMenu: public CStateMachine
 						}
 					}
 					else
+					{
+						options.set_state(1);
+						options.show(true);
+						set_state(OPTION_MENU);
+					}
+					break;
+				
+				case OPTION_MENU:
+					options.update();
+					if (options.get_curr_option()->get_state() == 5)
+					{
+						options.set_state(0);
+						options.show_child(false);
 						set_state(END_GAMEMENU);
+					}
 					break;
 
 				case END_GAMEMENU:

@@ -50,14 +50,14 @@ class CGameScreen: public CStateMachine
 		CPlayer * player;
 		int any_key, enter_key, pause_key;
 		int tilesize;
-		
+
+		CSaveGame * save[3];		
 		CGameOver gameover;
 		CGameTitle title;
 		CGameCredits credits;
 		CGameIntroduction introduction;
-		CGameMenu menu;
+		CGameMenu * menu;
 		CGameTransition transition;
-		CSaveGame save;
 		CHighScore highscore;
 		CWidget widget;
 		CLabel * pause;
@@ -67,9 +67,9 @@ class CGameScreen: public CStateMachine
 
 	public:
 		#ifndef USE_SDL2
-			CGameScreen ( SDL_Surface * s, CCamera * c, CPlayer * p, int ts ): menu(s, p, ts)
+			CGameScreen ( SDL_Surface * s, CCamera * c, CPlayer * p, int ts )
 		#else
-			CGameScreen ( SDL_Window * w, SDL_Renderer * r, CCamera * c, CPlayer * p, int ts ): gameover(r), highscore(r), title(r), credits(r), transition(r), introduction(r), menu(r, p, ts)
+			CGameScreen ( SDL_Window * w, SDL_Renderer * r, CCamera * c, CPlayer * p, int ts ): gameover(r), highscore(r), title(r), credits(r), transition(r), introduction(r)
 		#endif
 		{
 			curr_level = -1;
@@ -160,6 +160,19 @@ class CGameScreen: public CStateMachine
 			widget.show();
 			widget.show_child(false);
 			
+			save[0] = new CSaveGame("DT_save1");
+			save[0]->load();
+			save[1] = new CSaveGame("DT_save2");
+			save[1]->load();
+			save[2] = new CSaveGame("DT_save3");
+			save[2]->load();
+			
+			#ifndef USE_SDL2
+				menu = new CGameMenu(screen, player, tilesize, save);
+			#else
+				menu = new CGameMenu(renderer, player, tilesize, save);
+			#endif
+			
 			any_key = enter_key = pause_key = 0;
 			credits.reset();
 			set_state(CREDITS_SCREEN); // tela de créditos
@@ -198,7 +211,7 @@ class CGameScreen: public CStateMachine
 			if (get_state() == MAIN_LOOP || get_state() == PAUSE_SCREEN)
 				levels[curr_level]->input(event);
 			else if (get_state() == GAMEMENU_SCREEN)
-				menu.input(event);
+				menu->input(event);
 			
 			if (event.type == SDL_KEYDOWN)
 			{
@@ -304,7 +317,7 @@ class CGameScreen: public CStateMachine
 					break;
 				
 				case GAMEMENU_SCREEN:
-					menu.draw();
+					menu->draw();
 					break;
 
 				case TRANSITION:
@@ -354,7 +367,7 @@ class CGameScreen: public CStateMachine
 				case TITLE_SCREEN:
 					if (enter_key)
 					{
-						menu.reset();
+						menu->reset();
 						set_state(GAMEMENU_SCREEN);
 						break;
 					}
@@ -363,7 +376,7 @@ class CGameScreen: public CStateMachine
 					break;
 				
 				case GAMEMENU_SCREEN:
-					if (menu.update() == END_GAMEMENU)
+					if (menu->update() == END_GAMEMENU)
 					{
 						any_key = 0;
 						enter_key = 0;
@@ -385,9 +398,9 @@ class CGameScreen: public CStateMachine
 					break;
 				
 				case LOAD_GAME:
-					if (save.load()) // se conseguir carregar
+					if (menu->options.get_curr_save()->load()) // se conseguir carregar
 					{
-						SSaveData d = save.get_data();
+						SSaveData d = menu->options.get_curr_save()->get_data();
 						int aux[3];
 						SDL_memset(aux, 0x0, sizeof(aux));
 						sscanf(d.curr_level, "%d", &curr_level);
@@ -422,7 +435,7 @@ class CGameScreen: public CStateMachine
 							sprintf(d.lives, "%d", player->get_lives());
 							sprintf(d.score, "%d", player->score.get_score());
 							sprintf(d.score_aux, "%d", player->score.get_score_aux());
-							save.save(d);
+							menu->options.get_curr_save()->save(d);
 							cout << "CGameScreen salvando jogo\n";
 
 							transition.set_bg(levels[curr_level]->get_bg_path());

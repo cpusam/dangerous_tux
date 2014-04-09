@@ -3,13 +3,21 @@
 
 #ifndef USE_SDL2
 	#include <SDL/SDL.h>
-	#include <SDL/SDL_ttf.h>
-	#include <SDL/SDL_mixer.h>
+	#ifndef LIGHT_NO_GUI
+		#include <SDL/SDL_ttf.h>
+	#endif
+	#ifndef LIGHT_NO_SOUND
+		#include <SDL/SDL_mixer.h>
+	#endif
 	#include <SDL/SDL_image.h>
 #else
 	#include <SDL2/SDL.h>
-	#include <SDL2/SDL_ttf.h>
-	#include <SDL2/SDL_mixer.h>
+	#ifndef LIGHT_NO_GUI
+		#include <SDL2/SDL_ttf.h>
+	#endif
+	#ifndef LIGHT_NO_SOUND
+		#include <SDL2/SDL_mixer.h>
+	#endif
 	#include <SDL2/SDL_image.h>
 #endif
 
@@ -32,15 +40,18 @@ using namespace std;
 #include "movable.hpp"
 #include "util.hpp"
 
-// módulo de gui
-#include "gui/writer.hpp"
-#include "gui/widget.hpp"
-#include "gui/label.hpp"
-#include "gui/button.hpp"
-#include "gui/bar.hpp"
+#ifndef LIGHT_NO_GUI
+	// módulo de gui
+	#include "gui/writer.hpp"
+	#include "gui/widget.hpp"
+	#include "gui/label.hpp"
+	#include "gui/button.hpp"
+	#include "gui/bar.hpp"
+#endif
 
-// módulo de som
-#include "sound/soundplayer.hpp"
-
+#ifndef LIGHT_NO_SOUND
+	// módulo de som
+	#include "sound/soundplayer.hpp"
+#endif
 #endif
 

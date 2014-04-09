@@ -7,7 +7,7 @@ class CWidget: public CStateMachine
 {
 	protected:
 		string id; // identificação do widget
-		SVect pos; // posição geral no screen
+		SVect pos; // posição absoluta no screen
 		SVect rel_pos; // posição relativa ao widget pai
 		SDL_Rect dim; // dimensão, dim.x e dim.y posição no screen
 		bool visible; // só recebe eventos se estiver visível
@@ -36,7 +36,7 @@ class CWidget: public CStateMachine
 			for (int i(0); i < w.child.size(); i++)
 				child[i] = w.get_child(i);
 		}
-		
+		/*
 		CWidget & operator = ( CWidget & w )
 		{
 			if (this == &w)
@@ -54,6 +54,7 @@ class CWidget: public CStateMachine
 			
 			return *this;
 		}
+		*/
 		
 		void set_id ( string new_id )
 		{
@@ -67,18 +68,14 @@ class CWidget: public CStateMachine
 		
 		void set_pos ( SVect p )
 		{
-			SDL_Rect d;
+			if (pos.x == p.x && pos.y == p.y)
+				return;
 
 			pos = p;
 			dim.x = int(p.x), dim.y = int(p.y);
-			for (int i(0); i < child.size(); i++)
-			{
-				child[i]->set_pos(child[i]->get_rel_pos() + pos);
-				d = child[i]->get_dim();
-				d.x = int(child[i]->get_pos().x);
-				d.y = int(child[i]->get_pos().y);
-				child[i]->set_dim(d);
-			}
+			
+			for (vector <CWidget *>::iterator i = child.begin(); i != child.end(); i++)
+				(*i)->set_pos((*i)->get_rel_pos() + pos);
 		}
 		
 		SVect get_pos (  )
@@ -88,13 +85,27 @@ class CWidget: public CStateMachine
 			
 		void set_rel_pos ( SVect p )
 		{
+			if (rel_pos.x == p.x && rel_pos.y == p.y)
+				return;
+
+			rel_pos = p;
+			
 			if (parent)
 			{
-				rel_pos = p;
-				//pos += p;
-				dim.x = int(parent->get_pos().x + rel_pos.x);
-				dim.y = int(parent->get_pos().y + rel_pos.y);
+				pos.x = parent->get_pos().x + rel_pos.x;
+				pos.y = parent->get_pos().y + rel_pos.y;
+				dim.x = int(pos.x);
+				dim.y = int(pos.y);
 			}
+			else
+			{
+				dim.x = int(rel_pos.x);
+				dim.y = int(rel_pos.y);
+				pos = rel_pos;
+			}
+			
+			for (vector <CWidget *>::iterator i = child.begin(); i != child.end(); i++)
+				(*i)->set_pos((*i)->get_rel_pos() + pos);
 		}
 		
 		SVect get_rel_pos (  )
@@ -104,8 +115,8 @@ class CWidget: public CStateMachine
 		
 		void set_dim ( SDL_Rect d )
 		{
-			d.x = pos.x;
-			d.y = pos.y;
+			d.x = int(pos.x + rel_pos.x);
+			d.y = int(pos.y + rel_pos.y);
 			dim = d;
 		}
 		
@@ -114,7 +125,7 @@ class CWidget: public CStateMachine
 			return dim;
 		}
 		
-		void show ( bool s = true )
+		void show ( bool s=true )
 		{
 			visible = s;
 			show_child(s);
@@ -148,8 +159,9 @@ class CWidget: public CStateMachine
 		
 		void show_child ( bool s=true )
 		{
-			for (vector <CWidget *>::iterator i = child.begin(); i != child.end(); i++)
-				(*i)->show(s);
+			if (visible)
+				for (vector <CWidget *>::iterator i = child.begin(); i != child.end(); i++)
+					(*i)->show(s);
 		}
 		
 		bool add_child ( CWidget * w )

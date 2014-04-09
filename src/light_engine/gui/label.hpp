@@ -24,6 +24,7 @@ class CLabel: public CWidget
 				texture = 0;
 			#endif
 		}
+
 	public:
 		CLabel ( string s, SDL_Color c )
 		{
@@ -34,10 +35,16 @@ class CLabel: public CWidget
 			#else
 				texture = 0;
 			#endif
+			/*
 			if (s != "")
 				set_str(s);
 			else
 				str = "";
+			*/
+			if (s == "")
+				s = " ";
+			
+			set_str(s);
 		}
 		
 		~CLabel (  )

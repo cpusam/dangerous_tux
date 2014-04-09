@@ -25,6 +25,8 @@ class CSaveGame
 {
 	private:
 		SSaveData data;
+		string filename;
+		bool loaded;
 		#if _WIN32 || _WIN64 || __MINGW32__
 			char path[FILENAME_MAX];
 		#else
@@ -32,21 +34,22 @@ class CSaveGame
 		#endif
 
 	public:
-		CSaveGame ( )
+		CSaveGame ( string fn )
 		{
+			filename = fn;
 			#if _WIN32 || _WIN64 || __MINGW32__
 				#ifndef PREFIX
 					char p2[FILENAME_MAX];
 					_getcwd(p2, sizeof(p2));
-					sprintf(path, "%s\\DT_save", p2);
+					sprintf(path, "%s\\%s", p2, filename.c_str());
 				#else
-					sprintf(path, "%s\\dangeroustux\\DT_save", PREFIX);
+					sprintf(path, "%s\\dangeroustux\\%s", PREFIX, filename.c_str());
 				#endif
 			#else
 				#ifndef PREFIX
-					sprintf(path, "DT_save");
+					sprintf(path, "%s", filename.c_str());
 				#else
-					sprintf(path, "%s/DT_save", getenv("HOME"));
+					sprintf(path, "%s/%s", getenv("HOME"), filename.c_str());
 				#endif
 			#endif
 		}
@@ -56,6 +59,24 @@ class CSaveGame
 			return data;
 		}
 		
+		string get_filename (  )
+		{
+			return filename;
+		}
+		
+		bool was_loaded (  )
+		{
+			return loaded;
+		}
+		
+		void erase_profile (  )
+		{
+			if (remove(path) == -1)
+				cout << "CSaveGame: não foi possível deletar " << filename << endl;
+			else
+				cout << "CSaveGame: profile " << filename << " deletado.\n";
+		}
+		
 		bool load (  )
 		{
 			FILE * file = fopen(path, "rb");
@@ -63,6 +84,7 @@ class CSaveGame
 			if (!file)
 			{
 				cout << "CSaveGame: Não abriu " << path << endl;
+				loaded = false;
 				return false;
 			}
 			
@@ -70,10 +92,12 @@ class CSaveGame
 			{
 				cout << "CSaveGame: segunda não leu " << path << endl;
 				fclose(file);
+				loaded = false;
 				return false;
 			}
 			
 			fclose(file);
+			loaded = true;
 			return true;
 		}
 		

@@ -55,6 +55,7 @@ class CGameCredits: public CStateMachine
 			CLabel * ps = new CLabel("SAMUEL LEONARDO", (SDL_Color){255,255,0,0});
 			widget.add_child(ps);
 			
+			widget.set_pos(SVect(960/2,624/2));
 			#ifndef USE_SDL2
 				int h = g->get_surface()->h + gg->get_surface()->h + p->get_surface()->h + ps->get_surface()->h;
 				g->set_rel_pos(SVect(-(g->get_surface()->w/2), -h/2));
@@ -69,8 +70,6 @@ class CGameCredits: public CStateMachine
 				ps->set_rel_pos(SVect(-(ps->get_texture_width()/2), p->get_texture_height() + p->get_rel_pos().y));
 			#endif
 			
-			
-			widget.set_pos(SVect(960/2, 624/2));
 			#ifndef USE_SDL2
 				anim.add_frame((SDL_Rect){0,0,0,0}, 250);
 			#else
