@@ -30,7 +30,7 @@ class COption: public CWidget
 		CLabel * label[3]; // 
 	
 	public:
-		COption ( string s, SDL_Color c[3], void (* cb) ( CWidget * b ) )
+		COption ( string s, SDL_Color c[3], void (* cb) ( CWidget * b )=0 )
 		{
 			set_id(s);
 			callback = cb;
@@ -139,10 +139,6 @@ class COption: public CWidget
 		#endif
 };
 
-void option_callback ( CWidget * w )
-{
-}
-
 class CGameOptions: public CWidget
 {
 	protected:
@@ -150,9 +146,53 @@ class CGameOptions: public CWidget
 		COption * curr_option; // opção atual
 		CSaveGame * save[3]; // profiles de saves atuais
 		CSaveGame * curr_save; // profile atual sendo usado
+		SDL_Color color[3];
 
 	public:
-		CGameOptions ( CSaveGame * s[3], void (* cb) ( CWidget * b ) )
+		CGameOptions ( CSaveGame * s[3], void (* cb) ( CWidget * b )=0 )
+		{
+			save[0] = s[0];
+			save[1] = s[1];
+			save[2] = s[2];
+			curr_save = save[0];
+			
+			option[0] = option[1] = option[2] = 0;
+			color[0] = (SDL_Color){255,255,  0,255}, // normal
+			color[1] = (SDL_Color){  0,  0,255,255}, // selecionado
+			color[2] = (SDL_Color){255,  0,  0,255}; // apertando enter
+			reset_options();
+			
+			show(false);
+			set_state(0);
+		}
+		
+		~CGameOptions (  )
+		{
+			clear_child();
+			
+			delete option[0];
+			delete option[1];
+			delete option[2];
+		}
+		
+		void set_color ( SDL_Color c[3] )
+		{
+			color[0] = c[0];
+			color[1] = c[1];
+			color[2] = c[2];
+		}
+		
+		COption * get_curr_option (  )
+		{
+			return curr_option;
+		}
+		
+		CSaveGame * get_curr_save (  )
+		{
+			return curr_save;
+		}
+		
+		void reset_options (  )
 		{
 			#if _WIN32 || _WIN64 || __MINGW32__
 				char path[FILENAME_MAX];
@@ -175,91 +215,71 @@ class CGameOptions: public CWidget
 			if (CWriter::instance()->set_font(path, 80) == 0)
 				throw "CGameOptions: não foi possí­vel carregar fonte\n";
 			
-			save[0] = s[0];
-			save[1] = s[1];
-			save[2] = s[2];
-			curr_save = save[0];
 			SSaveData data;
 			char str[256];
-			SDL_Color color[3] = {
-				{255,255,  0,255}, // normal
-				{  0,  0,255,255}, // selecionado
-				{255,  0,  0,255}  // apertando enter ou delete
-			};
+			int level = 0;
 
-			if (save[0]->was_loaded())
+			if (save[0]->load())
 			{
 				data = save[0]->get_data();
-				sprintf(str, "LEVEL: %s - SCORE: %s", data.curr_level, data.score);
+				sscanf(data.curr_level, "%d", &level);
+				sprintf(str, "LEVEL: %d - SCORE: %s", level++, data.score);
 			}
 			else
 			{
 				sprintf(str, "NEW GAME");
 			}
-			option[0] = new COption(str, color, cb);
 			
-			if (save[1]->was_loaded())
+			if (option[0])
+				delete option[0];
+			
+			option[0] = new COption(str, color);
+			
+			if (save[1]->load())
 			{
 				data = save[1]->get_data();
-				sprintf(str, "LEVEL: %s - SCORE: %s", data.curr_level, data.score);
+				sscanf(data.curr_level, "%d", &level);
+				sprintf(str, "LEVEL: %d - SCORE: %s", level++, data.score);
 			}
 			else
 			{
 				sprintf(str, "NEW GAME");
 			}
-			option[1] = new COption(str, color, cb);
 			
-			if (save[2]->was_loaded())
+			if (option[1])
+				delete option[1];
+			
+			option[1] = new COption(str, color);
+			
+			if (save[2]->load())
 			{
 				data = save[2]->get_data();
-				sprintf(str, "LEVEL: %s - SCORE: %s", data.curr_level, data.score);
+				sscanf(data.curr_level, "%d", &level);
+				sprintf(str, "LEVEL: %d - SCORE: %s", level++, data.score);
 			}
 			else
 			{
 				sprintf(str, "NEW GAME");
 			}
-			option[2] = new COption(str, color, cb);
+			
+			if (option[2])
+				delete option[2];
+			
+			option[2] = new COption(str, color);
 			
 			curr_option = option[0];
 			curr_option->set_state(2);
 			
-			option[0]->set_rel_pos(SVect(0,0));
-			option[1]->set_rel_pos(SVect(0,option[0]->get_dim().h));
-			option[2]->set_rel_pos(SVect(0,option[0]->get_dim().h * 2));
-			
-			SDL_Rect d;
-			d = option[0]->get_dim();
-			cout << "CGameOptions: dim[0] = {" << d.x << "," << d.y << "," << d.w << "," << d.h << endl;
-			d = option[1]->get_dim();
-			cout << "CGameOptions: dim[1] = {" << d.x << "," << d.y << "," << d.w << "," << d.h << endl;
-			d = option[2]->get_dim();
-			cout << "CGameOptions: dim[2] = {" << d.x << "," << d.y << "," << d.w << "," << d.h << endl;
-			
+			clear_child();
 			add_child(option[0]);
 			add_child(option[1]);
 			add_child(option[2]);
 			set_pos(SVect(960/2, 624/2));
-			show(false);
-			set_state(0);
-		}
-		
-		~CGameOptions (  )
-		{
-			clear_child();
 			
-			delete option[0];
-			delete option[1];
-			delete option[2];
-		}
-		
-		COption * get_curr_option (  )
-		{
-			return curr_option;
-		}
-		
-		CSaveGame * get_curr_save (  )
-		{
-			return curr_save;
+			dim.h = option[0]->get_dim().h + option[1]->get_dim().h + option[2]->get_dim().h;
+			option[0]->set_rel_pos(SVect(-option[0]->get_dim().w/2,-dim.h/2));
+			option[1]->set_rel_pos(SVect(-option[1]->get_dim().w/2,option[1]->get_dim().h + option[0]->get_rel_pos().y));
+			option[2]->set_rel_pos(SVect(-option[2]->get_dim().w/2,option[2]->get_dim().h + option[1]->get_rel_pos().y));
 		}
 		
 		void input ( SDL_Event & event )
@@ -311,17 +331,62 @@ class CGameOptions: public CWidget
 							break;
 					
 						case SDLK_DELETE: // apaga o profile antigo
+							#if _WIN32 || _WIN64 || __MINGW32__
+								char path[FILENAME_MAX];
+								char p2[FILENAME_MAX];
+								_getcwd(p2, sizeof(p2));
+								#ifndef PREFIX
+									sprintf(path, "%s\\fonts\\inhouseedition.ttf", p2);
+								#else
+									sprintf(path, "%s\\dangeroustux\\fonts\\inhouseedition.ttf", PREFIX);
+								#endif
+							#else
+								char path[1024];
+								#ifndef PREFIX
+									sprintf(path, "./fonts/inhouseedition.ttf");
+								#else
+									sprintf(path, "%s/share/games/dangeroustux/fonts/inhouseedition.ttf", PREFIX);
+								#endif
+							#endif
+
+							if (CWriter::instance()->set_font(path, 80) == 0)
+								throw "CGameOptions: não foi possí­vel carregar fonte\n";
+							
 							if (curr_option == option[0])
 							{
-								save[0]->erase_profile();
+								if (save[0]->was_loaded())
+								{
+									save[0]->erase_profile();
+									rem_child(option[0]);
+									delete option[0];
+									option[0] = new COption("NEW GAME", color);
+									add_child(option[0]);
+									option[0]->set_rel_pos(SVect(-option[0]->get_dim().w/2, -dim.h/2));
+								}
 							}
 							else if (curr_option == option[1])
 							{
-								save[1]->erase_profile();
+								if (save[1]->was_loaded())
+								{
+									save[1]->erase_profile();
+									rem_child(option[1]);
+									delete option[1];
+									option[1] = new COption("NEW GAME", color);
+									add_child(option[1]);
+									option[1]->set_rel_pos(SVect(-option[1]->get_dim().w/2, option[1]->get_dim().h + option[0]->get_rel_pos().y));
+								}
 							}
 							else if (curr_option == option[2])
 							{
-								save[2]->erase_profile();
+								if (save[2]->was_loaded())
+								{
+									save[2]->erase_profile();
+									rem_child(option[2]);
+									delete option[2];
+									option[2] = new COption("NEW GAME", color);
+									add_child(option[2]);
+									option[2]->set_rel_pos(SVect(-option[2]->get_dim().w/2, option[2]->get_dim().h + option[1]->get_rel_pos().y));
+								}
 							}
 							break;
 					
@@ -330,14 +395,17 @@ class CGameOptions: public CWidget
 							if (curr_option == option[0])
 							{
 								curr_save = save[0];
+								set_state(2);
 							}
 							else if (curr_option == option[1])
 							{
 								curr_save = save[1];
+								set_state(2);
 							}
 							else if (curr_option == option[2])
 							{
 								curr_save = save[2];
+								set_state(2);
 							}
 							break;
 					
@@ -392,6 +460,7 @@ class CGameMenu: public CStateMachine
 		CLabelCamera * climbtree;
 		CLabelCamera * tools;
 		SVect player_pos;
+		SVect jetpack, gun;
 		#ifndef USE_SDL2
 			SDL_Surface * screen;
 		#else
@@ -402,9 +471,9 @@ class CGameMenu: public CStateMachine
 		
 	public:
 		#ifndef USE_SDL2
-			CGameMenu ( SDL_Surface * s, CPlayer * p, int ts, CSaveGame * save[3] ): options(save, option_callback)
+			CGameMenu ( SDL_Surface * s, CPlayer * p, int ts, CSaveGame * save[3] ): options(save)
 		#else
-			CGameMenu ( SDL_Renderer * r, CPlayer * p, int ts, CSaveGame * save[3] ): options(save, option_callback)
+			CGameMenu ( SDL_Renderer * r, CPlayer * p, int ts, CSaveGame * save[3] ): options(save)
 		#endif
 		{
 			map = new CTileMapView(ts);
@@ -479,6 +548,9 @@ class CGameMenu: public CStateMachine
 				player->set_map(map);
 				player->set_respawn(player_pos);
 				player->reset_gamemenu();
+				options.reset_options();
+				map->set_tile(gun.x, gun.y, 'r');
+				map->set_tile(jetpack.x, jetpack.y, 'q');
 				set_state(RUNNING_GAMEMENU);
 			}
 		}
@@ -538,7 +610,6 @@ class CGameMenu: public CStateMachine
 				}
 			}
 		#endif
-		
 		
 		int update (  )
 		{
@@ -772,6 +843,16 @@ class CGameMenu: public CStateMachine
 							
 							tools->set_pos(p);
 						}
+						else if (tile == 'r') // se é a arma
+						{
+							gun.x = (i % map->get_width()) * map->get_tilesize();
+							gun.y = (i / map->get_width()) * map->get_tilesize();
+						}
+						else if (tile == 'q')
+						{
+							jetpack.x = (i % map->get_width()) * map->get_tilesize();
+							jetpack.y = (i / map->get_width()) * map->get_tilesize();
+						}
 					}
 			
 					if (!has_player)
@@ -899,7 +980,7 @@ class CGameMenu: public CStateMachine
 				
 				case OPTION_MENU:
 					options.update();
-					if (options.get_curr_option()->get_state() == 5)
+					if (options.get_state() == 2)
 					{
 						options.set_state(0);
 						options.show_child(false);

@@ -161,11 +161,8 @@ class CGameScreen: public CStateMachine
 			widget.show_child(false);
 			
 			save[0] = new CSaveGame("DT_save1");
-			save[0]->load();
 			save[1] = new CSaveGame("DT_save2");
-			save[1]->load();
 			save[2] = new CSaveGame("DT_save3");
-			save[2]->load();
 			
 			#ifndef USE_SDL2
 				menu = new CGameMenu(screen, player, tilesize, save);
@@ -187,6 +184,9 @@ class CGameScreen: public CStateMachine
 				clear_levels();
 			}
 			
+			delete save[0];
+			delete save[1];
+			delete save[2];
 			delete name_msg;
 			delete textinput;
 			delete final;

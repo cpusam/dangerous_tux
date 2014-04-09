@@ -36,25 +36,6 @@ class CWidget: public CStateMachine
 			for (int i(0); i < w.child.size(); i++)
 				child[i] = w.get_child(i);
 		}
-		/*
-		CWidget & operator = ( CWidget & w )
-		{
-			if (this == &w)
-				return w;
-
-			id = w.get_id();
-			pos = w.get_pos();
-			rel_pos = w.get_rel_pos();
-			dim = w.get_dim();
-			visible = w.is_visible();
-			parent = w.get_parent();
-			child.reserve(w.child.size());
-			for (int i(0); i < w.child.size(); i++)
-				child[i] = w.get_child(i);
-			
-			return *this;
-		}
-		*/
 		
 		void set_id ( string new_id )
 		{
