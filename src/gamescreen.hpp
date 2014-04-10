@@ -677,7 +677,7 @@ class CGameScreen: public CStateMachine
 					{
 						SPlayerScore s;
 						
-						if (textinput->get_str().size() == 0)
+						if (textinput->get_str().length() <= 1)
 							sprintf(s.name, "PLAYER");
 						else
 							sprintf(s.name, "%s", textinput->get_str().c_str());

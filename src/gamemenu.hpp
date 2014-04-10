@@ -142,11 +142,11 @@ class COption: public CWidget
 class CGameOptions: public CWidget
 {
 	protected:
-		COption * option[3];
+		COption * option[3]; // opções
 		COption * curr_option; // opção atual
 		CSaveGame * save[3]; // profiles de saves atuais
 		CSaveGame * curr_save; // profile atual sendo usado
-		SDL_Color color[3];
+		SDL_Color color[3]; // cores das opções
 
 	public:
 		CGameOptions ( CSaveGame * s[3], void (* cb) ( CWidget * b )=0 )
@@ -223,7 +223,7 @@ class CGameOptions: public CWidget
 			{
 				data = save[0]->get_data();
 				sscanf(data.curr_level, "%d", &level);
-				sprintf(str, "LEVEL: %d - SCORE: %s", level++, data.score);
+				sprintf(str, "LEVEL: %d - SCORE: %s", ++level, data.score);
 			}
 			else
 			{
@@ -239,7 +239,7 @@ class CGameOptions: public CWidget
 			{
 				data = save[1]->get_data();
 				sscanf(data.curr_level, "%d", &level);
-				sprintf(str, "LEVEL: %d - SCORE: %s", level++, data.score);
+				sprintf(str, "LEVEL: %d - SCORE: %s", ++level, data.score);
 			}
 			else
 			{
@@ -255,7 +255,7 @@ class CGameOptions: public CWidget
 			{
 				data = save[2]->get_data();
 				sscanf(data.curr_level, "%d", &level);
-				sprintf(str, "LEVEL: %d - SCORE: %s", level++, data.score);
+				sprintf(str, "LEVEL: %d - SCORE: %s", ++level, data.score);
 			}
 			else
 			{
@@ -362,6 +362,8 @@ class CGameOptions: public CWidget
 									option[0] = new COption("NEW GAME", color);
 									add_child(option[0]);
 									option[0]->set_rel_pos(SVect(-option[0]->get_dim().w/2, -dim.h/2));
+									curr_option = option[0];
+									curr_option->set_state(2);
 								}
 							}
 							else if (curr_option == option[1])
@@ -374,6 +376,8 @@ class CGameOptions: public CWidget
 									option[1] = new COption("NEW GAME", color);
 									add_child(option[1]);
 									option[1]->set_rel_pos(SVect(-option[1]->get_dim().w/2, option[1]->get_dim().h + option[0]->get_rel_pos().y));
+									curr_option = option[1];
+									curr_option->set_state(2);
 								}
 							}
 							else if (curr_option == option[2])
@@ -386,6 +390,8 @@ class CGameOptions: public CWidget
 									option[2] = new COption("NEW GAME", color);
 									add_child(option[2]);
 									option[2]->set_rel_pos(SVect(-option[2]->get_dim().w/2, option[2]->get_dim().h + option[1]->get_rel_pos().y));
+									curr_option = option[2];
+									curr_option->set_state(2);
 								}
 							}
 							break;
