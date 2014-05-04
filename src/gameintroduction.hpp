@@ -8,7 +8,8 @@ enum EGameIntroductionState
 	ENTER_KEYDOWN,
 	KERNEL_HACKED,
 	LINUS_FACE,
-	LINUS_TUX_TALKING,
+	LINUS_TALKING,
+	TUX_TALKING,
 	TUX_OUT,
 	INACTIVE_INTRODUCTION
 };
@@ -470,9 +471,14 @@ class CGameIntroduction: public CStateMachine
 					#endif
 					break;
 					
-				case LINUS_TUX_TALKING:
-					break;
+				case LINUS_TALKING:
 					
+					break;
+				
+				case TUX_TALKING:
+					
+					break;
+				
 				case TUX_OUT:
 					break;
 				
@@ -550,11 +556,15 @@ class CGameIntroduction: public CStateMachine
 				case LINUS_FACE:
 					if (anim[3].update() == 3)
 					{
-						set_state(LINUS_TUX_TALKING);
+						set_state(LINUS_TALKING);
 					}
 					break;
 					
-				case LINUS_TUX_TALKING:
+				case LINUS_TALKING:
+					set_state(TUX_TALKING);
+					break;
+				
+				case TUX_TALKING:
 					set_state(TUX_OUT);
 					break;
 					

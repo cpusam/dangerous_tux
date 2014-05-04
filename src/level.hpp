@@ -417,6 +417,13 @@ class CLevel: public CStateMachine
 					map->set_source('s', (SDL_Rect){ts*6,ts*2,ts,ts});
 					map->set_source('t', (SDL_Rect){ts*7,ts*2,ts,ts});
 					map->set_source('u', (SDL_Rect){ts*6, ts*2,ts,ts});
+					map->set_source('v', (SDL_Rect){ts*4,ts*3,ts,ts});
+					map->set_source('w', (SDL_Rect){ts*5,ts*3,ts,ts});
+					map->set_source('0', (SDL_Rect){ts*6,ts*3,ts,ts}); // tile de neve unico
+					map->set_source('1', (SDL_Rect){ts*8,ts*3,ts,ts});
+					map->set_source('2', (SDL_Rect){ts*9,ts*3,ts,ts});
+					map->set_source('3', (SDL_Rect){ts*10,ts*3,ts,ts});
+					map->set_source('4', (SDL_Rect){ts*7,ts*3,ts,ts}); // tile de gramado
 					
 					CAnimatedTile a;
 					#ifndef USE_SDL2

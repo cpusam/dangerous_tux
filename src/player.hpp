@@ -132,10 +132,13 @@ class CPlayer: public CGameEntity
 			item.push_back('t');
 			item.push_back('K');
 			
+			// define os tiles para colisão
 			coll_tiles.push_back('a');
 			coll_tiles.push_back('b');
 			coll_tiles.push_back('c');
 			coll_tiles.push_back('s');
+			coll_tiles.push_back('v');
+			coll_tiles.push_back('w');
 			
 			// pontos de colisão
 			// colisão a direita

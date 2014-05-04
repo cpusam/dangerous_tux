@@ -1,3 +1,15 @@
+/*
+	Funcionamento:
+	'A': pega a esquerda do alien e direita do tile
+	'B': pega abaixo do alien e acima do tile
+	'C': pega a direita do alien e a esquerda do tile
+	'D': pega acima do alien e abaixo do tile
+	Mapa: T = tile sólido
+		  'B'
+		'C'T'A'
+		  'D'
+*/
+
 #ifndef CIRCLEALIEN_HPP
 #define CIRCLEALIEN_HPP
 

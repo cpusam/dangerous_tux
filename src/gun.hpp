@@ -35,6 +35,8 @@ class CShot: public CGameEntity
 			coll_tiles.push_back('c');
 			coll_tiles.push_back('u');
 			coll_tiles.push_back('s');
+			coll_tiles.push_back('v');
+			coll_tiles.push_back('w');
 		}
 
 		void set_map ( CTileMap * m )

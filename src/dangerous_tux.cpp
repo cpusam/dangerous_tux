@@ -92,10 +92,12 @@ int main ( int argc, char **argv )
 			SDL_Surface * screen = set_screen(TILESIZE * 20, TILESIZE * 13, &fps);
 			if (!screen)
 				throw SDL_GetError();
+			SDL_WM_SetCaption("Dangerous Tux - beta version 2104", NULL);
 		#else
 			SDL_Window * window = SDL_CreateWindow("Dangerous Tux! BETA version", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
 			SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
+			
+			SDL_SetWindowTitle(window, "Dangerous Tux - beta version 2104");
 			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // em fase de testes
 			SDL_RenderSetLogicalSize(renderer, TILESIZE * 20, TILESIZE * 13);
 			fps = 40;
