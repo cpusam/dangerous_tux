@@ -144,6 +144,7 @@ class CGameOptions: public CWidget
 	protected:
 		COption * option[3]; // opções
 		COption * curr_option; // opção atual
+		CLabel * info;
 		CSaveGame * save[3]; // profiles de saves atuais
 		CSaveGame * curr_save; // profile atual sendo usado
 		SDL_Color color[3]; // cores das opções
@@ -223,7 +224,7 @@ class CGameOptions: public CWidget
 			{
 				data = save[0]->get_data();
 				sscanf(data.curr_level, "%d", &level);
-				sprintf(str, "LEVEL: %d - SCORE: %s", ++level, data.score);
+				sprintf(str, "LEVEL: %d - LIVES: %s", ++level, data.lives);
 			}
 			else
 			{
@@ -239,7 +240,7 @@ class CGameOptions: public CWidget
 			{
 				data = save[1]->get_data();
 				sscanf(data.curr_level, "%d", &level);
-				sprintf(str, "LEVEL: %d - SCORE: %s", ++level, data.score);
+				sprintf(str, "LEVEL: %d - LIVES: %s", ++level, data.lives);
 			}
 			else
 			{
@@ -255,7 +256,7 @@ class CGameOptions: public CWidget
 			{
 				data = save[2]->get_data();
 				sscanf(data.curr_level, "%d", &level);
-				sprintf(str, "LEVEL: %d - SCORE: %s", ++level, data.score);
+				sprintf(str, "LEVEL: %d - LIVES: %s", ++level, data.lives);
 			}
 			else
 			{
@@ -269,17 +270,25 @@ class CGameOptions: public CWidget
 			
 			curr_option = option[0];
 			curr_option->set_state(2);
-			
+
 			clear_child();
 			add_child(option[0]);
 			add_child(option[1]);
 			add_child(option[2]);
 			set_pos(SVect(960/2, 624/2));
 			
+			info = new CLabel("SELECT A PROFILE:", (SDL_Color){0,0,0,255});
+			add_child(info);
+
 			dim.h = option[0]->get_dim().h + option[1]->get_dim().h + option[2]->get_dim().h;
 			option[0]->set_rel_pos(SVect(-option[0]->get_dim().w/2,-dim.h/2));
 			option[1]->set_rel_pos(SVect(-option[1]->get_dim().w/2,option[1]->get_dim().h + option[0]->get_rel_pos().y));
 			option[2]->set_rel_pos(SVect(-option[2]->get_dim().w/2,option[2]->get_dim().h + option[1]->get_rel_pos().y));
+			#ifndef USE_SDL2
+				info->set_pos(SVect((960 - info->get_surface()->w)/2, option[0]->get_pos().y - info->get_surface()->h));
+			#else
+				info->set_pos(SVect((960 - info->get_texture_width())/2, option[0]->get_pos().y - info->get_texture_height()));
+			#endif
 		}
 		
 		void input ( SDL_Event & event )
@@ -434,15 +443,21 @@ class CGameOptions: public CWidget
 			void draw ( SDL_Surface * screen )
 			{
 				if (is_visible())
+				{
+					info->draw(screen);
 					for (int i(0); i < 3; i++)
 						option[i]->draw(screen);
+				}
 			}
 		#else
 			void draw ( SDL_Renderer * renderer )
 			{
 				if (is_visible())
+				{
+					info->draw(renderer);
 					for (int i(0); i < 3; i++)
 						option[i]->draw(renderer);
+				}
 			}
 		#endif
 };
@@ -508,9 +523,9 @@ class CGameMenu: public CStateMachine
 			if (CWriter::instance()->set_font(path, 50) == 0)
 				throw "CGameMenu: Não conseguiu abrir fonte\n";
 			
-			controls = new CLabelCamera("CONTROLS:\n-LEFT ARROW KEY TO MOVE LEFT\n-RIGHT ARROW KEY TO MOVE RIGHT\n-UP ARROW KEY TO JUMP", (SDL_Color){0,0,0,0});
+			controls = new CLabelCamera("CONTROLS:\n-'LEFT ARROW' KEY TO MOVE LEFT\n-'RIGHT ARROW' KEY TO MOVE RIGHT\n-'UP ARROW' KEY TO JUMP", (SDL_Color){0,0,0,0});
 			climbtree = new CLabelCamera("TOUCH THE TREE AND\nPRESS 'UP' KEY TO CLIMB IT", (SDL_Color){0,0,0,0});
-			tools = new CLabelCamera("-PRESS 'A' KEY TO TURN ON/OFF THE JETPACK\n-PRESS 'S' TO USE LASER GUN", (SDL_Color){0,0,0,0});
+			tools = new CLabelCamera("-PRESS 'A' KEY TO TURN ON/OFF THE JETPACK\n-PRESS 'S' KEY TO USE LASER GUN", (SDL_Color){0,0,0,0});
 			
 			#ifndef USE_SDL2
 				screen = s;
@@ -891,6 +906,13 @@ class CGameMenu: public CStateMachine
 					map->set_source('s', (SDL_Rect){ts*6,ts*2,ts,ts});
 					map->set_source('t', (SDL_Rect){ts*7,ts*2,ts,ts});
 					map->set_source('u', (SDL_Rect){ts*6, ts*2,ts,ts});
+					map->set_source('v', (SDL_Rect){ts*4,ts*3,ts,ts});
+					map->set_source('w', (SDL_Rect){ts*5,ts*3,ts,ts});
+					map->set_source('0', (SDL_Rect){ts*6,ts*3,ts,ts}); // tile de neve unico
+					map->set_source('1', (SDL_Rect){ts*8,ts*3,ts,ts});
+					map->set_source('2', (SDL_Rect){ts*9,ts*3,ts,ts});
+					map->set_source('3', (SDL_Rect){ts*10,ts*3,ts,ts});
+					map->set_source('4', (SDL_Rect){ts*7,ts*3,ts,ts}); // tile de gramado
 					
 					CAnimatedTile a;
 					#ifndef USE_SDL2

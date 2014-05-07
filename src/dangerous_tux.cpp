@@ -42,11 +42,11 @@
 
 
 #define TILESIZE 48
-
-bool control_fps ( int time_first, int fps )
+/*
+bool control_fps ( int t, int fps )
 {
 	fps = 1000/fps;
-	int time_now = SDL_GetTicks() - time_first;
+	int time_now = SDL_GetTicks() - t;
 
 	if (time_now < fps)
 	{
@@ -56,6 +56,7 @@ bool control_fps ( int time_first, int fps )
 
 	return false;
 }
+*/
 
 int main ( int argc, char **argv )
 {
@@ -85,22 +86,20 @@ int main ( int argc, char **argv )
 
 		SDL_Event event;
 
-		int fps;
 		int fullscreen = 0;
 		#ifndef USE_SDL2
 			// no tamanho aproximado do dangerous dave original
-			SDL_Surface * screen = set_screen(TILESIZE * 20, TILESIZE * 13, &fps);
+			SDL_Surface * screen = set_screen(TILESIZE * 20, TILESIZE * 13);
 			if (!screen)
 				throw SDL_GetError();
-			SDL_WM_SetCaption("Dangerous Tux - beta version 2104", NULL);
+			SDL_WM_SetCaption("Dangerous Tux - beta version 2014", NULL);
 		#else
 			SDL_Window * window = SDL_CreateWindow("Dangerous Tux! BETA version", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
 			SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 			
-			SDL_SetWindowTitle(window, "Dangerous Tux - beta version 2104");
+			SDL_SetWindowTitle(window, "Dangerous Tux - beta version 2014");
 			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // em fase de testes
 			SDL_RenderSetLogicalSize(renderer, TILESIZE * 20, TILESIZE * 13);
-			fps = 40;
 		#endif
 
 		CCamera cam((SDL_Rect){0,TILESIZE, TILESIZE * 20,TILESIZE * 10}, (SDL_Rect){0,0,0,0});
@@ -115,10 +114,10 @@ int main ( int argc, char **argv )
 		srand(time(0));
 		
 		int done = 0;
-		Uint32 time_now;
+		FPSManager::instance()->set_framerate(40);
 		while (!done)
 		{
-			time_now = SDL_GetTicks();
+			//time_now = SDL_GetTicks();
 			while (SDL_PollEvent(&event))
 			{
 				if (event.type == SDL_QUIT)
@@ -152,19 +151,19 @@ int main ( int argc, char **argv )
 
 				gamescreen.input(event);
 			}
-		
-			if (control_fps(time_now, fps))
-			{
+
+			FPSManager::instance()->update();
+			#ifndef USE_SDL2
+				gamescreen.draw();
+				SDL_UpdateRect(screen, 0,0,0,0);
+			#else
+				SDL_RenderClear(renderer);
+				gamescreen.draw();
+				SDL_RenderPresent(renderer);
+			#endif
+
+			if (FPSManager::instance()->get_delta())
 				gamescreen.update();
-				#ifndef USE_SDL2
-					gamescreen.draw();
-					SDL_UpdateRect(screen, 0,0,0,0);
-				#else
-					SDL_RenderClear(renderer);
-					gamescreen.draw();
-					SDL_RenderPresent(renderer);
-				#endif
-			}
 		}
 		
 		#ifdef USE_SDL2

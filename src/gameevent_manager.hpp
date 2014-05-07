@@ -24,6 +24,7 @@ class CGameEventManager: public CStateMachine
 		int count;
 		int max;
 
+	private:
 		CGameEventManager (  )
 		{
 			max = 2;
@@ -32,6 +33,12 @@ class CGameEventManager: public CStateMachine
 		}
 
 	public:
+		~CGameEventManager (  )
+		{
+			if (singleton)
+				delete singleton;
+		}
+		
 		static CGameEventManager * instance (  )
 		{
 			if (!singleton)

@@ -1,6 +1,10 @@
 #ifndef BACKGROUND_HPP
 #define BACKGROUND_HPP
 
+/*
+	NOTA: quando a posição é negativa não está havendo movimento do background
+*/
+
 class CBackground
 {
 	protected:
@@ -40,12 +44,14 @@ class CBackground
 				return surface;
 			}
 			
-			void set_surface ( SDL_Surface * s )
+			bool set_surface ( SDL_Surface * s )
 			{
 				if (surface)
 					SDL_FreeSurface(surface);
 				
 				surface = s;
+				
+				return surface != 0;
 			}
 		#else
 			SDL_Texture * get_texture (  )
@@ -53,12 +59,14 @@ class CBackground
 				return texture;
 			}
 			
-			void set_texture ( SDL_Texture * t )
+			bool set_texture ( SDL_Texture * t )
 			{
 				if (texture)
 					SDL_DestroyTexture(texture);
 				
 				texture = t;
+				
+				return texture != 0;
 			}
 		#endif
 		
@@ -212,6 +220,104 @@ class CBackground
 						src.x = 0;
 						src.w = int(p.x) % w - (w - dim.w);
 						d.x = dim.x + w - int(p.x) % w;
+						SDL_RenderCopy(renderer, texture, &src, &d);
+					}
+				#endif
+			}
+		}
+		
+		// apenas um scrolling vertical
+		#ifndef USE_SDL2
+			void draw_ver ( CCamera * cam, SDL_Surface * screen )
+		#else
+			void draw_ver ( CCamera * cam, SDL_Renderer * renderer )
+		#endif
+		{
+			SVect p;
+			SDL_Rect d, dim, src;
+			int w, h;
+			
+			#ifndef USE_SDL2
+				if (!surface)
+					return;
+				w = surface->w;
+				h = surface->h;
+			#else
+				if (!texture)
+					return;
+				
+				SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+			#endif
+			
+			p = cam->get_position();
+			d = dim = cam->get_dimension();
+			src = d;
+			
+			if (p.y < 0)
+			{
+				src.x = int(p.x);
+				if (p.x < 0)
+					src.x = 0;
+				else if (p.x + dim.w > w)
+					src.w = w - dim.w;
+
+				if (int(p.y) % h < -dim.h)
+				{
+					src.y = h + int(p.y) % h;
+					src.h = dim.h;
+					d.y = dim.y;
+				}
+				else
+				{
+					src.y = 0;
+					src.h = dim.h + int(p.y) % h;
+					d.y = dim.y - int(p.x) % h;
+				}
+				#ifndef USE_SDL2
+					SDL_BlitSurface(surface, &src, screen, &d);
+
+					src.y = surface->h + int(p.y) % surface->h;
+					src.h = dim.h;
+					d.y = dim.y;
+					SDL_BlitSurface(surface, &src, screen, &d);
+				#else
+					SDL_RenderCopy(renderer, texture, &src, &d);
+					
+					src.y = h + int(p.y) % h;
+					src.h = dim.h;
+					d.y = dim.y;
+					SDL_RenderCopy(renderer, texture, &src, &d);
+				#endif
+			}
+			else
+			{
+				src.x = int(p.x);
+				if (p.x < 0)
+					src.x = 0;
+				else if (p.x + dim.w > w)
+					src.x = w - dim.w;
+
+				src.y = int(p.y) % h;
+				src.h = dim.h;
+				d.y = dim.y;
+				#ifndef USE_SDL2
+					SDL_BlitSurface(surface, &src, screen, &d);
+
+					if (int(p.y) % h > h - dim.h)
+					{
+						src.y = 0;
+						src.h = int(p.y) % h - (h - dim.h);
+						d.h = dim.h + h - int(p.y) % h;
+						SDL_BlitSurface(surface, &src, screen, &d);
+					}
+				#else
+					SDL_RenderCopy(renderer, texture, &src, &d);
+					
+					if (int(p.y) % h > h - dim.h)
+					{
+						src.y = 0;
+						src.h = int(p.y) % h - (h - dim.h);
+						d.y = dim.y + h - int(p.y) % h;
 						SDL_RenderCopy(renderer, texture, &src, &d);
 					}
 				#endif

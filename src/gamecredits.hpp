@@ -15,6 +15,10 @@ class CGameCredits: public CStateMachine
 		CAnimation anim; // apenas para contar o tempo
 		CAnimation tux_anim;
 		SVect tux_pos;
+		SVect bg_pos;
+		CBackground bg;
+		CCamera * cam;
+		int chosed;
 		
 	public:
 		#ifndef USE_SDL2
@@ -24,16 +28,20 @@ class CGameCredits: public CStateMachine
 		#endif
 		{
 			#if _WIN32 || _WIN64 || __MINGW32__
-				char path[FILENAME_MAX];
+				char path[FILENAME_MAX], bg_path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));
+			#else
+				char path[1024], bg_path[1024];
+			#endif
+		
+			#if _WIN32 || _WIN64 || __MINGW32__
 				#ifndef PREFIX
 					sprintf(path, "%s\\fonts\\inhouseedition.ttf", p2);
 				#else
 					sprintf(path, "%s\\dangeroustux\\fonts\\inhouseedition.ttf", PREFIX);
 				#endif
 			#else
-				char path[1024];
 				#ifndef PREFIX
 					sprintf(path, "./fonts/inhouseedition.ttf");
 				#else
@@ -94,6 +102,20 @@ class CGameCredits: public CStateMachine
 				#endif
 			#endif
 			
+			#if _WIN32 || _WIN64 || __MINGW32__
+					#ifndef PREFIX
+							sprintf(bg_path, "%s\\images\\credits_BG.png", p2);
+						#else
+							sprintf(bg_path, "%s\\dangeroustux\\images\\credits_BG.png", PREFIX);
+						#endif
+					#else
+						#ifndef PREFIX
+							sprintf(bg_path, "./images/credits_BG.png");
+						#else
+							sprintf(bg_path, "%s/share/games/dangeroustux/images/credits_BG.png", PREFIX);
+					#endif
+				#endif
+			
 			#ifndef USE_SDL2
 				anim.add_frame((SDL_Rect){0,0,0,0}, 250);
 				
@@ -104,7 +126,11 @@ class CGameCredits: public CStateMachine
 				tux_anim.add_frame((SDL_Rect){0,    0,214,234}, 3);
 				tux_anim.add_frame((SDL_Rect){0,  234,214,234}, 5); // meio
 				tux_anim.add_frame((SDL_Rect){0,2*234,214,234}, 3);
+				tux_anim.add_frame((SDL_Rect){0,  234,214,234}, 5); // meio
 				tux_pos.x = widget.get_pos().x - tux_anim.surface->w/2;
+				
+				if (!bg.set_surface(optimize_surface_alpha(IMG_Load(bg_path))))
+					throw "CGameCredits: não foi possível carregar credits_BG.png\n";
 			#else
 				anim.add_frame(NULL, (SDL_Rect){0,0,0,0}, 250);
 				
@@ -117,9 +143,18 @@ class CGameCredits: public CStateMachine
 				tux_anim.add_frame(aux, (SDL_Rect){0,2*234,214,234}, 3);
 				tux_anim.add_frame(aux, (SDL_Rect){0,  234,214,234}, 5); // meio
 				tux_pos.x = widget.get_pos().x - texture_width(aux)/2;
+				
+				if (!bg.set_texture(SDL_CreateTextureFromSurface(r, IMG_Load(bg_path))))
+					throw "CGameCredits: não foi possível carregar credits_BG.png\n";
 			#endif
-			tux_pos.y = 624 - 234;
-			widget.set_pos(SVect(widget.get_pos().x, widget.get_pos().y - 234/2));
+			widget.set_pos(SVect(960/2, 358/2));
+			tux_pos.y = 358;
+			
+			#ifndef USE_SDL2
+				cam = new CCamera((SDL_Rect){0,0,bg.get_surface()->w,bg.get_surface()->h}, (SDL_Rect){0,0,-2000*bg.get_surface()->w,bg.get_surface()->h});
+			#else
+				cam = new CCamera((SDL_Rect){0,0,texture_width(bg.get_texture()),texture_height(bg.get_texture())}, (SDL_Rect){0,0,-2000*texture_width(bg.get_texture()),texture_height(bg.get_texture())});
+			#endif
 			set_state(ACTIVE_CREDITS);
 		}
 		
@@ -128,7 +163,8 @@ class CGameCredits: public CStateMachine
 			CWidget * w = widget.get_child(0);
 			for (int i = 0; w; i++, w = widget.get_child(i))
 				delete w;
-			
+
+			delete cam;
 			#ifndef USE_SDL2
 				SDL_FreeSurface(tux_anim.surface);
 			#else
@@ -140,21 +176,29 @@ class CGameCredits: public CStateMachine
 			void draw ( SDL_Surface * screen )
 			{
 				SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0x00,0xc6,0xff));
-				widget.draw(screen);
+				bg.draw_hor(cam, screen);
 				tux_anim.draw(tux_pos.x, tux_pos.y, screen);
+
+				widget.draw(screen);
 			}
 		#else
 			void draw ( SDL_Renderer * renderer )
 			{
 				SDL_SetRenderDrawColor(renderer, 0x00,0xc6,0xff,0xFF);
 				SDL_RenderFillRect(renderer, NULL);
-				widget.draw(renderer);
+				
+				bg.draw_hor(cam, renderer);
 				tux_anim.draw(tux_pos.x, tux_pos.y, renderer);
+
+				widget.draw(renderer);
 			}
 		#endif
 		
 		void reset (  )
 		{
+			bg_pos.zero();
+			cam->set_position(SVect());
+		
 			anim.reset();
 			tux_anim.reset();
 			set_state(ACTIVE_CREDITS);
@@ -162,9 +206,13 @@ class CGameCredits: public CStateMachine
 		
 		int update (  )
 		{
+			bg_pos.x += 15.0f;
+			cam->set_position(bg_pos);
+			
 			tux_anim.update();
 			if (anim.update() == 3)
 				set_state(INACTIVE_CREDITS);
+			
 			return get_state();
 		}
 };

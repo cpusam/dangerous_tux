@@ -18,7 +18,7 @@ class CCamera
 			// focus padrão no meio da camera
 			focus.x = d.w / 2.0f;
 			focus.y = d.h / 2.0f;
-			lookat(SVect(0,0));
+			//lookat(SVect(0,0));
 			if (limit.w < dimension.w || limit.h < dimension.h)
 				cout << "CCamera: atenção limit W ou H menor que dimension W ou H\n";
 		}
@@ -30,12 +30,12 @@ class CCamera
 			
 			if (position.x < limit.x)
 				position.x = limit.x;
-			else if (position.x + dimension.w > limit.w)
+			else if (position.x + dimension.w > limit.x + limit.w)
 				position.x = limit.w - dimension.w;
 			
 			if (position.y < limit.y)
 				position.y = limit.y;
-			else if (position.y + dimension.h > limit.h)
+			else if (position.y + dimension.h > limit.x + limit.h)
 				position.y = limit.h - dimension.h;
 		}
 		
