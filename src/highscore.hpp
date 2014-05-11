@@ -214,7 +214,7 @@ class CHighScore: public CWidget
 			
 			SPlayerScore aux[10];
 			for (int i(0); i < 10; i++)
-				if (pscore[10] > pscore[i])
+				if (pscore[10] >= pscore[i])
 				{
 					SDL_memcpy(aux, ps, sizeof(ps));
 					for (int j(i); j < 9; j++)

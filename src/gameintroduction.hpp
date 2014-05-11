@@ -32,6 +32,8 @@ class CGameIntroduction: public CStateMachine
 		int init_hand; // posição inicial da mão
 		int final_hand; // posição final da mão
 		int vel_hand; // velocidade de movimento da mão
+		int tux_anim; // indice da animação atual do tux
+		int linux_anim; // indice da animação atual do linus
 	
 	public:
 		#ifndef USE_SDL2

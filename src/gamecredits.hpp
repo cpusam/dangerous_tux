@@ -151,9 +151,9 @@ class CGameCredits: public CStateMachine
 			tux_pos.y = 358;
 			
 			#ifndef USE_SDL2
-				cam = new CCamera((SDL_Rect){0,0,bg.get_surface()->w,bg.get_surface()->h}, (SDL_Rect){0,0,-2000*bg.get_surface()->w,bg.get_surface()->h});
+				cam = new CCamera((SDL_Rect){0,0,bg.get_surface()->w,bg.get_surface()->h}, (SDL_Rect){0,0,2000*bg.get_surface()->w,bg.get_surface()->h});
 			#else
-				cam = new CCamera((SDL_Rect){0,0,texture_width(bg.get_texture()),texture_height(bg.get_texture())}, (SDL_Rect){0,0,-2000*texture_width(bg.get_texture()),texture_height(bg.get_texture())});
+				cam = new CCamera((SDL_Rect){0,0,texture_width(bg.get_texture()),texture_height(bg.get_texture())}, (SDL_Rect){0,0,2000*texture_width(bg.get_texture()),texture_height(bg.get_texture())});
 			#endif
 			set_state(ACTIVE_CREDITS);
 		}

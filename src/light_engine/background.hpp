@@ -66,7 +66,7 @@ class CBackground
 				
 				texture = t;
 				
-				return texture != 0;
+				return (texture != 0);
 			}
 		#endif
 		
@@ -155,14 +155,14 @@ class CBackground
 			d = dim = cam->get_dimension();
 			src = d;
 			
+			src.y = int(p.y);
+			if (p.y < 0)
+				src.y = 0;
+			else if (p.y + dim.h > h)
+				src.y = h - dim.h;
+			
 			if (p.x < 0)
 			{
-				src.y = int(p.y);
-				if (p.y < 0)
-					src.y = 0;
-				else if (p.y + dim.h > h)
-					src.y = h - dim.h;
-
 				if (int(p.x) % w < -dim.w)
 				{
 					src.x = w + int(p.x) % w;
@@ -193,15 +193,11 @@ class CBackground
 			}
 			else
 			{
-				src.y = int(p.y);
-				if (p.y < 0)
-					src.y = 0;
-				else if (p.y + dim.h > h)
-					src.y = h - dim.h;
-
+				// para o destino a esquerda
 				src.x = int(p.x) % w;
-				src.w = dim.w;
+				src.w = w - int(p.x) % w;
 				d.x = dim.x;
+				d.w = src.w;
 				#ifndef USE_SDL2
 					SDL_BlitSurface(surface, &src, screen, &d);
 
@@ -210,6 +206,7 @@ class CBackground
 						src.x = 0;
 						src.w = int(p.x) % w - (w - dim.w);
 						d.x = dim.x + w - int(p.x) % w;
+						d.w = src.w;
 						SDL_BlitSurface(surface, &src, screen, &d);
 					}
 				#else
@@ -220,12 +217,14 @@ class CBackground
 						src.x = 0;
 						src.w = int(p.x) % w - (w - dim.w);
 						d.x = dim.x + w - int(p.x) % w;
+						d.w = src.w;
 						SDL_RenderCopy(renderer, texture, &src, &d);
 					}
 				#endif
 			}
 		}
 		
+		// NOTE: falta testar, precisa refazer
 		// apenas um scrolling vertical
 		#ifndef USE_SDL2
 			void draw_ver ( CCamera * cam, SDL_Surface * screen )

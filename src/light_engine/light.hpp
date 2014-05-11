@@ -39,7 +39,7 @@ using namespace std;
 #include "background.hpp"
 #include "movable.hpp"
 #include "util.hpp"
-#include "SDL_gfx/SDL_framerate.h"
+#include "SDL_gfx/SDL_framerate.hpp"
 
 #ifndef LIGHT_NO_GUI
 	// módulo de gui

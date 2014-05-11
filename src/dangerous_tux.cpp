@@ -42,21 +42,6 @@
 
 
 #define TILESIZE 48
-/*
-bool control_fps ( int t, int fps )
-{
-	fps = 1000/fps;
-	int time_now = SDL_GetTicks() - t;
-
-	if (time_now < fps)
-	{
-		SDL_Delay(fps - time_now);
-		return true;
-	}
-
-	return false;
-}
-*/
 
 int main ( int argc, char **argv )
 {
