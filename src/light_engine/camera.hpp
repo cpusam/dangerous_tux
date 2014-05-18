@@ -55,12 +55,12 @@ class CCamera
 			
 			if (position.x < limit.x)
 				position.x = limit.x;
-			else if (position.x + dimension.w > limit.w)
+			else if (position.x + dimension.w > limit.x + limit.w)
 				position.x = limit.w - dimension.w;
 			
 			if (position.y < limit.y)
 				position.y = limit.y;
-			else if (position.y + dimension.h > limit.h)
+			else if (position.y + dimension.h > limit.x + limit.h)
 				position.y = limit.h - dimension.h;
 		}
 		

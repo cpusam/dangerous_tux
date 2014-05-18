@@ -195,7 +195,7 @@ class CGameOptions: public CWidget
 		
 		void reset_options (  )
 		{
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));
@@ -340,7 +340,7 @@ class CGameOptions: public CWidget
 							break;
 					
 						case SDLK_DELETE: // apaga o profile antigo
-							#if _WIN32 || _WIN64 || __MINGW32__
+							#if _WIN32 || _WIN64
 								char path[FILENAME_MAX];
 								char p2[FILENAME_MAX];
 								_getcwd(p2, sizeof(p2));
@@ -502,7 +502,7 @@ class CGameMenu: public CStateMachine
 			player = p;
 			bg = 0;
 
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));
@@ -640,7 +640,7 @@ class CGameMenu: public CStateMachine
 				{
 					SDL_Surface * aux = 0;
 			
-					#if _WIN32 || _WIN64 || __MINGW32__
+					#if _WIN32 || _WIN64
 						char path[FILENAME_MAX];
 						char pimage[FILENAME_MAX];
 						char p2[FILENAME_MAX];
@@ -739,7 +739,7 @@ class CGameMenu: public CStateMachine
 						if (!map->texture)
 					#endif
 					{
-						#if _WIN32 || _WIN64 || __MINGW32__
+						#if _WIN32 || _WIN64
 							#ifndef PREFIX
 								sprintf(path, "%s\\images\\tiles.png", p2);
 							#else

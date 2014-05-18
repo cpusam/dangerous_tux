@@ -27,7 +27,7 @@ class CGameCredits: public CStateMachine
 			CGameCredits ( SDL_Renderer * r )
 		#endif
 		{
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX], bg_path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));
@@ -35,7 +35,7 @@ class CGameCredits: public CStateMachine
 				char path[1024], bg_path[1024];
 			#endif
 		
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\fonts\\inhouseedition.ttf", p2);
 				#else
@@ -88,7 +88,7 @@ class CGameCredits: public CStateMachine
 				ps->set_rel_pos(SVect(-(ps->get_texture_width()/2), p->get_texture_height() + p->get_rel_pos().y));
 			#endif
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 						sprintf(path, "%s\\images\\tux_walk.png", p2);
 					#else
@@ -102,7 +102,7 @@ class CGameCredits: public CStateMachine
 				#endif
 			#endif
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 					#ifndef PREFIX
 							sprintf(bg_path, "%s\\images\\credits_BG.png", p2);
 						#else
@@ -134,18 +134,22 @@ class CGameCredits: public CStateMachine
 			#else
 				anim.add_frame(NULL, (SDL_Rect){0,0,0,0}, 250);
 				
-				SDL_Texture * aux = SDL_CreateTextureFromSurface(r, IMG_Load(path));
-				if (!aux)
+				SDL_Surface * aux = IMG_Load(path);
+				SDL_Texture * texture = SDL_CreateTextureFromSurface(r, aux);
+				SDL_FreeSurface(aux);
+				if (!texture)
 					throw "CGameCredits: não foi possivel carregar tux_walk.png\n";
 				
-				tux_anim.add_frame(aux, (SDL_Rect){0,    0,214,234}, 3);
-				tux_anim.add_frame(aux, (SDL_Rect){0,  234,214,234}, 5); // meio
-				tux_anim.add_frame(aux, (SDL_Rect){0,2*234,214,234}, 3);
-				tux_anim.add_frame(aux, (SDL_Rect){0,  234,214,234}, 5); // meio
-				tux_pos.x = widget.get_pos().x - texture_width(aux)/2;
+				tux_anim.add_frame(texture, (SDL_Rect){0,    0,214,234}, 3);
+				tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 5); // meio
+				tux_anim.add_frame(texture, (SDL_Rect){0,2*234,214,234}, 3);
+				tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 5); // meio
+				tux_pos.x = widget.get_pos().x - texture_width(texture)/2;
 				
-				if (!bg.set_texture(SDL_CreateTextureFromSurface(r, IMG_Load(bg_path))))
+				aux = IMG_Load(bg_path);
+				if (!bg.set_texture(SDL_CreateTextureFromSurface(r, aux)))
 					throw "CGameCredits: não foi possível carregar credits_BG.png\n";
+				SDL_FreeSurface(aux);
 			#endif
 			widget.set_pos(SVect(960/2, 358/2));
 			tux_pos.y = 358;

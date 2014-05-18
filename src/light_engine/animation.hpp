@@ -180,6 +180,9 @@ class CAnimation: protected CStateMachine
 			
 			bool has_texture ( SDL_Texture * t )
 			{
+				if (!t)
+					return false;
+				
 				for (int i(0); i < texture.size(); i++)
 					if (t == texture.at(i))
 						return true;
@@ -330,9 +333,9 @@ class CAnimation: protected CStateMachine
 		{
 			switch (get_state())
 			{
-				case 0:
-					return 0; // animação parada
 				case 1:
+				case 2:
+				case 3:
 					if (frames.size() == 0 || delay.size() == 0)
 						throw "CAnimation: animação sem frames\n";
 
@@ -344,17 +347,28 @@ class CAnimation: protected CStateMachine
 						if (index >= frames.size())
 						{
 							if (repeat)
+							{
 								index = 0;
+								set_state(3); // termina e repete a animação
+								break;
+							}
 							else
+							{
 								index = frames.size() - 1;
-
-							return 3; // terminou a animação
+								set_state(4); // terminou a animação e fica parado
+								break;
+							}
 						}
 						
-						return 2; // novo frame
+						set_state(2); // novo frame
+						break;
 					}
 
-					return 1; // rodando
+					set_state(1); // rodando
+					break;
+
+				default:
+					break;
 			}
 			
 			return get_state();

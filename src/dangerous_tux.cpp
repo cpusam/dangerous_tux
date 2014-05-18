@@ -1,45 +1,42 @@
-#if _WIN32 || _WIN64 || __MINGW32__
-	#ifndef USE_SDL2
-		#include "SDL\\SDL.h"
-		#include "SDL\\SDL_image.h"
-		#include "SDL\\SDL_ttf.h"
-	#else
-		#include "SDL2\\SDL.h"
-		#include "SDL2\\SDL_image.h"
-		#include "SDL2\\SDL_ttf.h"
-	#endif
+/*
+ Copyright (C) 2014 Samuel Leonardo and Gustavo Medeiros
 
+ This software is provided 'as-is', without any express or implied
+ warranty. In no event will the authors be held liable for any damages
+ arising from the use of this software.
+
+ Permission is granted to anyone to use this software for any purpose,
+ including commercial applications, and to alter it and redistribute it
+ freely, subject to the following restrictions:
+
+    1. The origin of this software must not be misrepresented; you must not
+    claim that you wrote the original software. If you use this software
+    in a product, an acknowledgment in the product documentation would be
+    appreciated but is not required.
+
+    2. Altered source versions must be plainly marked as such, and must not be
+    misrepresented as being the original software.
+
+    3. This notice may not be removed or altered from any source
+    distribution.
+*/
+
+#if _WIN32 || _WIN64 
 	#include <windows.h>
 	#include <direct.h>
-	#undef main
 #else
 	#include <unistd.h>
-	#ifndef USE_SDL2
-		#include <SDL/SDL.h>
-		#include <SDL/SDL_image.h>
-		#include <SDL/SDL_ttf.h>
-	#else
-		#include <SDL2/SDL.h>
-		#include <SDL2/SDL_image.h>
-		#include <SDL2/SDL_ttf.h>
-	#endif
 #endif
 
 #include <iostream>
 #include <exception>
 #include <ctime>
 
-#if _WIN32 || _WIN64 || __MINGW32__
-	#include "light_engine\\light.hpp"
-#else
-	#include "light_engine/light.hpp"
-#endif
-
+#include "light_engine/light.hpp"
 #include "gamescreen.hpp" // contém todos os headers do jogo
 #ifndef USE_SDL2
 	#include "gamevideo.hpp"
 #endif
-
 
 #define TILESIZE 48
 
@@ -50,7 +47,7 @@ int main ( int argc, char **argv )
 		#ifndef USE_SDL2
 			SDL_putenv("SDL_VIDEO_CENTERED=center");
 		#else
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				SDL_SetMainReady();
 			#endif
 		#endif
@@ -59,10 +56,10 @@ int main ( int argc, char **argv )
 			throw SDL_GetError();
 	
 		if (TTF_Init() < 0)
-			throw "Erro na inicialização da font\n";
+			throw SDL_GetError();
 
-		if (IMG_Init(IMG_INIT_PNG) == 0)
-			throw "Erro na inicialização da sdl image\n";
+		if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) == 0)
+			throw SDL_GetError();
 		
 		if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096) < 0)
 			throw SDL_GetError();
@@ -124,7 +121,7 @@ int main ( int argc, char **argv )
 						#else
 						*/
 						#if USE_SDL2
-							#if _WIN32 || _WIN64 || __MINGW32__ || !__linux__
+							#if _WIN32 || _WIN64 || !__linux__
 								fullscreen ^= SDL_WINDOW_FULLSCREEN_DESKTOP;
 								SDL_SetWindowFullscreen(window, fullscreen);
 							#else
@@ -159,17 +156,26 @@ int main ( int argc, char **argv )
 	catch (const char * e)
 	{
 		cout << "Erro: " << e << endl;
+		#ifdef USE_SDL2
+			SDL_Log(e);
+		#endif
 		return 1;
 	}
 	// Erros com alguma lib SDL
 	catch (char * e)
 	{
 		cout << "Erro: " << e << endl;
+		#ifdef USE_SDL2
+			SDL_Log(e);
+		#endif
 		return 1;
 	}
 	catch (exception & e)
 	{
 		cout << e.what() << endl;
+		#ifdef USE_SDL2
+			SDL_Log(e.what());
+		#endif
 		return 1;
 	}
 

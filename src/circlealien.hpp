@@ -69,7 +69,7 @@ class CCircleAlien: public CGameEntity
 			curr_anim = &anim[0];
 			
 			SDL_Surface * aux = 0;
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));

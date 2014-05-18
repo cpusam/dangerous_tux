@@ -24,7 +24,7 @@ class CGameTransition: public CStateMachine
 			phrase = 0;
 			map = new CTileMapView(48);
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));
@@ -105,7 +105,7 @@ class CGameTransition: public CStateMachine
 		
 		void reset ( int curr_level, int num_levels )
 		{
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));
@@ -114,7 +114,7 @@ class CGameTransition: public CStateMachine
 			#endif
 			if (rand() % 2)
 			{
-				#if _WIN32 || _WIN64 || __MINGW32__
+				#if _WIN32 || _WIN64
 					#ifndef PREFIX
 						sprintf(path, "%s\\levels\\transition1.txt", p2);
 					#else
@@ -130,7 +130,7 @@ class CGameTransition: public CStateMachine
 			}
 			else
 			{
-				#if _WIN32 || _WIN64 || __MINGW32__
+				#if _WIN32 || _WIN64
 					#ifndef PREFIX
 						sprintf(path, "%s\\levels\\transition2.txt", p2);
 					#else
@@ -184,7 +184,7 @@ class CGameTransition: public CStateMachine
 			player->set_transition(map, p, final_pos);
 			set_state(1);
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\fonts\\inhouseedition.ttf", p2);
 				#else

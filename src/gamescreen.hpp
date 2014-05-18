@@ -105,7 +105,7 @@ class CGameScreen: public CStateMachine
 			#endif
 			transition.set_player(player);
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));
@@ -463,7 +463,7 @@ class CGameScreen: public CStateMachine
 					// limpa os levels antigos se existir
 					clear_levels();
 					
-					#if _WIN32 || _WIN64 || __MINGW32__
+					#if _WIN32 || _WIN64
 						char path[FILENAME_MAX];
 						char p2[FILENAME_MAX];
 						_getcwd(p2, sizeof(p2));
@@ -472,7 +472,7 @@ class CGameScreen: public CStateMachine
 					#endif
 					for (int i(0); i < 100; i++) // para no máximo 100 levels
 					{
-						#if _WIN32 || _WIN64 || __MINGW32__
+						#if _WIN32 || _WIN64
 							#ifndef PREFIX
 								sprintf(path, "%s\\levels\\level%d.txt", p2, i + 1);
 							#else
@@ -582,7 +582,7 @@ class CGameScreen: public CStateMachine
 							name_msg->show();
 							textinput->show();
 							set_state(GET_SCORE_NAME); // vai para tela de digitar nome
-							#if _WIN32 || _WIN64 || __MINGW32__
+							#if _WIN32 || _WIN64
 								char path[FILENAME_MAX];
 								#ifndef PREFIX
 									char p2[FILENAME_MAX];
@@ -624,7 +624,7 @@ class CGameScreen: public CStateMachine
 							name_msg->show();
 							textinput->show();
 							set_state(GET_SCORE_NAME); // vai para tela de digitar nome
-							#if _WIN32 || _WIN64 || __MINGW32__
+							#if _WIN32 || _WIN64
 								char path[FILENAME_MAX];
 								#ifndef PREFIX
 									char p2[FILENAME_MAX];

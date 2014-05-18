@@ -28,7 +28,7 @@ class CGameOver: public CStateMachine
 				SDL_Surface * aux = 0;
 			#endif
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));
@@ -36,7 +36,7 @@ class CGameOver: public CStateMachine
 				char path[1024];
 			#endif
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\gameover_BG.png", p2);
 				#else
@@ -61,7 +61,7 @@ class CGameOver: public CStateMachine
 			if (!background)
 				throw "SGameOver: não conseguiu abrir gameover_BG\n";
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\gameover_title.png", p2);
 				#else
@@ -86,7 +86,7 @@ class CGameOver: public CStateMachine
 			if (!title)
 				throw "SGameOver: não conseguiu abrir gameover_title\n";
 				
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\gameover_stars.png", p2);
 				#else

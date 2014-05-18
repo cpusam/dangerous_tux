@@ -187,7 +187,7 @@ class CLevel: public CStateMachine
 				{
 					SDL_Surface * aux = 0;
 					
-					#if _WIN32 || _WIN64 || __MINGW32__
+					#if _WIN32 || _WIN64
 						char path[FILENAME_MAX];
 						char pimage[FILENAME_MAX];
 						char p2[FILENAME_MAX];
@@ -281,7 +281,7 @@ class CLevel: public CStateMachine
 						if (!map->texture)
 					#endif
 					{
-						#if _WIN32 || _WIN64 || __MINGW32__
+						#if _WIN32 || _WIN64
 							#ifndef PREFIX
 								sprintf(path, "%s\\images\\tiles.png", p2);
 							#else
@@ -507,7 +507,7 @@ class CLevel: public CStateMachine
 					#endif
 					map->add_animation(a, 'K');
 
-					#if _WIN32 || _WIN64 || __MINGW32__
+					#if _WIN32 || _WIN64
 						#ifndef PREFIX
 							sprintf(path, "%s\\fonts\\inhouseedition.ttf", p2);
 						#else
@@ -583,7 +583,7 @@ class CLevel: public CStateMachine
 						gun_img->set_pos(SVect(gun->get_pos().x + gun->get_texture_width(), 11 * map->get_tilesize()));
 					#endif
 					gun_img->set_id("gun_img");
-					#if _WIN32 || _WIN64 || __MINGW32__
+					#if _WIN32 || _WIN64
 						#ifndef PREFIX
 							sprintf(path, "%s\\images\\gun.png", p2);
 						#else

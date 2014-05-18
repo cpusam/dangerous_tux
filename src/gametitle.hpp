@@ -36,7 +36,7 @@ class CGameTitle: public CStateMachine
 			press_enter = 0;
 			version = 0;
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));
@@ -44,7 +44,7 @@ class CGameTitle: public CStateMachine
 				char path[1024];
 			#endif
 		
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\gametitle_BG.jpg", p2);
 				#else
@@ -70,7 +70,7 @@ class CGameTitle: public CStateMachine
 					throw "CGameTitle: não conseguiu carregar imagem de background\n";
 			#endif
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\gametitle_name.png", p2);
 				#else
@@ -96,7 +96,7 @@ class CGameTitle: public CStateMachine
 					throw "CGameTitle: não conseguiu carregar imagem de título\n";
 			#endif
 		
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					#ifndef USE_SDL2
 						sprintf(path, "%s\\images\\tux_rocket_sprites_full.png", p2);
@@ -148,7 +148,7 @@ class CGameTitle: public CStateMachine
 				tux_rocket.add_frame(texture, (SDL_Rect){0,599,319,599}, 3);
 				tux_rocket.add_frame(texture, (SDL_Rect){0,599*2,319,599}, 3);
 				
-				#if _WIN32 || _WIN64 || __MINGW32__
+				#if _WIN32 || _WIN64
 					#ifndef PREFIX
 						sprintf(path, "%s\\images\\tux_rocket_sprites2.png", p2);
 					#else
@@ -183,7 +183,7 @@ class CGameTitle: public CStateMachine
 			tr_pos.x = 600;
 			
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\fonts\\inhouseedition.ttf", p2);
 				#else

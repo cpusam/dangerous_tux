@@ -75,7 +75,7 @@ class CWalkerAlien: public CGameEntity
 
 			anim.resize(6);
 
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));
@@ -134,7 +134,7 @@ class CWalkerAlien: public CGameEntity
 			#endif
 			
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\walkeralien_left.png", p2);
 				#else

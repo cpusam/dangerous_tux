@@ -27,7 +27,7 @@ class CSaveGame
 		SSaveData data;
 		string filename;
 		bool loaded;
-		#if _WIN32 || _WIN64 || __MINGW32__
+		#if _WIN32 || _WIN64
 			char path[FILENAME_MAX];
 		#else
 			char path[1024];
@@ -37,7 +37,7 @@ class CSaveGame
 		CSaveGame ( string fn )
 		{
 			filename = fn;
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					char p2[FILENAME_MAX];
 					_getcwd(p2, sizeof(p2));

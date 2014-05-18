@@ -1,24 +1,78 @@
 #ifndef LIGHT_HPP
 #define LIGHT_HPP
 
-#ifndef USE_SDL2
-	#include <SDL/SDL.h>
-	#ifndef LIGHT_NO_GUI
-		#include <SDL/SDL_ttf.h>
+#if _WIN32 || _WIN64
+	#if __MINGW32__ || __MINGW64__
+		#ifndef USE_SDL2
+			#include <SDL/SDL.h>
+			
+			#ifndef LIGHT_NO_GUI
+				#include <SDL/SDL_ttf.h>
+			#endif
+			
+			#ifndef LIGHT_NO_SOUND
+				#include <SDL/SDL_mixer.h>
+			#endif
+			
+			#ifndef LIGHT_NO_IMAGE
+				#include <SDL/SDL_image.h>
+			#endif
+		#else
+			#include <SDL2/SDL.h>
+			
+			#ifndef LIGHT_NO_GUI
+				#include <SDL2/SDL_ttf.h>
+			#endif
+			
+			#ifndef LIGHT_NO_SOUND
+				#include <SDL2/SDL_mixer.h>
+			#endif
+			
+			#ifndef LIGHT_NO_IMAGE
+				#include <SDL2/SDL_image.h>
+			#endif
+		#endif
+	#else
+		#include "SDL.h"
+		
+		#ifndef LIGHT_NO_GUI
+			#include "SDL_ttf.h"
+		#endif
+		
+		#ifndef LIGHT_NO_SOUND
+			#include "SDL_mixer.h"
+		#endif
+		
+		#ifndef LIGHT_NO_IMAGE
+			#include "SDL_image.h"
+		#endif
 	#endif
-	#ifndef LIGHT_NO_SOUND
-		#include <SDL/SDL_mixer.h>
-	#endif
-	#include <SDL/SDL_image.h>
+	#undef main
 #else
-	#include <SDL2/SDL.h>
-	#ifndef LIGHT_NO_GUI
-		#include <SDL2/SDL_ttf.h>
+	#ifndef USE_SDL2
+		#include <SDL/SDL.h>
+		#ifndef LIGHT_NO_GUI
+			#include <SDL/SDL_ttf.h>
+		#endif
+		#ifndef LIGHT_NO_SOUND
+			#include <SDL/SDL_mixer.h>
+		#endif
+		#ifndef LIGHT_NO_IMAGE
+			#include <SDL/SDL_image.h>
+		#endif
+	#else
+		#include <SDL2/SDL.h>
+		#ifndef LIGHT_NO_GUI
+			#include <SDL2/SDL_ttf.h>
+		#endif
+		#ifndef LIGHT_NO_SOUND
+			#include <SDL2/SDL_mixer.h>
+		#endif
+		#ifndef LIGHT_NO_IMAGE
+			#include <SDL2/SDL_image.h>
+		#endif
 	#endif
-	#ifndef LIGHT_NO_SOUND
-		#include <SDL2/SDL_mixer.h>
-	#endif
-	#include <SDL2/SDL_image.h>
+	#undef main
 #endif
 
 #include <iostream>

@@ -25,7 +25,7 @@ struct SPlayerScore
 class CHighScore: public CWidget
 {
 	private:
-		#if _WIN32 || _WIN64 || __MINGW32__
+		#if _WIN32 || _WIN64
 			char path[FILENAME_MAX];
 		#else
 			char path[1024];
@@ -56,7 +56,7 @@ class CHighScore: public CWidget
 			can_set_widgets = true;
 			name = score = level = 0;
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char p2[FILENAME_MAX];
 				#ifndef PREFIX
 					sprintf(path, "%s\\DT_highscore", _getcwd(p2, sizeof(p2)));
@@ -123,7 +123,7 @@ class CHighScore: public CWidget
 				return;
 
 			delete_child();
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));
@@ -248,7 +248,7 @@ class CHighScore: public CWidget
 		
 		bool read (  )
 		{
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
 				#ifndef PREFIX

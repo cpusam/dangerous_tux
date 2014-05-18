@@ -71,6 +71,7 @@ class FPSManager
 		Uint32 baseticks;
 		Uint32 lastticks;
 		Uint32 time_passed;
+	private:
 		static FPSManager * singleton;
 	
 	protected:

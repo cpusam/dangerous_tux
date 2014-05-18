@@ -8,6 +8,8 @@ enum EGameIntroductionState
 	ENTER_KEYDOWN,
 	KERNEL_HACKED,
 	LINUS_FACE,
+	SOMETIME_LATER,
+	IGLOO_BACKGROUND,
 	LINUS_TALKING,
 	TUX_TALKING,
 	TUX_OUT,
@@ -22,12 +24,15 @@ class CGameIntroduction: public CStateMachine
 			SDL_Surface * browser_bg;
 			SDL_Surface * keyboard_bg;
 			SDL_Surface * kernel_site;
+			SDL_Surface * igloo_bg;
 		#else
 			SDL_Texture * browser_bg;
 			SDL_Texture * keyboard_bg;
 			SDL_Texture * kernel_site;
+			SDL_Texture * igloo_bg;
 		#endif
 		CLabel * parallel; // frase: "In a parallel universe..."
+		CLabel * later; // frase "Some time later..."
 		int pos_hand; // posição da mão
 		int init_hand; // posição inicial da mão
 		int final_hand; // posição final da mão
@@ -47,15 +52,17 @@ class CGameIntroduction: public CStateMachine
 				SDL_Surface * aux = 0;
 			#endif
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
+				char paux[FILENAME_MAX];
 				_getcwd(p2, sizeof(p2));
 			#else
 				char path[1024];
+				char paux[1024];
 			#endif
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\intro_scene\\scene1_BG.png", p2);
 				#else
@@ -79,7 +86,7 @@ class CGameIntroduction: public CStateMachine
 			if (!browser_bg)
 				throw "CGameIntroduction: não foi possível carregar scene1_BG.png\n";
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\intro_scene\\scene2_BG.png", p2);
 				#else
@@ -103,7 +110,7 @@ class CGameIntroduction: public CStateMachine
 			if (!keyboard_bg)
 				throw "CGameIntroduction: não foi possível carregar scene2_BG.png\n";
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\intro_scene\\scene3_BG.png", p2);
 				#else
@@ -127,7 +134,31 @@ class CGameIntroduction: public CStateMachine
 			if (!kernel_site)
 				throw "CGameIntroduction: não foi possível carregar scene3_BG.png\n";
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
+				#ifndef PREFIX
+					sprintf(path, "%s\\images\\intro_scene\\scene5.jpg", p2);
+				#else
+					sprintf(path, "%s\\dangeroustux\\images\\intro_scene\\scene5.jpg", PREFIX);
+				#endif
+			#else
+				#ifndef PREFIX
+					sprintf(path, "./images/intro_scene/scene5.jpg");
+				#else
+					sprintf(path, "%s/share/games/dangeroustux/images/intro_scene/scene5.jpg", PREFIX);
+				#endif
+			#endif
+			
+			#ifndef USE_SDL2
+				igloo_bg = optimize_surface_alpha(IMG_Load(path));
+			#else
+				aux = IMG_Load(path);
+				igloo_bg = SDL_CreateTextureFromSurface(r, aux);
+				SDL_FreeSurface(aux);
+			#endif
+			if (!igloo_bg)
+				throw "CGameIntroduction: não foi possível carregar scene5.jpg\n";
+			
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\fonts\\inhouseedition.ttf", p2);
 				#else
@@ -148,14 +179,17 @@ class CGameIntroduction: public CStateMachine
 				CWriter::instance()->set_renderer(r);
 			#endif
 			
-			parallel = new CLabel("In a parallel universe...", (SDL_Color){255,255,0,0});
+			parallel = new CLabel("IN A PARALLEL UNIVERSE...", (SDL_Color){255,255,0,255});
+			later = new CLabel("SOME TIME LATER...", (SDL_Color){255,255,0,255});
 			#ifndef USE_SDL2
 				parallel->set_pos(SVect((960 - parallel->get_surface()->w)/2, (624 - parallel->get_surface()->h)/2));
+				later->set_pos(SVect((960 - later->get_surface()->w)/2, (624 - later->get_surface()->h)/2));
 			#else
 				parallel->set_pos(SVect((960 - parallel->get_texture_width())/2, (624 - parallel->get_texture_height())/2));
+				later->set_pos(SVect((960 - later->get_texture_width())/2, (624 - later->get_texture_height())/2));
 			#endif
 			/*
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\intro_scene\\", p2);
 				#else
@@ -175,7 +209,7 @@ class CGameIntroduction: public CStateMachine
 			*/
 			
 			CSound sound;
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\sounds\\key_press.wav", p2);
 				#else
@@ -191,9 +225,9 @@ class CGameIntroduction: public CStateMachine
 			sound.set_chunk(path);
 			CSoundPlayer::instance()->add_sound(sound);
 			
-			anim.resize(8);
+			anim.resize(6 + 5);
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\intro_scene\\scene2-Enter.png", p2);
 				#else
@@ -224,7 +258,7 @@ class CGameIntroduction: public CStateMachine
 				anim[0].add_frame(texture, (SDL_Rect){0,269*2,270,269}, 20);
 			#endif
 						
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\intro_scene\\scene2-Hand.png", p2);
 				#else
@@ -255,7 +289,7 @@ class CGameIntroduction: public CStateMachine
 				anim[1].add_frame(texture, (SDL_Rect){0,585,698,585}, 15);
 			#endif
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
 					sprintf(path, "%s\\images\\intro_scene\\scene4.png", p2);
 				#else
@@ -282,29 +316,42 @@ class CGameIntroduction: public CStateMachine
 				
 				anim[3].set_repeat(false); // animação do rosto de Linus
 				anim[3].add_frame(texture, (SDL_Rect){0,0,960,624}, 20);
-				anim[3].add_frame(texture, (SDL_Rect){0,624,960,624}, 25);
+				anim[3].add_frame(texture, (SDL_Rect){0,624,960,624}, 75);
 			#endif
 			
-			#if _WIN32 || _WIN64 || __MINGW32__
+			#if _WIN32 || _WIN64
 				#ifndef PREFIX
-					sprintf(path, "%s\\images\\intro_scene\\scene1-Kernel.png", p2);
+					sprintf(path, "%s\\images\\intro_scene\\", p2);
 				#else
-					sprintf(path, "%s\\dangeroustux\\images\\intro_scene\\scene1-Kernel.png", PREFIX);
+					sprintf(path, "%s\\dangeroustux\\images\\intro_scene\\", PREFIX);
 				#endif
 			#else
 				#ifndef PREFIX
-					sprintf(path, "./images/intro_scene/scene1-Kernel.png");
+					sprintf(path, "./images/intro_scene/");
 				#else
-					sprintf(path, "%s/share/games/dangeroustux/images/intro_scene/scene1-Kernel.png", PREFIX);
+					sprintf(path, "%s/share/games/dangeroustux/images/intro_scene/", PREFIX);
 				#endif
 			#endif
 			
+			#if _WIN32 || _WIN64
+				sprintf(paux, "%s\\scene1-Kernel.png", path);
+			#else
+				sprintf(paux, "%s/scene1-Kernel.png", path);
+			#endif
+		
 			#ifndef USE_SDL2
-				anim[4].surface = optimize_surface_alpha(IMG_Load(path));
+				anim[4].surface = optimize_surface_alpha(IMG_Load(paux));
 				if (!anim[4].surface)
 					throw "CGameIntroduction: não foi possível carregar scene1-Kernel.png\n";
 			#else
-				aux = IMG_Load(path);
+				
+				#if _WIN32 || _WIN64
+					sprintf(paux, "%s\\scene1-Kernel.png", path);
+				#else
+					sprintf(paux, "%s/scene1-Kernel.png", path);
+				#endif
+				
+				aux = IMG_Load(paux);
 				texture = SDL_CreateTextureFromSurface(r, aux);
 				SDL_FreeSurface(aux);
 				if (!texture)
@@ -321,26 +368,32 @@ class CGameIntroduction: public CStateMachine
 				anim[4].add_frame(texture, (SDL_Rect){0,170,717,170}, 10);
 				anim[4].add_frame(texture, (SDL_Rect){0,0,717,170}, 25);
 				anim[4].set_repeat(false);
+				
+				/* EM CONSTRUÇÃO
+				#if _WIN32 || _WIN64
+					sprintf(paux, "%s\\Linus\\.png", path);
+				#else
+					sprintf(paux, "%s\\Linus\\.png", path);
+				#endif
+				aux = IMG_Load(paux);
+				*/
 			#endif
 			
 			#ifndef USE_SDL2
 				anim[0].set_repeat(false); // animação da tecla enter pressionada
-				anim[0].add_frame((SDL_Rect){0,0,270,269}, 1);
-				anim[0].add_frame((SDL_Rect){0,269,270,269}, 2);
+				anim[0].add_frame((SDL_Rect){0,    0,270,269},  1);
+				anim[0].add_frame((SDL_Rect){0,  269,270,269},  2);
 				anim[0].add_frame((SDL_Rect){0,269*2,270,269}, 20);
 
 				anim[1].set_repeat(false); // animação da mão
 				anim[1].pause();
-				anim[1].add_frame((SDL_Rect){0,0,698,585}, 15);
+				anim[1].add_frame((SDL_Rect){0,  0,698,585}, 15);
 				anim[1].add_frame((SDL_Rect){0,585,698,585}, 15);
-			
-				anim[2].add_frame((SDL_Rect){0,0,0,0}, 75); // animação do hack do kernel
-				anim[2].set_repeat(false);
 
 				anim[3].set_repeat(false); // animação do rosto de Linus
-				anim[3].add_frame((SDL_Rect){0,0,960,624}, 20);
-				anim[3].add_frame((SDL_Rect){0,624,960,624}, 25);
-			
+				anim[3].add_frame((SDL_Rect){0,  0,960,624}, 20);
+				anim[3].add_frame((SDL_Rect){0,624,960,624}, 75);
+
 				anim[4].add_frame((SDL_Rect){0,170*9,717,170}, 20); // animação de digitando
 				anim[4].add_frame((SDL_Rect){0,170*8,717,170}, 10);
 				anim[4].add_frame((SDL_Rect){0,170*7,717,170}, 10);
@@ -352,15 +405,34 @@ class CGameIntroduction: public CStateMachine
 				anim[4].add_frame((SDL_Rect){0,170,717,170}, 10);
 				anim[4].add_frame((SDL_Rect){0,0,717,170}, 25);
 				anim[4].set_repeat(false);
+			#endif
 			
-				anim[5].add_frame((SDL_Rect){0,0,0,0}, 100); // em um universo paralelo
-				anim[5].set_repeat(false);
-			#else
-				anim[2].add_frame(0, (SDL_Rect){0,0,0,0}, 75); // animação do hack do kernel
+			#ifndef USE_SDL2
+				// animação do hack do kernel
+				anim[2].add_frame((SDL_Rect){0,0,0,0}, 75); 
 				anim[2].set_repeat(false);
-				
-				anim[5].add_frame(0, (SDL_Rect){0,0,0,0}, 100); // em um universo paralelo
+				 // em um universo paralelo
+				anim[5].add_frame((SDL_Rect){0,0,0,0}, 100);
 				anim[5].set_repeat(false);
+				// algum tempo depois
+				anim[6].add_frame((SDL_Rect){0,0,0,0}, 60); 
+				anim[6].set_repeat(false);
+				// mostrando lado de fora do iglu
+				anim[7].add_frame((SDL_Rect){0,0,0,0}, 60); 
+				anim[7].set_repeat(false);
+			#else
+				// animação do hack do kernel
+				anim[2].add_frame(0, (SDL_Rect){0,0,0,0}, 75); 
+				anim[2].set_repeat(false);
+				 // em um universo paralelo
+				anim[5].add_frame(0, (SDL_Rect){0,0,0,0}, 100);
+				anim[5].set_repeat(false);
+				// algum tempo depois
+				anim[6].add_frame(0, (SDL_Rect){0,0,0,0}, 60); 
+				anim[6].set_repeat(false);
+				// mostrando lado de fora do iglu
+				anim[7].add_frame(0, (SDL_Rect){0,0,0,0}, 60); 
+				anim[7].set_repeat(false);
 			#endif
 			
 			#ifndef USE_SDL2
@@ -377,28 +449,40 @@ class CGameIntroduction: public CStateMachine
 		
 		~CGameIntroduction (  )
 		{
+			if (parallel)
+				delete parallel;
+				
+			if (later)
+				delete later;
+			
 			#ifndef USE_SDL2
-				if (parallel)
-					delete parallel;
-
 				if (browser_bg)
 					SDL_FreeSurface(browser_bg);
 			
 				if (keyboard_bg)
 					SDL_FreeSurface(keyboard_bg);
-			
+				
+				if (kernel_site)
+					SDL_FreeSurface(kernel_site);
+				
+				if (igloo_bg)
+					SDL_FreeSurface(igloo_bg);
+				
 				for (int i(0); i < anim.size(); i++)
 					if (anim[i].surface)
 						SDL_FreeSurface(anim[i].surface);
 			#else
-				if (parallel)
-					delete parallel;
-
 				if (browser_bg)
 					SDL_DestroyTexture(browser_bg);
 			
 				if (keyboard_bg)
 					SDL_DestroyTexture(keyboard_bg);
+			
+				if (kernel_site)
+					SDL_DestroyTexture(kernel_site);
+				
+				if (igloo_bg)
+					SDL_DestroyTexture(igloo_bg);
 			
 				for (int i(0); i < anim.size(); i++)
 					anim[i].destroy_textures();
@@ -407,7 +491,9 @@ class CGameIntroduction: public CStateMachine
 		
 		void reset (  )
 		{
-			anim[5].reset();
+			for (int i(0); i < anim.size(); i++)
+				anim[i].reset();
+
 			set_state(PARALLEL_UNIVERSE);
 		}
 		
@@ -472,6 +558,25 @@ class CGameIntroduction: public CStateMachine
 						anim[3].draw(0,0, renderer);
 					#endif
 					break;
+				
+				case SOMETIME_LATER:
+					#ifndef USE_SDL2
+						SDL_FillRect(screen, NULL, 0x0);
+						later->draw(screen);
+					#else
+						SDL_SetRenderDrawColor(renderer, 0,0,0,255);
+						SDL_RenderFillRect(renderer, NULL);
+						later->draw(renderer);
+					#endif
+					break;
+				
+				case IGLOO_BACKGROUND:
+					#ifndef USE_SDL2
+						SDL_BlitSurface(igloo_bg, NULL, screen, NULL);
+					#else
+						SDL_RenderCopy(renderer, igloo_bg, NULL, NULL);
+					#endif
+					break;
 					
 				case LINUS_TALKING:
 					
@@ -496,7 +601,7 @@ class CGameIntroduction: public CStateMachine
 				case INACTIVE_INTRODUCTION:
 					break;
 				case PARALLEL_UNIVERSE:
-					if (anim[5].update() == 3)
+					if (anim[5].update() == 4)
 					{
 						anim[4].reset();
 						set_state(LINUS_TYPING);
@@ -510,7 +615,7 @@ class CGameIntroduction: public CStateMachine
 						{
 							CSoundPlayer::instance()->play_sound("key_press.wav");
 						}
-						else if (upd == 3)
+						else if (upd == 4)
 						{
 							pos_hand = init_hand;
 							anim[0].reset();
@@ -539,7 +644,7 @@ class CGameIntroduction: public CStateMachine
 							CSoundPlayer::instance()->play_sound("key_press.wav");
 						}
 						
-						if (upd == 3)
+						if (upd == 4)
 						{
 							anim[2].reset();
 							set_state(KERNEL_HACKED);
@@ -548,20 +653,34 @@ class CGameIntroduction: public CStateMachine
 					break;
 					
 				case KERNEL_HACKED:
-					if (anim[2].update() == 3)
+					if (anim[2].update() == 4)
 					{
 						anim[3].reset();
 						set_state(LINUS_FACE);
 					}
 					break;
-					
+				
 				case LINUS_FACE:
-					if (anim[3].update() == 3)
+					if (anim[3].update() == 4)
+					{
+						set_state(SOMETIME_LATER);
+					}
+					break;
+				
+				case SOMETIME_LATER:
+					if (anim[6].update() == 4)
+					{
+						set_state(IGLOO_BACKGROUND);
+					}
+					break;
+				
+				case IGLOO_BACKGROUND:
+					if (anim[7].update() == 4)
 					{
 						set_state(LINUS_TALKING);
 					}
 					break;
-					
+				
 				case LINUS_TALKING:
 					set_state(TUX_TALKING);
 					break;
