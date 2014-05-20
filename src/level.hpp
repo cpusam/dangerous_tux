@@ -31,6 +31,7 @@ class CLevel: public CStateMachine
 		vector <CGameEntity *> aliens;
 		CKernelSignal kernel_signal;
 		CExitSignal exit_signal;
+		SDL_Color widget_color;
 		static CWidget * widget; // os widgets do level
 		static CPlayer * player;
 		#ifndef USE_SDL2
@@ -45,6 +46,8 @@ class CLevel: public CStateMachine
 		#ifndef USE_SDL2
 			CLevel ( int tilesize, int i )
 			{
+				widget_color = (SDL_Color){0,0,0,255};
+				
 				if (!widget)
 					widget = new CWidget("level_window");
 
@@ -56,6 +59,8 @@ class CLevel: public CStateMachine
 			CLevel ( SDL_Renderer * r, int tilesize, int i ): kernel_signal(r), exit_signal(r)
 			{
 				renderer = r;
+				widget_color = (SDL_Color){0,0,0,255};
+				
 				if (!widget)
 					widget = new CWidget("level_window");
 
@@ -210,9 +215,9 @@ class CLevel: public CStateMachine
 							sprintf(pimage, "%s/share/games/dangeroustux/images/", PREFIX);
 						#endif
 					#endif
-
+					
 					string nimage; // nome da imagem
-					ifstream file(path, ifstream::binary);
+					ifstream file(path);
 					if (!file)
 						throw "CLevel: Não foi possível ler o arquivo de level\n";
 					getline(file, nimage);
@@ -239,34 +244,34 @@ class CLevel: public CStateMachine
 
 					vector <int> tileset;
 					string line;
-					int i;
+					int i, size = 0;
 					
-					for (i = 0; i < 10; i++)
+					for (i = 0; !file.eof(); i++)
 					{
-						if (!file.eof())
-						{
-							line = "";
-							getline(file, line);
-							int j;
-
-							for (j = 0; j < line.size(); j++)
-									tileset.push_back(line[j]);
-
-							if (line[j] == '\0')
-							{
-								if (line[j - 1] == '\r')
-									tileset[tileset.size() - 1] = -1;
-								else
-									tileset.push_back(-1);
-							}
-						}
-						else
+						line = "";
+						getline(file, line);
+						int j;
+						
+						if (size == 0)
+							size = line.size();
+						else	if (line.size() != size || file.eof())
 							break;
+						
+						for (j = 0; j < line.size(); j++)
+								tileset.push_back(line[j]);
+
+						if (line[j] == '\0')
+						{
+							if (line[j - 1] == '\r')
+								tileset[tileset.size() - 1] = -1;
+							else
+								tileset.push_back(-1);
+						}
 					}
 					file.close();
 					
-					if (i < 10)
-						throw "CLevel: falha ao ler linhas do mapa, lido menos de 10 linhas\n";
+					if (i < 13)
+						throw "CLevel: falha ao ler linhas do mapa, lido menos de 13 linhas\n";
 					
 					if (!map->read(tileset))
 						throw "CLevel: não foi possível iniciar o mapa\n";
@@ -537,50 +542,52 @@ class CLevel: public CStateMachine
 						static_cast<CLabel *>(widget->get_child("jetpack_bar"))->show(false);
 						static_cast<CLabel *>(widget->get_child("gun"))->show(false);
 						static_cast<CLabel *>(widget->get_child("gun_img"))->show(false);
-						static_cast<CLabel *>(widget->get_child("go_exit"))->show(false);
+						//static_cast<CLabel *>(widget->get_child("go_exit"))->show(false);
 						set_state(1); // vai para executando a fase
 						break;
 					}
 					else if (!widget)
 						throw "CLevel: Erro no widget\n";
 					
-					
+					/*
 					CLabel * go_exit = new CLabel("GO THROUGH THE EXIT!", (SDL_Color){255,255,0,0});
 					widget->add_child(go_exit);
 					go_exit->set_id("go_exit");
 					go_exit->set_pos(SVect(318, 12 * map->get_tilesize()));
+					//removido também linhas lá em baixo
+					*/
 					
-					CLabel * score = new CLabel("SCORE: ", (SDL_Color){0,255,0,0});
+					CLabel * score = new CLabel("SCORE: ", widget_color);
 					widget->add_child(score);
 					score->set_id("score");
 					score->set_pos(SVect(125,0));
 	
-					CLabel * lives = new CLabel("LIVES: ", (SDL_Color){0,255,0,0});
+					CLabel * lives = new CLabel("LIVES: ", widget_color);
 					widget->add_child(lives);
 					lives->set_id("lives");
 					lives->set_pos(SVect(320 + score->get_pos().x,0));
 
-					CLabel * level = new CLabel("LEVEL: ", (SDL_Color){0,255,0,0});
+					CLabel * level = new CLabel("LEVEL: ", widget_color);
 					widget->add_child(level);
 					level->set_id("level");
 					level->set_pos(SVect(270 + lives->get_pos().x,0));
 	
-					CLabel * jetpack = new CLabel("JETPACK: ", (SDL_Color){0,255,0,0});
+					CLabel * jetpack = new CLabel("JETPACK: ", widget_color);
 					widget->add_child(jetpack);
 					jetpack->set_id("jetpack");
-					jetpack->set_pos(SVect(105, 11 * map->get_tilesize())); 
+					jetpack->set_pos(SVect(105, map->get_tilesize())); 
 	
-					CLabel * gun = new CLabel("GUN ", (SDL_Color){0,255,0,0});
+					CLabel * gun = new CLabel("GUN ", widget_color);
 					widget->add_child(gun);
 					gun->set_id("gun");
-					gun->set_pos(SVect(720, 11 * map->get_tilesize()));
+					gun->set_pos(SVect(720, map->get_tilesize()));
 
-					CLabel * gun_img = new CLabel(" ", (SDL_Color){0,0,0,0});
+					CLabel * gun_img = new CLabel(" ", widget_color);
 					widget->add_child(gun_img);
 					#ifndef USE_SDL2
-						gun_img->set_pos(SVect(gun->get_pos().x + gun->get_surface()->w, 11 * map->get_tilesize()));
+						gun_img->set_pos(SVect(gun->get_pos().x + gun->get_surface()->w, map->get_tilesize()));
 					#else
-						gun_img->set_pos(SVect(gun->get_pos().x + gun->get_texture_width(), 11 * map->get_tilesize()));
+						gun_img->set_pos(SVect(gun->get_pos().x + gun->get_texture_width(), map->get_tilesize()));
 					#endif
 					gun_img->set_id("gun_img");
 					#if _WIN32 || _WIN64
@@ -614,15 +621,15 @@ class CLevel: public CStateMachine
 					#ifndef USE_SDL2
 						bar->color_bg = SDL_MapRGB(screen->format, 255, 255, 255);
 						bar->color_bar = SDL_MapRGB(screen->format, 255, 0, 0);
-						bar->set_pos(SVect(jetpack->get_pos().x + jetpack->get_surface()->w,540));
+						bar->set_pos(SVect(jetpack->get_pos().x + jetpack->get_surface()->w, map->get_tilesize() + 12));
 					#else
 						bar->color_bg = 0xFFFFFFFF;
 						bar->color_bar = 0xFF000000;
-						bar->set_pos(SVect(jetpack->get_pos().x + jetpack->get_texture_width(),540));
+						bar->set_pos(SVect(jetpack->get_pos().x + jetpack->get_texture_width(),map->get_tilesize() + 12));
 					#endif
 					bar->set_id("jetpack_bar");
 
-					CLabelNumber * num_score = new CLabelNumber(0, (SDL_Color){0,255,0,0}, 6);
+					CLabelNumber * num_score = new CLabelNumber(0, widget_color, 6);
 					widget->add_child(num_score);
 					num_score->set_id("num_score");
 					#ifndef USE_SDL2
@@ -631,7 +638,7 @@ class CLevel: public CStateMachine
 						num_score->set_pos(SVect(score->get_pos().x + score->get_texture_width(), 0));
 					#endif
 					
-					CLabelNumber * num_lives = new CLabelNumber(player->get_lives(), (SDL_Color){0,255,0,0}, 2);
+					CLabelNumber * num_lives = new CLabelNumber(player->get_lives(), widget_color, 2);
 					widget->add_child(num_lives);
 					num_lives->set_id("num_lives");
 					#ifndef USE_SDL2
@@ -640,7 +647,7 @@ class CLevel: public CStateMachine
 						num_lives->set_pos(SVect(lives->get_pos().x + lives->get_texture_width(), 0));
 					#endif
 	
-					CLabelNumber * num_level = new CLabelNumber(id, (SDL_Color){0,255,0,0}, 2);
+					CLabelNumber * num_level = new CLabelNumber(id, widget_color, 2);
 					widget->add_child(num_level);
 					num_level->set_id("num_level");
 					#ifndef USE_SDL2
@@ -655,7 +662,7 @@ class CLevel: public CStateMachine
 					jetpack->show(false);
 					bar->show(false);
 					gun_img->show(false);
-					go_exit->show(false);
+					//go_exit->show(false);
 					set_state(RUNNING_LEVEL); // vai para executando a fase
 					break;
 				}
@@ -695,10 +702,11 @@ class CLevel: public CStateMachine
 						gun->show();
 						gun_img->show();
 					}
-
+					
+					/*
 					if (player->has_kernel())
 						widget->get_child("go_exit")->show();
-					
+					*/
 					static_cast<CLabelNumber *>(widget->get_child("num_score"))->set_value(player->score.get_score());
 					static_cast<CLabelNumber *>(widget->get_child("num_lives"))->set_value(player->get_lives());
 					

@@ -84,7 +84,7 @@ int main ( int argc, char **argv )
 			SDL_RenderSetLogicalSize(renderer, TILESIZE * 20, TILESIZE * 13);
 		#endif
 
-		CCamera cam((SDL_Rect){0,TILESIZE, TILESIZE * 20,TILESIZE * 10}, (SDL_Rect){0,0,0,0});
+		CCamera cam((SDL_Rect){0,0, TILESIZE * 20,TILESIZE * 13}, (SDL_Rect){0,0,0,0});
 		#ifndef USE_SDL2
 			CPlayer player;
 			CGameScreen gamescreen(screen, &cam, &player, TILESIZE);

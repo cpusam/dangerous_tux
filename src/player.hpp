@@ -882,6 +882,11 @@ class CPlayer: public CGameEntity
 						dir = RIGHT_PLAYER;
 						set_state(STANDING);
 					}
+					else if (up_key)
+					{
+						dir = RIGHT_PLAYER;
+						set_state(STANDING);
+					}
 
 					curr_anim->update();
 					break;

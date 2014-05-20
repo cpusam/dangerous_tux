@@ -147,9 +147,9 @@ class CHighScore: public CWidget
 				CWriter::instance()->set_renderer(renderer);
 			#endif
 			
-			name = new CLabel("NAME", (SDL_Color){0,255,0,0});
-			score = new CLabel("SCORE", (SDL_Color){0,255,0,0});
-			level = new CLabel("LEVEL", (SDL_Color){0,255,0,0});
+			name  = new CLabel("NAME",  (SDL_Color){255,255,255,255});
+			score = new CLabel("SCORE", (SDL_Color){255,255,255,255});
+			level = new CLabel("LEVEL", (SDL_Color){255,255,255,255});
 
 			CLabel * cname;
 			CLabel * cscore;
@@ -163,15 +163,15 @@ class CHighScore: public CWidget
 
 				if (nscore - 1 != i)
 				{
-					cname = new CLabel(ps[i].name, (SDL_Color){255,0,0,0});
-					cscore = new CLabel(ps[i].score, (SDL_Color){255,0,0,0});
-					clevel = new CLabel(ps[i].level, (SDL_Color){255,0,0,0});
+					cname  = new CLabel(ps[i].name,  (SDL_Color){255,0,0,255});
+					cscore = new CLabel(ps[i].score, (SDL_Color){255,0,0,255});
+					clevel = new CLabel(ps[i].level, (SDL_Color){255,0,0,255});
 				}
 				else
 				{
-					cname = new CLabel(ps[i].name, (SDL_Color){255,255,0,0});
-					cscore = new CLabel(ps[i].score, (SDL_Color){255,255,0,0});
-					clevel = new CLabel(ps[i].level, (SDL_Color){255,255,0,0});
+					cname  = new CLabel(ps[i].name,  (SDL_Color){255,255,0,255});
+					cscore = new CLabel(ps[i].score, (SDL_Color){255,255,0,255});
+					clevel = new CLabel(ps[i].level, (SDL_Color){255,255,0,255});
 				}
 				
 				name->add_child(cname);
@@ -235,11 +235,13 @@ class CHighScore: public CWidget
 						return false;
 					}
 					fclose(file);
+
 					// faz releitura do high score
 					read();
 					nscore = i + 1;
 					can_set_widgets = true;
 					set_widgets();
+					
 					return true;
 				}
 			
@@ -248,22 +250,6 @@ class CHighScore: public CWidget
 		
 		bool read (  )
 		{
-			#if _WIN32 || _WIN64
-				char path[FILENAME_MAX];
-				char p2[FILENAME_MAX];
-				#ifndef PREFIX
-					sprintf(path, "%s\\DT_highscore", _getcwd(p2, sizeof(p2)));
-				#else
-					sprintf(path, "%s\\dageroustux\\DT_highscore", PREFIX);
-				#endif
-			#else
-				char path[1024];
-				#ifndef PREFIX
-					sprintf(path, "DT_highscore");
-				#else
-					sprintf(path, "%s/DT_highscore", getenv("HOME"));
-				#endif
-			#endif
 			FILE * file = fopen(path, "rb");
 			
 			if (file == NULL)
