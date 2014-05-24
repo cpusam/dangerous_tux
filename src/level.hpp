@@ -130,24 +130,11 @@ class CLevel: public CStateMachine
 
 		void draw (  )
 		{
-			if (bg)
-			{
-				#ifndef USE_SDL2
-					bg->draw(cam, screen);
-				#else
-					bg->draw(cam, renderer);
-				#endif
-			}
-			else
-			{
-				SDL_Rect r = cam->get_dimension();
-				#ifndef USE_SDL2
-					SDL_FillRect(screen, &r, SDL_MapRGB(screen->format, 0xb6,0xb6,0xb6));
-				#else
-					SDL_SetRenderDrawColor(renderer, 0xb6,0xb6,0xb6, 0xff);
-					SDL_RenderFillRect(renderer, &r);
-				#endif
-			}
+			#ifndef USE_SDL2
+				bg->draw_hor(cam, screen);
+			#else
+				bg->draw_hor(cam, renderer);
+			#endif
 			
 			#ifndef USE_SDL2
 				map->draw(cam, screen);
@@ -656,7 +643,6 @@ class CLevel: public CStateMachine
 						num_level->set_pos(SVect(level->get_pos().x + level->get_texture_width(), 0));
 					#endif
 
-					widget->set_id("main_window");
 					widget->show();
 					gun->show(false);
 					jetpack->show(false);

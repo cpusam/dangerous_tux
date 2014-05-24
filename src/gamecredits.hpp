@@ -11,7 +11,7 @@ enum EGameCreditsState
 class CGameCredits: public CStateMachine
 {
 	protected:
-		CWidget widget;
+		//CWidget widget;
 		CAnimation anim; // apenas para contar o tempo
 		CAnimation tux_anim;
 		SVect tux_pos;
@@ -64,6 +64,7 @@ class CGameCredits: public CStateMachine
 				{83,65,77,85,69,76,32,76,69,79,78,65,82,68,79},
 			};
 			
+			/*
 			CLabel * g = new CLabel(s[0], (SDL_Color){255,0,0,0});
 			widget.add_child(g);
 			CLabel * gg = new CLabel(s[1], (SDL_Color){255,255,0,0});
@@ -87,6 +88,7 @@ class CGameCredits: public CStateMachine
 				p->set_rel_pos(SVect(-(p->get_texture_width()/2), gg->get_texture_height() + gg->get_rel_pos().y));
 				ps->set_rel_pos(SVect(-(ps->get_texture_width()/2), p->get_texture_height() + p->get_rel_pos().y));
 			#endif
+			*/
 			
 			#if _WIN32 || _WIN64
 				#ifndef PREFIX
@@ -127,7 +129,8 @@ class CGameCredits: public CStateMachine
 				tux_anim.add_frame((SDL_Rect){0,  234,214,234}, 5); // meio
 				tux_anim.add_frame((SDL_Rect){0,2*234,214,234}, 3);
 				tux_anim.add_frame((SDL_Rect){0,  234,214,234}, 5); // meio
-				tux_pos.x = widget.get_pos().x - tux_anim.surface->w/2;
+				//tux_pos.x = widget.get_pos().x - tux_anim.surface->w/2;
+				tux_pos.x = (960 - tux_anim.surface->w)/2;
 				
 				if (!bg.set_surface(optimize_surface_alpha(IMG_Load(bg_path))))
 					throw "CGameCredits: não foi possível carregar credits_BG.png\n";
@@ -144,14 +147,15 @@ class CGameCredits: public CStateMachine
 				tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 5); // meio
 				tux_anim.add_frame(texture, (SDL_Rect){0,2*234,214,234}, 3);
 				tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 5); // meio
-				tux_pos.x = widget.get_pos().x - texture_width(texture)/2;
+				//tux_pos.x = widget.get_pos().x - texture_width(texture)/2;
+				tux_pos.x = (960 - texture_width(texture))/2
 				
 				aux = IMG_Load(bg_path);
 				if (!bg.set_texture(SDL_CreateTextureFromSurface(r, aux)))
 					throw "CGameCredits: não foi possível carregar credits_BG.png\n";
 				SDL_FreeSurface(aux);
 			#endif
-			widget.set_pos(SVect(960/2, 358/2));
+			//widget.set_pos(SVect(960/2, 358/2));
 			tux_pos.y = 358;
 			
 			#ifndef USE_SDL2
@@ -164,9 +168,11 @@ class CGameCredits: public CStateMachine
 		
 		~CGameCredits (  )
 		{
+		/*
 			CWidget * w = widget.get_child(0);
 			for (int i = 0; w; i++, w = widget.get_child(i))
 				delete w;
+		*/
 
 			delete cam;
 			#ifndef USE_SDL2
@@ -183,7 +189,7 @@ class CGameCredits: public CStateMachine
 				bg.draw_hor(cam, screen);
 				tux_anim.draw(tux_pos.x, tux_pos.y, screen);
 
-				widget.draw(screen);
+				//widget.draw(screen);
 			}
 		#else
 			void draw ( SDL_Renderer * renderer )
@@ -194,7 +200,7 @@ class CGameCredits: public CStateMachine
 				bg.draw_hor(cam, renderer);
 				tux_anim.draw(tux_pos.x, tux_pos.y, renderer);
 
-				widget.draw(renderer);
+				//widget.draw(renderer);
 			}
 		#endif
 		
