@@ -137,9 +137,7 @@ class CGameCredits: public CStateMachine
 			#else
 				anim.add_frame(NULL, (SDL_Rect){0,0,0,0}, 250);
 				
-				SDL_Surface * aux = IMG_Load(path);
-				SDL_Texture * texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				SDL_Texture * texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CGameCredits: não foi possivel carregar tux_walk.png\n";
 				
@@ -148,12 +146,10 @@ class CGameCredits: public CStateMachine
 				tux_anim.add_frame(texture, (SDL_Rect){0,2*234,214,234}, 3);
 				tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 5); // meio
 				//tux_pos.x = widget.get_pos().x - texture_width(texture)/2;
-				tux_pos.x = (960 - texture_width(texture))/2
+				tux_pos.x = (960 - texture_width(texture))/2;
 				
-				aux = IMG_Load(bg_path);
-				if (!bg.set_texture(SDL_CreateTextureFromSurface(r, aux)))
+				if (!bg.set_texture(IMG_LoadTexture(r, bg_path)))
 					throw "CGameCredits: não foi possível carregar credits_BG.png\n";
-				SDL_FreeSurface(aux);
 			#endif
 			//widget.set_pos(SVect(960/2, 358/2));
 			tux_pos.y = 358;

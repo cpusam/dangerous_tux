@@ -112,9 +112,7 @@ class CWalkerAlien: public CGameEntity
 				anim[4].add_frame((SDL_Rect){48,48*2,48,48}, 6);
 				anim[4].add_frame((SDL_Rect){48*2,48*2,48,48}, 6);
 			#else
-				aux = IMG_Load(path);
-				texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CWalkerAlien: não foi possível abrir walkeralien_right.png\n";
 				
@@ -167,9 +165,7 @@ class CWalkerAlien: public CGameEntity
 				anim[5].add_frame((SDL_Rect){48,48*2,48,48}, 6);
 				anim[5].add_frame((SDL_Rect){48*2,48*2,48,48}, 6);
 			#else
-				aux = IMG_Load(path);
-				texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CWalkerAlien: não foi possível abrir walkeralien_left.png\n";
 				
@@ -369,23 +365,8 @@ class CWalkerAlien: public CGameEntity
 			
 			if (get_state() == INACTIVE_ALIEN)
 				return;
-
-			SDL_Rect a, b;
 			
-			a = cam->get_dimension();
-			a.x = cam->get_position().x - map->get_tilesize();
-			a.y = cam->get_position().y;
-			a.w += map->get_tilesize() * 2;
-			
-			b = dim;
-			b.x = pos.x + dim.x;
-			b.y = pos.y + dim.y;
-
-			if (!boudingbox(a, b) && !pointbox(init_pos + c_point[9], a))
-			{
-				reset();
-			}
-			else if (get_state() == STOPED_ALIEN)
+			if (get_state() == STOPED_ALIEN)
 			{
 				if (init_pos.x + c_point[9].x > player->get_pos().x)
 				{
@@ -403,6 +384,29 @@ class CWalkerAlien: public CGameEntity
 				vel.x = 0;
 				curr_anim->reset();
 				set_state(MOVING_ALIEN);
+			}
+			else
+			{
+				SDL_Rect a, b, c;
+			
+				a = cam->get_dimension();
+				a.x = cam->get_position().x - map->get_tilesize();
+				a.y = cam->get_position().y;
+				a.w += map->get_tilesize() * 2;
+			
+				b = dim;
+				b.x = pos.x + dim.x;
+				b.y = pos.y + dim.y;
+
+				c.x = init_pos.x + c_point[9].x;
+				c.y = init_pos.y + c_point[9].y;
+				c.w = dim.w;
+				c.h = dim.h;
+			
+				if (!boudingbox(a, b) && !boudingbox(c, a))
+				{
+					reset();
+				}
 			}
 		}
 		

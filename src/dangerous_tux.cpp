@@ -76,10 +76,12 @@ int main ( int argc, char **argv )
 				throw SDL_GetError();
 			SDL_WM_SetCaption("Dangerous Tux - beta version 2014", NULL);
 		#else
-			SDL_Window * window = SDL_CreateWindow("Dangerous Tux! BETA version", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
+			SDL_Window * window = SDL_CreateWindow("Dangerous Tux! BETA version 2014", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
 			SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 			
-			SDL_SetWindowTitle(window, "Dangerous Tux - beta version 2014");
+			SDL_Texture * target_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, TILESIZE * 20, TILESIZE * 13);
+			
+			
 			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // em fase de testes
 			SDL_RenderSetLogicalSize(renderer, TILESIZE * 20, TILESIZE * 13);
 		#endif
@@ -89,6 +91,7 @@ int main ( int argc, char **argv )
 			CPlayer player;
 			CGameScreen gamescreen(screen, &cam, &player, TILESIZE);
 		#else
+			CWriter::instance()->set_renderer(renderer);
 			CPlayer player(renderer);
 			CGameScreen gamescreen(window, renderer, &cam, &player, TILESIZE);
 		#endif
@@ -139,8 +142,16 @@ int main ( int argc, char **argv )
 				gamescreen.draw();
 				SDL_UpdateRect(screen, 0,0,0,0);
 			#else
-				SDL_RenderClear(renderer);
+				SDL_SetRenderTarget(renderer, target_texture);
 				gamescreen.draw();
+				SDL_RenderCopy(renderer, target_texture, NULL, NULL);
+				SDL_SetRenderTarget(renderer, NULL);
+				
+				//SDL_RenderPresent(renderer);
+				
+				SDL_SetRenderDrawColor(renderer, 0,0,0,255);
+				SDL_RenderClear(renderer);
+				SDL_RenderCopyEx(renderer, target_texture, NULL, NULL, 0, NULL, SDL_FLIP_NONE);
 				SDL_RenderPresent(renderer);
 			#endif
 
@@ -149,6 +160,7 @@ int main ( int argc, char **argv )
 		}
 		
 		#ifdef USE_SDL2
+			SDL_DestroyTexture(target_texture);
 			SDL_DestroyWindow(window);
 			SDL_DestroyRenderer(renderer);
 		#endif
@@ -179,12 +191,12 @@ int main ( int argc, char **argv )
 		return 1;
 	}
 
-	SDL_Quit();
 	IMG_Quit();
 	TTF_Quit();
 	CSoundPlayer::instance()->free_sounds();
 	Mix_CloseAudio();
-
+	SDL_Quit();
+	
 	return 0;
 }
 

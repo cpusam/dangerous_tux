@@ -60,15 +60,13 @@ class CGameTitle: public CStateMachine
 			
 			#ifndef USE_SDL2
 				background = optimize_surface_alpha(IMG_Load(path));
-				if (!background)
-					throw "CGameTitle: não conseguiu carregar imagem de background\n";
 			#else
-				aux = IMG_Load(path);
-				background = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
-				if (!background)
-					throw "CGameTitle: não conseguiu carregar imagem de background\n";
+				background = IMG_LoadTexture(r, path);
 			#endif
+				
+			if (!background)
+				throw "CGameTitle: não conseguiu carregar imagem de background\n";
+
 			
 			#if _WIN32 || _WIN64
 				#ifndef PREFIX
@@ -86,15 +84,13 @@ class CGameTitle: public CStateMachine
 
 			#ifndef USE_SDL2
 				title_name = optimize_surface_alpha(IMG_Load(path));
-				if (!title_name)
-					throw "CGameTitle: não conseguiu carregar imagem de título\n";
 			#else
-				aux = IMG_Load(path);
-				title_name = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
-				if (!title_name)
-					throw "CGameTitle: não conseguiu carregar imagem de título\n";
+				title_name = IMG_LoadTexture(r, path);
 			#endif
+
+			if (!title_name)
+				throw "CGameTitle: não conseguiu carregar imagem de título\n";
+
 		
 			#if _WIN32 || _WIN64
 				#ifndef PREFIX
@@ -138,9 +134,7 @@ class CGameTitle: public CStateMachine
 				tux_rocket.add_frame((SDL_Rect){0,599*4,319,599}, 3);
 				tux_rocket.add_frame((SDL_Rect){0,599*5,319,599}, 3);
 			#else
-				aux = IMG_Load(path);
-				texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CGameTitle: não conseguiu carregar imagem do tux no foguete\n";
 				
@@ -162,9 +156,7 @@ class CGameTitle: public CStateMachine
 					#endif
 				#endif
 				
-				aux = IMG_Load(path);
-				texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CGameTitle: não conseguiu carregar segunda imagem do tux no foguete\n";
 				
@@ -198,11 +190,7 @@ class CGameTitle: public CStateMachine
 			#endif
 			if (!CWriter::instance()->set_font(path, 70))
 				throw "CGameTitle: não foi possível carregar fonte\n";
-			
-			#if USE_SDL2
-				CWriter::instance()->set_renderer(r);
-			#endif
-			
+
 			press_enter = new CLabel("PRESS ENTER!", (SDL_Color){0,0,0,0});
 			press_enter->set_pos(SVect(188,439));
 			version = new CLabel("BETA VERSION - 2014", (SDL_Color){255,255,0,0});

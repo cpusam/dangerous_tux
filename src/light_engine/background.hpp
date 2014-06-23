@@ -120,9 +120,23 @@ class CBackground
 				SDL_QueryTexture(texture, NULL, NULL, &w, &h);
 			#endif
 			
-			p = cam->get_position();
-			d = cam->get_dimension();
-			src = d;
+			if (cam)
+			{
+				p = cam->get_position();
+				d = cam->get_dimension();
+				src = d;
+			}
+			else
+			{
+				#ifndef USE_SDL2
+					d = (SDL_Rect){0,0,screen->w,screen->h};
+				#else
+					int rw, rh;
+					SDL_RenderGetLogicalSize(renderer, &rw, &rh);
+					d = (SDL_Rect){0,0,rw,rh};
+				#endif
+				src = d;
+			}
 			
 			src.x = int(p.x);
 			src.y = int(p.y);

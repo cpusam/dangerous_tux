@@ -53,9 +53,7 @@ class CGameOver: public CStateMachine
 			#ifndef USE_SDL2
 				background = optimize_surface_alpha(IMG_Load(path));
 			#else
-				aux = IMG_Load(path);
-				background = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				background = IMG_LoadTexture(r, path);
 			#endif
 			
 			if (!background)
@@ -78,9 +76,7 @@ class CGameOver: public CStateMachine
 			#ifndef USE_SDL2
 				title = optimize_surface_alpha(IMG_Load(path));
 			#else
-				aux = IMG_Load(path);
-				title = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				title = IMG_LoadTexture(r, path);
 			#endif
 			
 			if (!title)
@@ -105,9 +101,7 @@ class CGameOver: public CStateMachine
 				if (!stars.surface)
 					throw "SGameOver: não conseguiu abrir gameover_stars\n";
 			#else
-				aux = IMG_Load(path);
-				texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "SGameOver: não conseguiu abrir gameover_stars\n";
 			#endif

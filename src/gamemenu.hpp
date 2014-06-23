@@ -681,9 +681,7 @@ class CGameMenu: public CStateMachine
 								throw path;
 							}
 						#else
-							aux = IMG_Load(path);
-							bg = new CBackground(SDL_CreateTextureFromSurface(renderer, aux));
-							SDL_FreeSurface(aux);
+							bg = new CBackground(IMG_LoadTexture(renderer, path));
 							if (!bg->get_texture())
 							{
 								sprintf(path, "CGameMenu: não foi possível abrir background %s%s\n", pimage, nimage.c_str());
@@ -758,9 +756,7 @@ class CGameMenu: public CStateMachine
 							if (!map->surface)
 								throw SDL_GetError();
 						#else
-							aux = IMG_Load(path);
-							map->texture = SDL_CreateTextureFromSurface(renderer, aux);
-							SDL_FreeSurface(aux);
+							map->texture = IMG_LoadTexture(renderer, path);
 							if (!map->texture)
 								throw SDL_GetError();
 						#endif

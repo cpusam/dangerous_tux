@@ -33,21 +33,26 @@ enum ESoundType
 
 enum ESoundState
 {
-	INACTIVE_SOUND,
-	PAUSED_SOUND,
-	PLAYING_SOUND
+	UNLOADED_SOUND, // som ainda não carregado
+	INACTIVE_SOUND, // som carregado e pronto para tocar
+	PAUSED_SOUND, // som pausado
+	PLAYING_SOUND // tocando o som
 };
 
-class CSound
+class CSound: public CStateMachine
 {
 	protected:
 		int type;
-		int state;
 		int channel; // canal usado para tocar o som
 		string id;
 		string path;
 		Mix_Chunk * chunk;
 		Mix_Music * music;
+	
+		virtual int update (  )
+		{
+			return get_state();
+		}
 	
 	public:
 		CSound (  )
@@ -55,23 +60,13 @@ class CSound
 			type = UNDEF_SOUND;
 			chunk = 0;
 			music = 0;
-			state = INACTIVE_SOUND;
+			set_state(UNLOADED_SOUND);
 			channel = -1;
 		}
 		
 		int get_type (  )
 		{
 			return type;
-		}
-		
-		int get_state (  )
-		{
-			return state;
-		}
-		
-		void set_state ( int s )
-		{
-			state = s;
 		}
 		
 		string get_id (  )
@@ -99,34 +94,115 @@ class CSound
 			return channel;
 		}
 		
-		bool play_sound ( int ch, int loops )
+		bool play ( int ch, int loops )
 		{
 			bool ret = false;
-			channel = ch;
-			
+					
 			switch (type)
 			{
 				case CHUNK_SOUND:
 					ch = Mix_PlayChannel(channel, chunk, loops);
 					if (channel == -1)
+					{
 						channel = ch;
-					ret = true;
+						ret = true;
+					}
 					break;
 				
 				case MUSIC_SOUND:
 					ch = Mix_PlayMusic(music, loops);
 					if (channel == -1)
+					{
 						channel = ch;
-					ret = true;
+						ret = true;
+					}
 					break;
+					
+				case UNDEF_SOUND:
+					if (chunk || music)
+						set_state(INACTIVE_SOUND);
+					else
+						set_state(UNLOADED_SOUND);
+					return false;
+				
 				default:
 					break;
 			}
 			
+			if (ret)
+				set_state(PLAYING_SOUND);
+			else
+				set_state(PAUSED_SOUND);
+			
 			return ret;
 		}
 		
-		void free_sound (  )
+		bool pause (  )
+		{
+			bool ret = false;
+			
+			switch (type)
+			{
+				case CHUNK_SOUND:
+					if (channel > -1)
+					{
+						Mix_Pause(channel);
+						ret = true;
+					}
+					break;
+				
+				case MUSIC_SOUND:
+					Mix_PauseMusic();
+					ret = true;
+					break;
+				
+				case UNDEF_SOUND:
+					if (chunk || music)
+						set_state(INACTIVE_SOUND);
+					else
+						set_state(UNLOADED_SOUND);
+					return false;
+				
+				default:
+					break;
+			}
+			
+			if (ret)
+				set_state(PAUSED_SOUND);
+			else
+				set_state(PLAYING_SOUND);
+			
+			return ret;
+		}
+		
+		bool resume (  )
+		{
+			bool ret = false;
+			
+			switch (type)
+			{
+				case CHUNK_SOUND:
+					if (channel > -1)
+					{
+						Mix_Resume(channel);
+						ret = true;
+					}
+					break;
+				
+				case MUSIC_SOUND:
+					
+					break;
+				
+				case UNDEF_SOUND:
+					if (chunk || music)
+						set_state(INACTIVE_SOUND);
+					else
+						set_state(UNLOADED_SOUND);
+					return false;
+			}
+		}
+		
+		void free (  )
 		{
 			if (chunk)
 				Mix_FreeChunk(chunk);
@@ -136,6 +212,9 @@ class CSound
 			
 			chunk = 0;
 			music = 0;
+			
+			set_state(UNLOADED_SOUND);
+			type = UNDEF_SOUND;
 		}
 		
 		void set_chunk ( string p )
@@ -196,10 +275,10 @@ class CSoundPlayer: public CStateMachine
 	public:
 		~CSoundPlayer (  )
 		{
+			free_sounds();
+			
 			if (singleton)
 				delete singleton;
-			
-			free_sounds();
 		}
 		
 		static CSoundPlayer * instance (  )
@@ -213,7 +292,7 @@ class CSoundPlayer: public CStateMachine
 		void free_sounds (  )
 		{
 			for (vector <CSound>::iterator it = sound.begin(); it != sound.end(); it++)
-				it->free_sound();
+				it->free();
 			
 			sound.clear();
 		}
@@ -251,25 +330,7 @@ class CSoundPlayer: public CStateMachine
 			
 			for (vector <CSound>::iterator it = sound.begin(); it != sound.end(); it++)
 				if (id == it->get_id())
-				{
-					switch (it->get_type())
-					{
-						case CHUNK_SOUND:
-							Mix_Pause(it->get_channel());
-							ret = true;
-							break;
-						case MUSIC_SOUND:
-							Mix_PauseMusic();
-							ret = true;
-							break;
-					}
-					
-					if (ret)
-					{
-						it->set_state(PAUSED_SOUND);
-						break;
-					}
-				}
+					it->pause();
 			
 			return ret;
 		}
@@ -311,11 +372,11 @@ class CSoundPlayer: public CStateMachine
 				{
 					if (it->get_state() == PAUSED_SOUND)
 					{
-						resume_sound(id);
+						it->resume();
 						ret = true;
 					}
 					else
-						ret = it->play_sound(channel, loops);
+						ret = it->play(channel, loops);
 					it->set_state(PLAYING_SOUND);
 					
 					if (ret)

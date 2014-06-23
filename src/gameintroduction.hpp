@@ -88,9 +88,7 @@ class CGameIntroduction: public CStateMachine
 			#ifndef USE_SDL2
 				browser_bg = optimize_surface_alpha(IMG_Load(path));
 			#else
-				aux = IMG_Load(path);
-				browser_bg = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				browser_bg = IMG_LoadTexture(r, path);
 			#endif
 			if (!browser_bg)
 				throw "CGameIntroduction: não foi possível carregar scene1_BG.png\n";
@@ -112,9 +110,7 @@ class CGameIntroduction: public CStateMachine
 			#ifndef USE_SDL2
 				keyboard_bg = optimize_surface_alpha(IMG_Load(path));
 			#else
-				aux = IMG_Load(path);
-				keyboard_bg = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				keyboard_bg = IMG_LoadTexture(r, path);
 			#endif
 			if (!keyboard_bg)
 				throw "CGameIntroduction: não foi possível carregar scene2_BG.png\n";
@@ -136,9 +132,7 @@ class CGameIntroduction: public CStateMachine
 			#ifndef USE_SDL2
 				kernel_site = optimize_surface_alpha(IMG_Load(path));
 			#else
-				aux = IMG_Load(path);
-				kernel_site = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				kernel_site = IMG_LoadTexture(r, path);
 			#endif
 			if (!kernel_site)
 				throw "CGameIntroduction: não foi possível carregar scene3_BG.png\n";
@@ -160,9 +154,7 @@ class CGameIntroduction: public CStateMachine
 			#ifndef USE_SDL2
 				igloo_bg = optimize_surface_alpha(IMG_Load(path));
 			#else
-				aux = IMG_Load(path);
-				igloo_bg = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				igloo_bg = IMG_LoadTexture(r, path);
 			#endif
 			if (!igloo_bg)
 				throw "CGameIntroduction: não foi possível carregar scene5.jpg\n";
@@ -255,9 +247,7 @@ class CGameIntroduction: public CStateMachine
 				if (!anim[0].surface)
 					throw "CGameIntroduction: não foi possível carregar scene2-Enter.png\n";
 			#else
-				aux = IMG_Load(path);
-				texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CGameIntroduction: não foi possível carregar scene2-Enter.png\n";
 				
@@ -286,9 +276,7 @@ class CGameIntroduction: public CStateMachine
 				if (!anim[1].surface)
 					throw "CGameIntroduction: não foi possível carregar scene2-Hand.png\n";
 			#else
-				aux = IMG_Load(path);
-				texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CGameIntroduction: não foi possível carregar scene2-Hand.png\n";
 				
@@ -317,9 +305,7 @@ class CGameIntroduction: public CStateMachine
 				if (!anim[3].surface)
 					throw "CGameIntroduction: não foi possível carregar scene4.png\n";
 			#else
-				aux = IMG_Load(path);
-				texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CGameIntroduction: não foi possível carregar scene4.png\n";
 				
@@ -360,9 +346,7 @@ class CGameIntroduction: public CStateMachine
 					sprintf(path, "%s/scene1-Kernel.png", paux);
 				#endif
 				
-				aux = IMG_Load(path);
-				texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CGameIntroduction: não foi possível carregar scene1-Kernel.png\n";
 				
@@ -400,7 +384,7 @@ class CGameIntroduction: public CStateMachine
 				anim[9].add_frame(texture, (SDL_Rect){}, 15);
 				anim[9].add_frame(texture, (SDL_Rect){}, 15);
 				anim[9].add_frame(texture, (SDL_Rect){}, 15);
-				anim[8].set_repeat(false);
+				anim[9].set_repeat(false);
 				*/
 			#endif
 			

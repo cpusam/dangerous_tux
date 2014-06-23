@@ -48,9 +48,7 @@ class CGameTransition: public CStateMachine
 					throw "CGameTransition: não foi possível carregar tiles.png\n";
 			#else
 				renderer = r;
-				SDL_Surface * aux = IMG_Load(path);
-				map->texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				map->texture = IMG_LoadTexture(renderer, path);
 				if (!map->texture)
 					throw "CGameTransition: não foi possível carregar tiles.png\n";
 			#endif

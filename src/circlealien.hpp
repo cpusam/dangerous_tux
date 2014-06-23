@@ -96,8 +96,7 @@ class CCircleAlien: public CGameEntity
 				for (int i(1); i < anim.size(); i++)
 					anim[i].surface = anim[0].surface;
 			#else
-				aux = IMG_Load(path);
-				SDL_Texture * texture = SDL_CreateTextureFromSurface(r, aux);
+				SDL_Texture * texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CCircleAlien: não foi possível carregar circlealien.png\n";
 			#endif
@@ -299,22 +298,7 @@ class CCircleAlien: public CGameEntity
 			if (get_state() == INACTIVE_ALIEN)
 				return;
 			
-			SDL_Rect a, b;
-			
-			a = cam->get_dimension();
-			a.x = cam->get_position().x - map->get_tilesize();
-			a.y = cam->get_position().y;
-			a.w += map->get_tilesize() * 2;
-			
-			b = dim;
-			b.x = pos.x + dim.x;
-			b.y = pos.y + dim.y;
-
-			if (!boudingbox(a, b) && !pointbox(init_pos + c_point[8], a))
-			{
-				reset();
-			}
-			else if (get_state() == STOPED_ALIEN)
+			if (get_state() == STOPED_ALIEN)
 			{
 				switch (dir)
 				{
@@ -352,6 +336,29 @@ class CCircleAlien: public CGameEntity
 				
 				curr_anim->reset();
 				set_state(MOVING_ALIEN);
+			}
+			else
+			{
+				SDL_Rect a, b, c;
+				
+				a = cam->get_dimension();
+				a.x = cam->get_position().x - map->get_tilesize();
+				a.y = cam->get_position().y;
+				a.w += map->get_tilesize() * 2;
+			
+				b = dim;
+				b.x = pos.x + dim.x;
+				b.y = pos.y + dim.y;
+			
+				c.x = init_pos.x + c_point[8].x;
+				c.y = init_pos.y + c_point[8].y;
+				c.w = dim.w;
+				c.h = dim.h;
+
+				if (!boudingbox(a, b) && !boudingbox(c, a))
+				{
+					reset();
+				}
 			}
 		}
 		

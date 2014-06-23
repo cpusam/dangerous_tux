@@ -40,9 +40,7 @@ class CKernelSignal: public CGameEntity
 				if (!anim.surface)
 					throw "CKernelSignal: não foi possível abrir kernel_signal.png\n";
 			#else
-				aux = IMG_Load(path);
-				SDL_Texture * texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				SDL_Texture * texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CKernelSignal: não foi possível abrir kernel_signal.png\n";
 			#endif
@@ -208,9 +206,7 @@ class CExitSignal: public CGameEntity
 				if (!anim.surface)
 					throw "CExitSignal: não foi possível abrir exit_signal.png\n";
 			#else
-				aux = IMG_Load(path);
-				SDL_Texture * texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				SDL_Texture * texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CExitSignal: não foi possível abrir exit_signal.png\n";
 			#endif

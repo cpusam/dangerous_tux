@@ -173,36 +173,28 @@ class CPlayer: public CGameEntity
 					#ifndef USE_SDL2
 						anim[0].surface = optimize_surface_alpha(IMG_Load(path));
 					#else
-						aux = IMG_Load(path);
-						tright = SDL_CreateTextureFromSurface(r, aux);
-						SDL_FreeSurface(aux);
+						tright = IMG_LoadTexture(r, path);
 					#endif
 					
 					sprintf(path, "%s\\images\\tux_left.png", p2);
 					#ifndef USE_SDL2
 						anim[6].surface = optimize_surface_alpha(IMG_Load(path));
 					#else
-						aux = IMG_Load(path);
-						tleft = SDL_CreateTextureFromSurface(r, aux);
-						SDL_FreeSurface(aux);
+						tleft = IMG_LoadTexture(r, path);
 					#endif
 				#else
 					sprintf(path, "%s\\dangeroustux\\images\\tux_right.png", PREFIX);
 					#ifndef USE_SDL2
 						anim[0].surface = optimize_surface_alpha(IMG_Load(path));
 					#else
-						aux = IMG_Load(path);
-						tright = SDL_CreateTextureFromSurface(r, aux);
-						SDL_FreeSurface(aux);
+						tright = IMG_LoadTexture(r, path);
 					#endif
 					
 					sprintf(path, "%s\\dangeroustux\\images\\tux_left.png", PREFIX);
 					#ifndef USE_SDL2
 						anim[6].surface = optimize_surface_alpha(IMG_Load(path));
 					#else
-						aux = IMG_Load(path);
-						tleft = SDL_CreateTextureFromSurface(r, aux);
-						SDL_FreeSurface(aux);
+						tleft = IMG_LoadTexture(r, path);
 					#endif
 				#endif	
 			#else
@@ -212,36 +204,28 @@ class CPlayer: public CGameEntity
 					#ifndef USE_SDL2
 						anim[0].surface = optimize_surface_alpha(IMG_Load(path));
 					#else
-						aux = IMG_Load(path);
-						tright = SDL_CreateTextureFromSurface(r, aux);
-						SDL_FreeSurface(aux);
+						tright = IMG_LoadTexture(r, path);
 					#endif
 					
 					sprintf(path, "./images/tux_left.png");
 					#ifndef USE_SDL2
 						anim[6].surface = optimize_surface_alpha(IMG_Load(path));
 					#else
-						aux = IMG_Load(path);
-						tleft = SDL_CreateTextureFromSurface(r, aux);
-						SDL_FreeSurface(aux);
+						tleft = IMG_LoadTexture(r, path);
 					#endif
 				#else
 					sprintf(path, "%s/share/games/dangeroustux/images/tux_right.png", PREFIX);
 					#ifndef USE_SDL2
 						anim[0].surface = optimize_surface_alpha(IMG_Load(path));
 					#else
-						aux = IMG_Load(path);
-						tright = SDL_CreateTextureFromSurface(r, aux);
-						SDL_FreeSurface(aux);
+						tright = IMG_LoadTexture(r, path);
 					#endif
 
 					sprintf(path, "%s/share/games/dangeroustux/images/tux_left.png", PREFIX);
 					#ifndef USE_SDL2
 						anim[6].surface = optimize_surface_alpha(IMG_Load(path));
 					#else
-						aux = IMG_Load(path);
-						tleft = SDL_CreateTextureFromSurface(r, aux);
-						SDL_FreeSurface(aux);
+						tleft = IMG_LoadTexture(r, path);
 					#endif
 				#endif			
 			#endif

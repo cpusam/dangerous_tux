@@ -60,23 +60,13 @@
 
 	void fill_rect ( CCamera * cam, SDL_Surface * screen, Uint32 color, SDL_Rect r )
 	{
-		SDL_Rect d;
-
 		if (cam)
 		{
-			d.x = (r.x - cam->get_position().x) + cam->get_dimension().x;
-			d.y = (r.y - cam->get_position().y) + cam->get_dimension().y;
-		}
-		else
-		{
-			d.x = r.x;
-			d.y = r.y;
+			r.x = (r.x - cam->get_position().x) + cam->get_dimension().x;
+			r.y = (r.y - cam->get_position().y) + cam->get_dimension().y;
 		}
 	
-		d.w = r.w;
-		d.h = r.h;
-	
-		SDL_FillRect(screen, &d, color);
+		SDL_FillRect(screen, &r, color);
 	}
 
 	void draw_surface ( SDL_Surface * surface, int x, int y, CCamera * cam, SDL_Surface * screen )

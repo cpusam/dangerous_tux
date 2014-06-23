@@ -219,9 +219,7 @@ class CLevel: public CStateMachine
 							throw path;
 						}
 					#else
-						aux = IMG_Load(path);
-						bg = new CBackground(SDL_CreateTextureFromSurface(renderer, aux));
-						SDL_FreeSurface(aux);
+						bg = new CBackground(IMG_LoadTexture(renderer, path));
 						if (!bg->get_texture())
 						{
 							sprintf(path, "CLevel: não foi possível abrir background %s%s\n", pimage, nimage.c_str());
@@ -292,9 +290,7 @@ class CLevel: public CStateMachine
 							if (!map->surface)
 								throw SDL_GetError();
 						#else
-							aux = IMG_Load(path);
-							map->texture = SDL_CreateTextureFromSurface(renderer, aux);
-							SDL_FreeSurface(aux);
+							map->texture = IMG_LoadTexture(renderer, path);
 							if (!map->texture)
 								throw SDL_GetError();
 						#endif
@@ -515,10 +511,7 @@ class CLevel: public CStateMachine
 					// define a fonte para CWriter
 					if (CWriter::instance()->set_font(path, 55) == 0)
 						throw "CLevel: Não conseguiu abrir fonte\n";
-					
-					#if USE_SDL2
-						CWriter::instance()->set_renderer(renderer);
-					#endif
+
 					// verifica se já foi adicionado algum widget
 					if (widget && widget->child_size() > 0) // se sim, pula adicionar de novo
 					{
@@ -596,9 +589,7 @@ class CLevel: public CStateMachine
 						if (!gun_img->get_surface())
 							throw SDL_GetError();
 					#else
-						aux = IMG_Load(path);
-						gun_img->set_texture(SDL_CreateTextureFromSurface(renderer, aux));
-						SDL_FreeSurface(aux);
+						gun_img->set_texture(IMG_LoadTexture(renderer, path));
 						if (!gun_img->get_texture())
 							throw SDL_GetError();
 					#endif

@@ -83,9 +83,7 @@ class CFlyerAlien: public CGameEntity
 				anim[2].add_frame((SDL_Rect){48,48*2,48,48}, 6);
 				anim[2].add_frame((SDL_Rect){48*2,48*2,48,48}, 6);
 			#else
-				aux = IMG_Load(path);
-				texture = SDL_CreateTextureFromSurface(r, aux);
-				SDL_FreeSurface(aux);
+				texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CFlyerAlien: não conseguiu abrir flyeralien.png\n";
 				
@@ -161,22 +159,7 @@ class CFlyerAlien: public CGameEntity
 			if (get_state() == INACTIVE_ALIEN)
 				return;
 			
-			SDL_Rect a, b;
-			
-			a = cam->get_dimension();
-			a.x = cam->get_position().x - map->get_tilesize();
-			a.y = cam->get_position().y;
-			a.w += map->get_tilesize() * 2;
-			
-			b = dim;
-			b.x = pos.x + dim.x;
-			b.y = pos.y + dim.y;
-
-			if (!boudingbox(a, b) && !pointbox(init_pos + c_point, a))
-			{
-				reset();
-			}
-			else if (get_state() == STOPED_ALIEN)
+			if (get_state() == STOPED_ALIEN)
 			{
 				if (init_pos.x + c_point.x > player->get_pos().x)
 					dir = LEFT_ALIEN; // move para esquerda
@@ -187,6 +170,29 @@ class CFlyerAlien: public CGameEntity
 				curr_anim = &anim[0]; // voando
 				curr_anim->reset();
 				set_state(MOVING_ALIEN);
+			}
+			else
+			{
+				SDL_Rect a, b, c;
+			
+				a = cam->get_dimension();
+				a.x = cam->get_position().x - map->get_tilesize();
+				a.y = cam->get_position().y;
+				a.w += map->get_tilesize() * 2;
+			
+				b = dim;
+				b.x = pos.x + dim.x;
+				b.y = pos.y + dim.y;
+
+				c.x = init_pos.x + c_point.x;
+				c.y = init_pos.y + c_point.y;
+				c.w = dim.w;
+				c.h = dim.h;
+			
+				if (!boudingbox(a, b) && !boudingbox(c, a))
+				{
+					reset();
+				}
 			}
 		}
 		
