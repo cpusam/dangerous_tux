@@ -4,7 +4,6 @@
 #include <sstream>
 #include <string.h>
 
-#include "gameentity.hpp"
 #include "player.hpp"
 #include "walkeralien.hpp"
 #include "flyeralien.hpp"
@@ -25,6 +24,7 @@ class CLevel: public CStateMachine
 		CTileMapView * map;
 		CBackground * bg;
 		string bg_path;
+		string level_path;
 		vector <SVect> jetpacks; // posição de cada jetpack no mapa
 
 	public:
@@ -118,6 +118,11 @@ class CLevel: public CStateMachine
 			return bg_path;
 		}
 		
+		string get_level_path (  )
+		{
+			return level_path;
+		}
+		
 		CTileMapView * get_map (  )
 		{
 			return map;
@@ -203,6 +208,7 @@ class CLevel: public CStateMachine
 						#endif
 					#endif
 					
+					level_path = path;
 					string nimage; // nome da imagem
 					ifstream file(path);
 					if (!file)
@@ -388,6 +394,10 @@ class CLevel: public CStateMachine
 					map->remove_tile('P'); // remove o jogador da visão
 					map->remove_tile('F'); // remove o flyer alien da visão
 					map->remove_tile('G'); // remove o walker alien da visão
+					map->set_source('L', (SDL_Rect){ts*11,ts*3,ts,ts});
+					map->set_source('M', (SDL_Rect){0,ts*4,ts,ts});
+					map->set_source('N', (SDL_Rect){ts,ts*4,ts,ts});
+					map->set_source('O', (SDL_Rect){ts*2,ts*4,ts,ts});
 					map->set_source('a', (SDL_Rect){0,0,ts,ts});
 					map->set_source('b', (SDL_Rect){ts,0,ts,ts});
 					map->set_source('c', (SDL_Rect){ts*2,0,ts,ts});
@@ -494,6 +504,34 @@ class CLevel: public CStateMachine
 						a.add_frame(map->texture, (SDL_Rect){ts*3,ts*3,ts,ts}, 4);
 					#endif
 					map->add_animation(a, 'K');
+					
+					a.clear_frames();
+					#ifndef USE_SDL2
+						a.add_frame((SDL_Rect){ts*6,ts*4,ts,ts}, 6);
+						a.add_frame((SDL_Rect){ts*5,ts*4,ts,ts}, 6);
+						a.add_frame((SDL_Rect){ts*4,ts*4,ts,ts}, 6);
+						a.add_frame((SDL_Rect){ts*3,ts*4,ts,ts}, 6);
+					#else
+						a.add_frame(map->texture, (SDL_Rect){ts*6,ts*4,ts,ts}, 6);
+						a.add_frame(map->texture, (SDL_Rect){ts*5,ts*4,ts,ts}, 6);
+						a.add_frame(map->texture, (SDL_Rect){ts*4,ts*4,ts,ts}, 6);
+						a.add_frame(map->texture, (SDL_Rect){ts*3,ts*4,ts,ts}, 6);
+					#endif
+					map->add_animation(a, 'x');
+					
+					a.clear_frames();
+					#ifndef USE_SDL2
+						a.add_frame((SDL_Rect){ts*10,ts*4,ts,ts}, 6);
+						a.add_frame((SDL_Rect){ts*9,ts*4,ts,ts}, 6);
+						a.add_frame((SDL_Rect){ts*8,ts*4,ts,ts}, 6);
+						a.add_frame((SDL_Rect){ts*7,ts*4,ts,ts},6);
+					#else
+						a.add_frame(map->texture, (SDL_Rect){ts*10,ts*4,ts,ts}, 6);
+						a.add_frame(map->texture, (SDL_Rect){ts*9,ts*4,ts,ts}, 6);
+						a.add_frame(map->texture, (SDL_Rect){ts*8,ts*4,ts,ts}, 6);
+						a.add_frame(map->texture, (SDL_Rect){ts*7,ts*4,ts,ts}, 6);
+					#endif
+					map->add_animation(a, 'y');
 
 					#if _WIN32 || _WIN64
 						#ifndef PREFIX
