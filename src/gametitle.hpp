@@ -1,6 +1,12 @@
 #ifndef GAMETITLE_HPP
 #define GAMETITLE_HPP
 
+enum EGameTitleState
+{
+	RUNNING_GAMETITLE,
+	BACKGROUND_GAMETITLE
+};
+
 class CGameTitle: public CStateMachine
 {
 	protected:
@@ -193,7 +199,7 @@ class CGameTitle: public CStateMachine
 
 			press_enter = new CLabel("PRESS ENTER!", (SDL_Color){0,0,0,0});
 			press_enter->set_pos(SVect(188,439));
-			version = new CLabel("BETA VERSION - 2014", (SDL_Color){255,255,0,0});
+			version = new CLabel("BETA VERSION - 2014", (SDL_Color){0,255,0,255});
 			#ifndef USE_SDL2
 				version->set_pos(SVect((960 - version->get_surface()->w)/2, 624 - version->get_surface()->h));
 				p_enter.add_frame((SDL_Rect){0,0,0,0}, 25);
@@ -232,60 +238,114 @@ class CGameTitle: public CStateMachine
 		{
 			tn_pos = tn_init;
 			tux_rocket.reset();
+			set_state(RUNNING_GAMETITLE);
 		}
-	
+		
+		void input ( SDL_Event & event )
+		{
+			if (event.type == SDL_KEYDOWN)
+				if (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER)
+				{
+					press_enter->show(false);
+					set_state(BACKGROUND_GAMETITLE);
+				}
+		}
+		
 		int update (  )
 		{
-			tn_pos.x += tn_vel;
-			if (tn_pos.x > tn_final.x)
-				tn_pos = tn_final;
+			switch (get_state())
+			{
+				case RUNNING_GAMETITLE:
+					tn_pos.x += tn_vel;
+					if (tn_pos.x > tn_final.x)
+						tn_pos = tn_final;
 			
-			tux_rocket.update();
+					tux_rocket.update();
 			
-			p_enter.update();
-			if (p_enter.get_index() == 1)
-				press_enter->show(false);
-			else
-				press_enter->show();
+					p_enter.update();
+					if (p_enter.get_index() == 1)
+						press_enter->show(false);
+					else
+						press_enter->show();
+					break;
+				
+				case BACKGROUND_GAMETITLE:
+					tux_rocket.update();
+					break;
+				
+				default:
+					set_state(RUNNING_GAMETITLE);
+					break;
+			}
 			
 			return get_state();
 		}
 	
 		#ifndef USE_SDL2
-			void draw ( CCamera * cam, SDL_Surface * screen )
+			void draw ( SDL_Surface * screen )
 			{
-				SDL_BlitSurface(background, NULL, screen, NULL);
+				switch (get_state())
+				{
+					case RUNNING_GAMETITLE:
+						SDL_BlitSurface(background, NULL, screen, NULL);
 		
-				SDL_Rect d;
+						SDL_Rect d;
 		
-				d.x = tn_pos.x;
-				d.y = tn_pos.y;
-				d.w = title_name->w;
-				d.h = title_name->h;
+						d.x = tn_pos.x;
+						d.y = tn_pos.y;
+						d.w = title_name->w;
+						d.h = title_name->h;
 		
-				SDL_BlitSurface(title_name, NULL, screen, &d);
+						SDL_BlitSurface(title_name, NULL, screen, &d);
 		
-				tux_rocket.draw(tr_pos.x, tr_pos.y, screen);
-				press_enter->draw(screen);
-				version->draw(screen);
+						tux_rocket.draw(tr_pos.x, tr_pos.y, screen);
+						press_enter->draw(screen);
+						version->draw(screen);
+						break;
+					
+					case BACKGROUND_GAMETITLE:
+						SDL_BlitSurface(background, NULL, screen, NULL);
+		
+						tux_rocket.draw(tr_pos.x, tr_pos.y, screen);
+						version->draw(screen);
+						break;
+					
+					default:
+						break;
+				}
 			}
 		#else
-			void draw ( CCamera * cam, SDL_Renderer * renderer )
+			void draw ( SDL_Renderer * renderer )
 			{
-				SDL_RenderCopy(renderer, background, NULL, NULL);
+				switch (get_state())
+				{
+					case RUNNING_GAMETITLE:
+						SDL_RenderCopy(renderer, background, NULL, NULL);
 		
-				SDL_Rect d;
+						SDL_Rect d;
 		
-				d.x = tn_pos.x;
-				d.y = tn_pos.y;
-				d.w = texture_width(title_name);
-				d.h = texture_height(title_name);
+						d.x = tn_pos.x;
+						d.y = tn_pos.y;
+						d.w = texture_width(title_name);
+						d.h = texture_height(title_name);
 		
-				SDL_RenderCopy(renderer, title_name, NULL, &d);
+						SDL_RenderCopy(renderer, title_name, NULL, &d);
 		
-				tux_rocket.draw(tr_pos.x, tr_pos.y, renderer);
-				press_enter->draw(renderer);
-				version->draw(renderer);
+						tux_rocket.draw(tr_pos.x, tr_pos.y, renderer);
+						press_enter->draw(renderer);
+						version->draw(renderer);
+						break;
+					
+					case BACKGROUND_GAMETITLE:
+						SDL_RenderCopy(renderer, background, NULL, NULL);
+	
+						tux_rocket.draw(tr_pos.x, tr_pos.y, renderer);
+						version->draw(renderer);
+						break;
+					
+					default:
+						break;
+				}
 			}
 		#endif
 };

@@ -398,6 +398,8 @@ class CLevel: public CStateMachine
 					map->set_source('M', (SDL_Rect){0,ts*4,ts,ts});
 					map->set_source('N', (SDL_Rect){ts,ts*4,ts,ts});
 					map->set_source('O', (SDL_Rect){ts*2,ts*4,ts,ts});
+					map->set_source('Q', (SDL_Rect){ts*11,ts*4,ts,ts});
+					map->set_source('R', (SDL_Rect){0,ts*5,ts,ts});
 					map->set_source('a', (SDL_Rect){0,0,ts,ts});
 					map->set_source('b', (SDL_Rect){ts,0,ts,ts});
 					map->set_source('c', (SDL_Rect){ts*2,0,ts,ts});
@@ -433,7 +435,7 @@ class CLevel: public CStateMachine
 						a.add_frame(map->texture, (SDL_Rect){ts,ts * 2,ts,ts}, 4);
 						a.add_frame(map->texture, (SDL_Rect){ts * 2,ts * 2,ts,ts}, 4);
 					#endif
-					map->add_animation(a, 'o');
+					map->add_animation(a, 'o'); // tile de fogo
 
 					a.clear_frames();
 					#ifndef USE_SDL2
@@ -445,7 +447,7 @@ class CLevel: public CStateMachine
 						a.add_frame(map->texture, (SDL_Rect){ts * 4,ts * 2,ts,ts}, 4);
 						a.add_frame(map->texture, (SDL_Rect){ts * 5,ts * 2,ts,ts}, 4);
 					#endif
-					map->add_animation(a, 'p');
+					map->add_animation(a, 'p'); // macarrão roxo
 					
 					a.clear_frames();
 					#ifndef USE_SDL2
@@ -503,7 +505,7 @@ class CLevel: public CStateMachine
 						a.add_frame(map->texture, (SDL_Rect){ts*2,ts*3,ts,ts}, 4);
 						a.add_frame(map->texture, (SDL_Rect){ts*3,ts*3,ts,ts}, 4);
 					#endif
-					map->add_animation(a, 'K');
+					map->add_animation(a, 'K'); // kernel
 					
 					a.clear_frames();
 					#ifndef USE_SDL2
@@ -517,7 +519,7 @@ class CLevel: public CStateMachine
 						a.add_frame(map->texture, (SDL_Rect){ts*4,ts*4,ts,ts}, 6);
 						a.add_frame(map->texture, (SDL_Rect){ts*3,ts*4,ts,ts}, 6);
 					#endif
-					map->add_animation(a, 'x');
+					map->add_animation(a, 'x'); // água fervente
 					
 					a.clear_frames();
 					#ifndef USE_SDL2
@@ -531,7 +533,7 @@ class CLevel: public CStateMachine
 						a.add_frame(map->texture, (SDL_Rect){ts*8,ts*4,ts,ts}, 6);
 						a.add_frame(map->texture, (SDL_Rect){ts*7,ts*4,ts,ts}, 6);
 					#endif
-					map->add_animation(a, 'y');
+					map->add_animation(a, 'y'); // piche
 
 					#if _WIN32 || _WIN64
 						#ifndef PREFIX

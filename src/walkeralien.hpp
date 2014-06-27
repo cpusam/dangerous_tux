@@ -47,10 +47,16 @@ class CWalkerAlien: public CGameEntity
 			SVect pd[2] = {SVect(0,20),SVect(38,20)};
 			gun.set_pos_dir(pd);
 			
+			// tiles onde se pode caminhar
 			coll_tiles.push_back('a');
 			coll_tiles.push_back('b');
 			coll_tiles.push_back('c');
+			coll_tiles.push_back('s');
+			coll_tiles.push_back('v');
 			coll_tiles.push_back('u');
+			coll_tiles.push_back('w');
+			coll_tiles.push_back('Q');
+			coll_tiles.push_back('R');
 			
 			// pontos de colisão
 			// colisão a direita

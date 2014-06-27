@@ -156,7 +156,8 @@ int main ( int argc, char **argv )
 			#endif
 
 			if (FPSManager::instance()->get_delta())
-				gamescreen.update();
+				if (gamescreen.update() == EXIT_SCREEN)
+					done = 1;
 		}
 		
 		#ifdef USE_SDL2

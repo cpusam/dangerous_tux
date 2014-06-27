@@ -44,10 +44,16 @@ class CCircleAlien: public CGameEntity
 			map = player->get_map();
 			dim = (SDL_Rect){10,9,15,15};
 			
+			// define os tiles de colisão completa
 			coll_tiles.push_back('a');
 			coll_tiles.push_back('b');
 			coll_tiles.push_back('c');
 			coll_tiles.push_back('s');
+			coll_tiles.push_back('v');
+			coll_tiles.push_back('u');
+			coll_tiles.push_back('w');
+			coll_tiles.push_back('Q');
+			coll_tiles.push_back('R');
 			
 			// pontos de colisão
 			// à direita

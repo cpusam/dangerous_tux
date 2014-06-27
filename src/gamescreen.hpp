@@ -32,7 +32,8 @@ enum EScreenState
 	FINAL_SCREEN,
 	GAMEOVER_SCREEN,
 	HIGHSCORE_SCREEN,
-	GET_SCORE_NAME
+	GET_SCORE_NAME,
+	EXIT_SCREEN
 };
 
 class CGameScreen: public CStateMachine
@@ -165,14 +166,16 @@ class CGameScreen: public CStateMachine
 			save[2] = new CSaveGame("DT_save3");
 			
 			#ifndef USE_SDL2
-				menu = new CGameMenu(screen, player, tilesize, save);
+				menu = new CGameMenu(save);
 			#else
-				menu = new CGameMenu(renderer, player, tilesize, save);
+				menu = new CGameMenu(save);
 			#endif
 			
 			any_key = enter_key = pause_key = 0;
-			credits.reset();
-			set_state(CREDITS_SCREEN); // tela de créditos
+			title.reset();
+			set_state(TITLE_SCREEN);
+			//credits.reset();
+			//set_state(CREDITS_SCREEN); // tela de créditos
 			//set_state(LOAD_GAME);
 		}
 		
@@ -209,9 +212,17 @@ class CGameScreen: public CStateMachine
 			highscore.input(event);
 
 			if (get_state() == MAIN_LOOP || get_state() == PAUSE_SCREEN)
+			{
 				levels[curr_level]->input(event);
+			}
 			else if (get_state() == GAMEMENU_SCREEN)
+			{
 				menu->input(event);
+			}
+			else if (get_state() == TITLE_SCREEN)
+			{
+				title.input(event);
+			}
 			
 			if (event.type == SDL_KEYDOWN)
 			{
@@ -310,14 +321,20 @@ class CGameScreen: public CStateMachine
 
 				case TITLE_SCREEN:
 					#ifndef USE_SDL2
-						title.draw(cam, screen);
+						title.draw(screen);
 					#else
-						title.draw(cam, renderer);
+						title.draw(renderer);
 					#endif
 					break;
 				
 				case GAMEMENU_SCREEN:
-					menu->draw();
+					#ifndef USE_SDL2
+						title.draw(screen);
+						menu->draw(screen);
+					#else
+						title.draw(renderer);
+						menu->draw(renderer);
+					#endif
 					break;
 
 				case TRANSITION:
@@ -358,45 +375,58 @@ class CGameScreen: public CStateMachine
 					{
 						any_key = 0;
 						enter_key = 0;
-						widget.show_child(false);
-						title.reset();
-						set_state(TITLE_SCREEN);
+						menu->reset();
+						set_state(GAMEMENU_SCREEN);
+						//widget.show_child(false);
+						//title.reset();
+						//set_state(GAMEMENU_SCREEN);
 					}
 					break;
 
 				case TITLE_SCREEN:
-					if (enter_key)
+					if (title.update() == BACKGROUND_GAMETITLE)
 					{
 						menu->reset();
 						set_state(GAMEMENU_SCREEN);
 						break;
 					}
-					
-					title.update();
 					break;
 				
 				case GAMEMENU_SCREEN:
-					if (menu->update() == END_GAMEMENU)
+					title.update();
+					menu->update();
+					if (menu->get_state() == END_GAMEMENU)
 					{
 						any_key = 0;
 						enter_key = 0;
-						set_state(LOAD_GAME);
+						vector <COption *> option = menu->options.get_option();
+						for (int i(0); i < option.size(); i++)
+							if (option[i] == menu->options.get_chose_option())
+							{
+								switch (i)
+								{
+									case 0 ... 2:
+										set_state(LOAD_GAME);
+										break;
+									
+									case 3: // creditos
+										credits.reset();
+										set_state(CREDITS_SCREEN);
+										break;
+									
+									case 4: // sair do jogo
+										set_state(EXIT_SCREEN);
+										break;
+									
+									default:
+										break;
+								}
+								
+								break;
+							}
 					}
 					break;
-				
-				case INTRODUCTION: // tela de introdução do jogo
-					if (enter_key || introduction.get_state() == INACTIVE_INTRODUCTION)
-					{
-						any_key = 0;
-						enter_key = 0;
-						widget.show_child(false);
-						set_state(LOAD_LEVELS_SCREEN);
-						break;
-					}
-					
-					introduction.update();
-					break;
-				
+
 				case LOAD_GAME:
 					if (menu->options.get_curr_save()->load()) // se conseguir carregar
 					{
@@ -423,7 +453,20 @@ class CGameScreen: public CStateMachine
 
 					set_state(LOAD_LEVELS_SCREEN); // vai para inicializando o level
 					break;
-
+				
+				case INTRODUCTION: // tela de introdução do jogo
+					if (enter_key || introduction.get_state() == INACTIVE_INTRODUCTION)
+					{
+						any_key = 0;
+						enter_key = 0;
+						widget.show_child(false);
+						set_state(LOAD_LEVELS_SCREEN);
+						break;
+					}
+					
+					introduction.update();
+					break;
+				
 				case SAVE_GAME:
 					if (player->get_state() != GAMEOVER)
 					{
@@ -691,7 +734,10 @@ class CGameScreen: public CStateMachine
 						set_state(HIGHSCORE_SCREEN); // vai para high score
 					}
 					break;
-					
+				
+				case EXIT_SCREEN:
+					break;
+				
 				default:
 					set_state(INTRODUCTION);
 					break;
