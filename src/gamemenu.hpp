@@ -290,6 +290,7 @@ class CGameOptions: public CWidget
 			{
 				int i;
 				if (event.type == SDL_KEYDOWN && get_state() != INACTIVE_GAMEOPTIONS)
+				{
 					switch (event.key.keysym.sym)
 					{
 						case SDLK_DOWN:
@@ -364,9 +365,7 @@ class CGameOptions: public CWidget
 								for (i = 0; i < option.size(); i++)
 									if (curr_option == option[i])
 									{
-										curr_save = save[i];
-										chose_option = curr_option;
-										set_state(INACTIVE_GAMEOPTIONS);
+										curr_option->set_state(3); // vai para pressionado
 										break;
 									}
 							}
@@ -375,6 +374,21 @@ class CGameOptions: public CWidget
 						default:
 							break;
 					}
+				}
+				else if (event.type == SDL_KEYUP && get_state() != INACTIVE_GAMEOPTIONS)
+				{
+					if (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER)
+					{
+						for (i = 0; i < option.size(); i++)
+							if (curr_option == option[i] && option[i]->get_state() == 3)
+							{
+								curr_save = save[i];
+								chose_option = curr_option;
+								set_state(INACTIVE_GAMEOPTIONS);
+								break;
+							}
+					}
+				}
 			}
 	
 			int update (  )

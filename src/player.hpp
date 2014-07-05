@@ -9,7 +9,7 @@
 
 struct SPlayerConfig
 {
-	SVect vel_max; // velocidades máximas em pÃ© em pixels
+	SVect vel_max; // velocidades máximas em pé em pixels
 	SVect acc; // aceleração ao se movimentar
 	SVect acc_jetpack; // aceleração ao se movimentar com o jetpack
 	float gravity; // aceleração da gravidade quando pulando ou caindo
@@ -767,7 +767,7 @@ class CPlayer: public CGameEntity
 			
 			if (event.type == SDL_JOYAXISMOTION)
 			{
-				// se Ã© no eixo X
+				// se é no eixo X
 				if (event.jaxis.axis == 0)
 				{
 					if (event.jaxis.value < 0)
@@ -782,7 +782,7 @@ class CPlayer: public CGameEntity
 						left_key = right_key = 0;
 				}
 				
-				// se Ã© no eixo Y
+				// se é no eixo Y
 				if (event.jaxis.axis == 1)
 				{
 					if (event.jaxis.value < 0)
@@ -1273,7 +1273,7 @@ class CPlayer: public CGameEntity
 					break;
 
 				case JETPACK: // usando jet pack
-					if (jetpack_key) // se Ã© para desligar o jetpack
+					if (jetpack_key) // se é para desligar o jetpack
 					{
 						jetpack_key = 0;
 						vel.zero();

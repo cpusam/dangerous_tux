@@ -26,27 +26,26 @@
 
 class CTileMap
 {
-	private:
+	protected:
 		int width; // largura do mapa
 		int height;
 		int tilesize;
 		SVect position;
 		SDL_Rect dimension;
 		vector <int> tileset;
-	protected:
 		vector <int> tiles;
 	
 	public:
-		CTileMap ( int ts )
+		CTileMap ( int tilesize )
 		{
-			width = height = ts;
-			tilesize = ts;
-			dimension = (SDL_Rect){0,0,ts,ts};
+			width = height = tilesize;
+			tilesize = tilesize;
+			dimension = (SDL_Rect){0,0,tilesize,tilesize};
 		}
 		
-		void set_tilesize ( int ts )
+		void set_tilesize ( int tilesize )
 		{
-			tilesize = ts;
+			tilesize = tilesize;
 		}
 		
 		bool set_tile ( int x, int y, int t )
@@ -316,12 +315,12 @@ class CTileMapView: public CTileMap
 	
 	public:
 		#ifndef USE_SDL2
-			CTileMapView ( int ts, SDL_Surface * s=0 ): CTileMap(ts)
+			CTileMapView ( int tilesize, SDL_Surface * s=0 ): CTileMap(tilesize)
 			{
 				surface = s;
 			}
 		#else
-			CTileMapView ( int ts, SDL_Texture * t=0 ): CTileMap(ts)
+			CTileMapView ( int tilesize, SDL_Texture * t=0 ): CTileMap(tilesize)
 			{
 				texture = t;
 			}
@@ -379,30 +378,30 @@ class CTileMapView: public CTileMap
 		#endif
 		{
 			int i, j, t;
-			static int ts = get_tilesize();
 			SVect pos = cam->get_position(), p = cam->get_position();
-			SDL_Rect dest ={0,0,ts,ts};
+			SDL_Rect dest ={0,0,tilesize,tilesize};
 			SDL_Rect src = {0,0,0,0};
 			SDL_Rect dim = cam->get_dimension();
 			
-			pos.x = int(pos.x) / ts;
-			pos.y = int(pos.y) / ts;
-			dim.w /= ts;
-			dim.h /= ts;
+			pos.x = int(pos.x) / tilesize;
+			pos.y = int(pos.y) / tilesize;
+			dim.w /= tilesize;
+			dim.h /= tilesize;
 			
 			for (i = pos.x; i <= pos.x + dim.w; i++)
 				for (j = pos.y; j <= pos.y + dim.h; j++)
 				{
-					t = get_tile(i * ts, j * ts);
+					//t = get_tile(i * tilesize, j * tilesize);
+					t = tileset.at(i * width + j);
 					if (!has_tile(t))
 						continue;
 
 					if (is_animated(t))
 					{
 						#ifndef USE_SDL2
-							animation[t].draw(i * ts, j * ts, cam, screen);
+							animation[t].draw(i * tilesize, j * tilesize, cam, screen);
 						#else
-							animation[t].draw(i * ts, j * ts, cam, renderer);
+							animation[t].draw(i * tilesize, j * tilesize, cam, renderer);
 						#endif
 						continue;
 					}
@@ -411,34 +410,34 @@ class CTileMapView: public CTileMap
 				
 					if (i == pos.x)
 					{
-						src.x += int(p.x) % ts;
-						src.w = ts - int(p.x) % ts;
+						src.x += int(p.x) % tilesize;
+						src.w = tilesize - int(p.x) % tilesize;
 						dest.x = dim.x;
 					}
 					else if (i == pos.x + dim.w)
 					{
-						src.w = int(p.x) % ts;
-						dest.x = dim.x + dim.w * ts - src.w;
+						src.w = int(p.x) % tilesize;
+						dest.x = dim.x + dim.w * tilesize - src.w;
 					}
 					else
 					{
-						dest.x = dim.x + (i - pos.x) * ts - (int(p.x) % ts);
+						dest.x = dim.x + (i - pos.x) * tilesize - (int(p.x) % tilesize);
 					}
 					
 					if (j == pos.y)
 					{
-						src.y += int(p.y) % ts;
-						src.h = ts - int(p.y) % ts;
+						src.y += int(p.y) % tilesize;
+						src.h = tilesize - int(p.y) % tilesize;
 						dest.y = dim.y;
 					}
 					else if (j == pos.y + dim.h)
 					{
-						src.h = int(p.y) % ts;
-						dest.y = dim.y + dim.h * ts - src.h;
+						src.h = int(p.y) % tilesize;
+						dest.y = dim.y + dim.h * tilesize - src.h;
 					}
 					else
 					{
-						dest.y = dim.y + (j - pos.y) * ts - (int(p.y) % ts);
+						dest.y = dim.y + (j - pos.y) * tilesize - (int(p.y) % tilesize);
 					}
 					
 					#ifndef USE_SDL2
@@ -446,7 +445,7 @@ class CTileMapView: public CTileMap
 						{
 							dest.w = src.w;
 							dest.h = src.h;
-							SDL_BlitSurface(surface, &src, screen, &dest);
+							SDL_Blitilesizeurface(surface, &src, screen, &dest);
 						}
 					#else
 						if (texture)

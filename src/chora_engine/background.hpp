@@ -493,7 +493,7 @@ class CAnimatedBackground: private CStateMachine
 			
 			p = cam->get_position();
 			d = dim = cam->get_dimension();
-			surf = src = anim[0].get_curr_frame();
+			surf = src = anim[0].get_curr_frame().get_source();
 			
 			src.y = surf.y + int(p.y) % surf.h;
 			if (p.y < 0)

@@ -32,7 +32,7 @@
 #include <exception>
 #include <ctime>
 
-#include "light_engine/light.hpp"
+#include "chora_engine/chora.hpp"
 #include "gamescreen.hpp" // contém todos os headers do jogo
 #ifndef USE_SDL2
 	#include "gamevideo.hpp"

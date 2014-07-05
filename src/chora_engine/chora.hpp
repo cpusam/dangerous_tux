@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2014 Samuel Leonardo
+ Copyright (C) 2014 Chora Engine (Samuel Leonardo)
 
  This software is provided 'as-is', without any express or implied
  warranty. In no event will the authors be held liable for any damages
@@ -21,52 +21,52 @@
     distribution.
 */
 
-#ifndef LIGHT_HPP
-#define LIGHT_HPP
+#ifndef CHORA_HPP
+#define CHORA_HPP
 
 #if _WIN32 || _WIN64
 	#if __MINGW32__ || __MINGW64__
 		#ifndef USE_SDL2
 			#include <SDL/SDL.h>
 			
-			#ifndef LIGHT_NO_GUI
+			#ifndef CHORA_NO_GUI
 				#include <SDL/SDL_ttf.h>
 			#endif
 			
-			#ifndef LIGHT_NO_SOUND
+			#ifndef CHORA_NO_SOUND
 				#include <SDL/SDL_mixer.h>
 			#endif
 			
-			#ifndef LIGHT_NO_IMAGE
+			#ifndef CHORA_NO_IMAGE
 				#include <SDL/SDL_image.h>
 			#endif
 		#else
 			#include <SDL2/SDL.h>
 			
-			#ifndef LIGHT_NO_GUI
+			#ifndef CHORA_NO_GUI
 				#include <SDL2/SDL_ttf.h>
 			#endif
 			
-			#ifndef LIGHT_NO_SOUND
+			#ifndef CHORA_NO_SOUND
 				#include <SDL2/SDL_mixer.h>
 			#endif
 			
-			#ifndef LIGHT_NO_IMAGE
+			#ifndef CHORA_NO_IMAGE
 				#include <SDL2/SDL_image.h>
 			#endif
 		#endif
 	#else
 		#include "SDL.h"
 		
-		#ifndef LIGHT_NO_GUI
+		#ifndef CHORA_NO_GUI
 			#include "SDL_ttf.h"
 		#endif
 		
-		#ifndef LIGHT_NO_SOUND
+		#ifndef CHORA_NO_SOUND
 			#include "SDL_mixer.h"
 		#endif
 		
-		#ifndef LIGHT_NO_IMAGE
+		#ifndef CHORA_NO_IMAGE
 			#include "SDL_image.h"
 		#endif
 	#endif
@@ -74,24 +74,24 @@
 #else
 	#ifndef USE_SDL2
 		#include <SDL/SDL.h>
-		#ifndef LIGHT_NO_GUI
+		#ifndef CHORA_NO_GUI
 			#include <SDL/SDL_ttf.h>
 		#endif
-		#ifndef LIGHT_NO_SOUND
+		#ifndef CHORA_NO_SOUND
 			#include <SDL/SDL_mixer.h>
 		#endif
-		#ifndef LIGHT_NO_IMAGE
+		#ifndef CHORA_NO_IMAGE
 			#include <SDL/SDL_image.h>
 		#endif
 	#else
 		#include <SDL2/SDL.h>
-		#ifndef LIGHT_NO_GUI
+		#ifndef CHORA_NO_GUI
 			#include <SDL2/SDL_ttf.h>
 		#endif
-		#ifndef LIGHT_NO_SOUND
+		#ifndef CHORA_NO_SOUND
 			#include <SDL2/SDL_mixer.h>
 		#endif
-		#ifndef LIGHT_NO_IMAGE
+		#ifndef CHORA_NO_IMAGE
 			#include <SDL2/SDL_image.h>
 		#endif
 	#endif
@@ -110,15 +110,19 @@ using namespace std;
 #include "statemachine.hpp"
 #include "vect.hpp"
 #include "camera.hpp"
-#include "animation.hpp"
-#include "tilemap.hpp"
 #include "collision.hpp"
-#include "background.hpp"
+#include "animation.hpp"
 #include "movable.hpp"
 #include "util.hpp"
 #include "SDL_gfx/SDL_framerate.hpp"
+#include "background.hpp"
+#ifndef CHORA_NO_TILE
+	// módulo de tiles
+	#include "tile/tilemap.hpp"
+#endif
 
-#ifndef LIGHT_NO_GUI
+
+#ifndef CHORA_NO_GUI
 	// módulo de gui
 	#include "gui/writer.hpp"
 	#include "gui/widget.hpp"
@@ -127,7 +131,7 @@ using namespace std;
 	#include "gui/bar.hpp"
 #endif
 
-#ifndef LIGHT_NO_SOUND
+#ifndef CHORA_NO_SOUND
 	// módulo de som
 	#include "sound/soundplayer.hpp"
 #endif

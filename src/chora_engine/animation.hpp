@@ -63,6 +63,52 @@ struct STimer
 };
 
 
+class CAnimationFrame
+{
+	protected:
+		int delay;
+		SDL_Rect source;
+	public:
+		int x, y; // posições relativas ao destino
+	
+	public:
+		CAnimationFrame (  )
+		{
+			x = y = 0;
+			delay = 0;
+			source = (SDL_Rect){0,0,0,0};
+		}
+		
+		CAnimationFrame ( int d, SDL_Rect s )
+		{
+			set_delay(d);
+			set_source(s);
+		}
+		
+		bool set_delay ( int d )
+		{
+			if (d > -1)
+				delay = d;
+			
+			return (d > -1);
+		}
+		
+		int get_delay (  )
+		{
+			return delay;
+		}
+		
+		void set_source ( SDL_Rect s )
+		{
+			source = s;
+		}
+		
+		SDL_Rect get_source (  )
+		{
+			return source;
+		}
+};
+
 class CAnimation: protected CStateMachine
 {
 	protected:
@@ -70,8 +116,7 @@ class CAnimation: protected CStateMachine
 		int state;
 		int index;
 		bool repeat;
-		vector <int> delay;
-		vector <SDL_Rect> frames;
+		vector <CAnimationFrame> frames;
 
 		#ifndef USE_SDL2
 			public:
@@ -123,23 +168,20 @@ class CAnimation: protected CStateMachine
 		
 		void set_delay ( int f, int d )
 		{
-			if (f < delay.size())
-				delay[f] = d;
-			else
-				delay.push_back(d);
+			if (f >= 0 && f < frames.size())
+				frames[f].set_delay(d);
 		}
 		
 		// seta todos os frames para o mesmo delay
 		void set_frames_delay ( int d )
 		{
-			for (int i = 0; i < delay.size(); i++)
-				delay[i] = d;
+			for (int i = 0; i < frames.size(); i++)
+				frames[i].set_delay(d);
 		}
 		
 		void clear_frames ( bool destroy=false )
 		{
 			frames.clear();
-			delay.clear();
 			#if USE_SDL2
 				if (destroy)
 					destroy_textures();
@@ -151,8 +193,13 @@ class CAnimation: protected CStateMachine
 			void add_frame ( SDL_Rect src, int d )
 			{
 				index = 0;
-				frames.push_back(src);
-				set_delay(delay.size() + 1, d);
+				frames.push_back(CAnimationFrame(d, src));
+			}
+			
+			void add_frame ( CAnimationFrame f )
+			{
+				index = 0;
+				frames.push_back(f);
 			}
 		#else
 			SDL_Texture * get_texture ( int i )
@@ -217,8 +264,13 @@ class CAnimation: protected CStateMachine
 			{
 				index = 0;
 				texture.push_back(t);
-				frames.push_back(src);
-				set_delay(delay.size() + 1, d);
+				frames.push_back(CAnimationFrame(d, src));
+			}
+			
+			void add_frame ( SDL_Texture * t, CAnimationFrame f )
+			{
+				index = 0;
+				frames.push_back(f);
 			}
 		#endif
 		
@@ -239,15 +291,15 @@ class CAnimation: protected CStateMachine
 			return index;
 		}
 		
-		SDL_Rect get_frame ( int i )
+		CAnimationFrame get_frame ( int i )
 		{
-			if (i < 0 || i >= frames.size())
-				return (SDL_Rect){0,0,0,0};
+			if (i > 0 && i <= frames.size())
+				return frames[i];
 			
-			return frames[i];
+			return CAnimationFrame();
 		}
 		
-		SDL_Rect get_curr_frame (  )
+		CAnimationFrame get_curr_frame (  )
 		{
 			return frames[index];
 		}
@@ -259,9 +311,9 @@ class CAnimation: protected CStateMachine
 		#endif
 		{
 			SDL_Rect dest, source;
-			dest.x = x;
-			dest.y = y;
-			source = frames[index];
+			dest.x = x + frames[index].x;
+			dest.y = y + frames[index].y;
+			source = frames[index].get_source();
 			
 			dest.w = source.w;
 			dest.h = source.h;
@@ -282,13 +334,13 @@ class CAnimation: protected CStateMachine
 		#endif
 		{
 			SDL_Rect dest, source;
-			source = frames[index];
+			source = frames[index].get_source();
 			
 			SVect pos = cam->get_position();
 			SDL_Rect dim = cam->get_dimension();
 
-			dest.x = x + dim.x;
-			dest.y = y + dim.y;
+			dest.x = x + dim.x + frames[index].x;
+			dest.y = y + dim.y + frames[index].y;
 			dest.w = source.w;
 			dest.h = source.h;
 
@@ -347,7 +399,7 @@ class CAnimation: protected CStateMachine
 				if (surface)
 					SDL_BlitSurface(surface, &source, screen, &dest);
 			#else
-				if (texture.size() > 0 && texture.at(get_index()))
+				if (texture.size() > 0)
 					SDL_RenderCopy(renderer, texture.at(get_index()), &source, &dest);
 			#endif
 		}
@@ -359,11 +411,11 @@ class CAnimation: protected CStateMachine
 				case 1:
 				case 2:
 				case 3:
-					if (frames.size() == 0 || delay.size() == 0)
+					if (frames.size() == 0)
 						throw "CAnimation: animação sem frames\n";
 
 					timer.update();
-					if (timer.steps() >= delay[index])
+					if (timer.steps() >= frames[index].get_delay())
 					{
 						timer.reset();
 						index++;
