@@ -9,4 +9,4 @@ DangerousTux.exe: $(DEPS)
 	$(CXX) -o $@ src/dangerous_tux.cpp -DUSE_SDL2 $(CXXFLAGS) $(LDLIBS)
 
 clean:
-	rm -f DangerousTux.exe
+	-rm -f DangerousTux.exe

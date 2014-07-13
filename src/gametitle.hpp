@@ -35,9 +35,9 @@ class CGameTitle: public CStateMachine
 			CGameTitle ( SDL_Renderer * r )
 		#endif
 		{
+			SDL_Surface * aux = 0;
 			#if USE_SDL2
 				SDL_Texture * texture = 0;
-				SDL_Surface * aux = 0;
 			#endif
 			press_enter = 0;
 			version = 0;
@@ -129,16 +129,16 @@ class CGameTitle: public CStateMachine
 			#endif
 			
 			#ifndef USE_SDL2
-				tux_rocket.surface = optimize_surface_alpha(IMG_Load(path));
-				if (!tux_rocket.surface)
+				aux = optimize_surface_alpha(IMG_Load(path));
+				if (!aux)
 					throw "CGameTitle: não conseguiu carregar imagem do tux no foguete\n";
 				
-				tux_rocket.add_frame((SDL_Rect){0,0,319,599}, 3);
-				tux_rocket.add_frame((SDL_Rect){0,599,319,599}, 3);
-				tux_rocket.add_frame((SDL_Rect){0,599*2,319,599}, 3);
-				tux_rocket.add_frame((SDL_Rect){0,599*3,319,599}, 3);
-				tux_rocket.add_frame((SDL_Rect){0,599*4,319,599}, 3);
-				tux_rocket.add_frame((SDL_Rect){0,599*5,319,599}, 3);
+				tux_rocket.add_frame(aux, (SDL_Rect){0,0,319,599}, 3);
+				tux_rocket.add_frame(aux, (SDL_Rect){0,599,319,599}, 3);
+				tux_rocket.add_frame(aux, (SDL_Rect){0,599*2,319,599}, 3);
+				tux_rocket.add_frame(aux, (SDL_Rect){0,599*3,319,599}, 3);
+				tux_rocket.add_frame(aux, (SDL_Rect){0,599*4,319,599}, 3);
+				tux_rocket.add_frame(aux, (SDL_Rect){0,599*5,319,599}, 3);
 			#else
 				texture = IMG_LoadTexture(r, path);
 				if (!texture)
@@ -202,8 +202,8 @@ class CGameTitle: public CStateMachine
 			version = new CLabel("BETA VERSION - 2014", (SDL_Color){0,255,0,255});
 			#ifndef USE_SDL2
 				version->set_pos(SVect((960 - version->get_surface()->w)/2, 624 - version->get_surface()->h));
-				p_enter.add_frame((SDL_Rect){0,0,0,0}, 25);
-				p_enter.add_frame((SDL_Rect){0,0,0,0}, 25);
+				p_enter.add_frame(NULL, (SDL_Rect){0,0,0,0}, 25);
+				p_enter.add_frame(NULL, (SDL_Rect){0,0,0,0}, 25);
 
 			#else
 				version->set_pos(SVect((960 - version->get_texture_width())/2, 624 - version->get_texture_height()));
@@ -221,8 +221,7 @@ class CGameTitle: public CStateMachine
 				if (title_name)
 					SDL_FreeSurface(title_name);
 		
-				if (tux_rocket.surface)
-					SDL_FreeSurface(tux_rocket.surface);
+				tux_rocket.destroy_surfaces();
 			#else
 				if (background)
 					SDL_DestroyTexture(background);

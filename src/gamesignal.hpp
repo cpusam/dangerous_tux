@@ -36,8 +36,8 @@ class CKernelSignal: public CGameEntity
 			#endif
 
 			#ifndef USE_SDL2
-				anim.surface = optimize_surface_alpha(IMG_Load(path));
-				if (!anim.surface)
+				aux = optimize_surface_alpha(IMG_Load(path));
+				if (!aux)
 					throw "CKernelSignal: não foi possível abrir kernel_signal.png\n";
 			#else
 				SDL_Texture * texture = IMG_LoadTexture(r, path);
@@ -45,10 +45,10 @@ class CKernelSignal: public CGameEntity
 					throw "CKernelSignal: não foi possível abrir kernel_signal.png\n";
 			#endif
 			#ifndef USE_SDL2
-				anim.add_frame((SDL_Rect){0,0,48,48}, 6);
-				anim.add_frame((SDL_Rect){0,48,48,48}, 6);
-				anim.add_frame((SDL_Rect){0,48*2,48,48}, 6);
-				anim.add_frame((SDL_Rect){0,48*3,48,48}, 6);
+				anim.add_frame(aux, (SDL_Rect){0,0,48,48}, 6);
+				anim.add_frame(aux, (SDL_Rect){0,48,48,48}, 6);
+				anim.add_frame(aux, (SDL_Rect){0,48*2,48,48}, 6);
+				anim.add_frame(aux, (SDL_Rect){0,48*3,48,48}, 6);
 			#else
 				anim.add_frame(texture, (SDL_Rect){0,0,48,48}, 6);
 				anim.add_frame(texture, (SDL_Rect){0,48,48,48}, 6);
@@ -62,8 +62,7 @@ class CKernelSignal: public CGameEntity
 		~CKernelSignal (  )
 		{
 			#ifndef USE_SDL2
-				if (anim.surface)
-					SDL_FreeSurface(anim.surface);
+				anim.destroy_surfaces();
 			#else
 				anim.destroy_textures();
 			#endif
@@ -202,8 +201,8 @@ class CExitSignal: public CGameEntity
 			#endif
 
 			#ifndef USE_SDL2
-				anim.surface = optimize_surface_alpha(IMG_Load(path));
-				if (!anim.surface)
+				aux = optimize_surface_alpha(IMG_Load(path));
+				if (!aux)
 					throw "CExitSignal: não foi possível abrir exit_signal.png\n";
 			#else
 				SDL_Texture * texture = IMG_LoadTexture(r, path);
@@ -212,10 +211,10 @@ class CExitSignal: public CGameEntity
 			#endif
 			
 			#ifndef USE_SDL2
-				anim.add_frame((SDL_Rect){0,0,48,48}, 6);
-				anim.add_frame((SDL_Rect){0,48,48,48}, 6);
-				anim.add_frame((SDL_Rect){0,48*2,48,48}, 6);
-				anim.add_frame((SDL_Rect){0,48*3,48,48}, 6);
+				anim.add_frame(aux, (SDL_Rect){0,0,48,48}, 6);
+				anim.add_frame(aux, (SDL_Rect){0,48,48,48}, 6);
+				anim.add_frame(aux, (SDL_Rect){0,48*2,48,48}, 6);
+				anim.add_frame(aux, (SDL_Rect){0,48*3,48,48}, 6);
 			#else
 				anim.add_frame(texture, (SDL_Rect){0,0,48,48}, 6);
 				anim.add_frame(texture, (SDL_Rect){0,48,48,48}, 6);
@@ -229,8 +228,7 @@ class CExitSignal: public CGameEntity
 		~CExitSignal (  )
 		{
 			#ifndef USE_SDL2
-				if (anim.surface)
-					SDL_FreeSurface(anim.surface);
+				anim.destroy_surfaces();
 			#else
 				anim.destroy_textures();
 			#endif

@@ -70,7 +70,9 @@
 			#include "SDL_image.h"
 		#endif
 	#endif
+	
 	#undef main
+	
 #else
 	#ifndef USE_SDL2
 		#include <SDL/SDL.h>
@@ -118,7 +120,7 @@ using namespace std;
 #include "background.hpp"
 #ifndef CHORA_NO_TILE
 	// módulo de tiles
-	#include "tile/tilemap.hpp"
+	#include "platform/tilemap.hpp"
 #endif
 
 

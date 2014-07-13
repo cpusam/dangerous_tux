@@ -46,6 +46,18 @@ bool pointbox ( SVect p, SDL_Rect b )
 	return true;
 }
 
+// verifica se "a" está completamente dentro de "b", mas não o contrário
+bool rect_inside ( SDL_Rect a, SDL_Rect b )
+{
+	if (a.x + a.w > b.x + b.w)	return false;
+	if (a.x < b.x)	return false;
+	
+	if (a.y + a.h > b.y + b.h)	return false;
+	if (a.y < b.y)	return false;
+	
+	return true;
+}
+
 
 #endif
 

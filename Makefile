@@ -14,4 +14,4 @@ DangerousTux.SDL2: $(DEPS)
 	$(CXX) -o DangerousTux src/dangerous_tux.cpp -DUSE_SDL2 $(CXXFLAGS) $(LDLIBS_SDL2)
 
 clean:
-	rm -f DangerousTux
+	-rm -f DangerousTux

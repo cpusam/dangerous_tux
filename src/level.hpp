@@ -424,24 +424,24 @@ class CLevel: public CStateMachine
 					map->set_source('2', (SDL_Rect){ts*9,ts*3,ts,ts});
 					map->set_source('3', (SDL_Rect){ts*10,ts*3,ts,ts});
 					map->set_source('4', (SDL_Rect){ts*7,ts*3,ts,ts}); // tile de gramado
-					
+				
 					CAnimatedTile a;
 					#ifndef USE_SDL2
-						a.add_frame((SDL_Rect){0,ts * 2,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts,ts * 2,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts * 2,ts * 2,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){0,ts * 2,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts,ts * 2,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts * 2,ts * 2,ts,ts}, 4);
 					#else
 						a.add_frame(map->texture, (SDL_Rect){0,ts * 2,ts,ts}, 4);
 						a.add_frame(map->texture, (SDL_Rect){ts,ts * 2,ts,ts}, 4);
 						a.add_frame(map->texture, (SDL_Rect){ts * 2,ts * 2,ts,ts}, 4);
 					#endif
 					map->add_animation(a, 'o'); // tile de fogo
-
+					
 					a.clear_frames();
 					#ifndef USE_SDL2
-						a.add_frame((SDL_Rect){ts * 3,ts * 2,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts * 4,ts * 2,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts * 5,ts * 2,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts * 3,ts * 2,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts * 4,ts * 2,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts * 5,ts * 2,ts,ts}, 4);
 					#else
 						a.add_frame(map->texture, (SDL_Rect){ts * 3,ts * 2,ts,ts}, 4);
 						a.add_frame(map->texture, (SDL_Rect){ts * 4,ts * 2,ts,ts}, 4);
@@ -451,14 +451,14 @@ class CLevel: public CStateMachine
 					
 					a.clear_frames();
 					#ifndef USE_SDL2
-						a.add_frame((SDL_Rect){ts*8,ts,ts,ts}, 4); // início
-						a.add_frame((SDL_Rect){ts*9,ts,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
-						a.add_frame((SDL_Rect){ts*10,ts,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts*11,ts,ts,ts}, 4); // final
-						a.add_frame((SDL_Rect){ts*10,ts,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
-						a.add_frame((SDL_Rect){ts*9,ts,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts*8,ts,ts,ts}, 4); // início
+						a.add_frame(map->surface, (SDL_Rect){ts*9,ts,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
+						a.add_frame(map->surface, (SDL_Rect){ts*10,ts,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts*11,ts,ts,ts}, 4); // final
+						a.add_frame(map->surface, (SDL_Rect){ts*10,ts,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
+						a.add_frame(map->surface, (SDL_Rect){ts*9,ts,ts,ts}, 4);
 					#else
 						a.add_frame(map->texture, (SDL_Rect){ts*8,ts,ts,ts}, 4); // início
 						a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 4);
@@ -470,17 +470,17 @@ class CLevel: public CStateMachine
 						a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 4);
 					#endif
 					map->add_animation(a, 'q'); // jetpack
-
+					
 					a.clear_frames();
 					#ifndef USE_SDL2
-						a.add_frame((SDL_Rect){ts*8,ts*2,ts,ts}, 4); // início
-						a.add_frame((SDL_Rect){ts*9,ts*2,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
-						a.add_frame((SDL_Rect){ts*10,ts*2,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts*11,ts*2,ts,ts}, 4); // final
-						a.add_frame((SDL_Rect){ts*10,ts*2,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
-						a.add_frame((SDL_Rect){ts*9,ts*2,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts*8,ts*2,ts,ts}, 4); // início
+						a.add_frame(map->surface, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
+						a.add_frame(map->surface, (SDL_Rect){ts*10,ts*2,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts*11,ts*2,ts,ts}, 4); // final
+						a.add_frame(map->surface, (SDL_Rect){ts*10,ts*2,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
+						a.add_frame(map->surface, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
 					#else
 						a.add_frame(map->texture, (SDL_Rect){ts*8,ts*2,ts,ts}, 4); // início
 						a.add_frame(map->texture, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
@@ -495,10 +495,10 @@ class CLevel: public CStateMachine
 					
 					a.clear_frames();
 					#ifndef USE_SDL2
-						a.add_frame((SDL_Rect){0,ts*3,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts,ts*3,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts*2,ts*3,ts,ts}, 4);
-						a.add_frame((SDL_Rect){ts*3,ts*3,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){0,ts*3,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts,ts*3,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts*2,ts*3,ts,ts}, 4);
+						a.add_frame(map->surface, (SDL_Rect){ts*3,ts*3,ts,ts}, 4);
 					#else
 						a.add_frame(map->texture, (SDL_Rect){0,ts*3,ts,ts}, 4);
 						a.add_frame(map->texture, (SDL_Rect){ts,ts*3,ts,ts}, 4);
@@ -509,10 +509,10 @@ class CLevel: public CStateMachine
 					
 					a.clear_frames();
 					#ifndef USE_SDL2
-						a.add_frame((SDL_Rect){ts*6,ts*4,ts,ts}, 6);
-						a.add_frame((SDL_Rect){ts*5,ts*4,ts,ts}, 6);
-						a.add_frame((SDL_Rect){ts*4,ts*4,ts,ts}, 6);
-						a.add_frame((SDL_Rect){ts*3,ts*4,ts,ts}, 6);
+						a.add_frame(map->surface, (SDL_Rect){ts*6,ts*4,ts,ts}, 6);
+						a.add_frame(map->surface, (SDL_Rect){ts*5,ts*4,ts,ts}, 6);
+						a.add_frame(map->surface, (SDL_Rect){ts*4,ts*4,ts,ts}, 6);
+						a.add_frame(map->surface, (SDL_Rect){ts*3,ts*4,ts,ts}, 6);
 					#else
 						a.add_frame(map->texture, (SDL_Rect){ts*6,ts*4,ts,ts}, 6);
 						a.add_frame(map->texture, (SDL_Rect){ts*5,ts*4,ts,ts}, 6);
@@ -523,10 +523,10 @@ class CLevel: public CStateMachine
 					
 					a.clear_frames();
 					#ifndef USE_SDL2
-						a.add_frame((SDL_Rect){ts*10,ts*4,ts,ts}, 6);
-						a.add_frame((SDL_Rect){ts*9,ts*4,ts,ts}, 6);
-						a.add_frame((SDL_Rect){ts*8,ts*4,ts,ts}, 6);
-						a.add_frame((SDL_Rect){ts*7,ts*4,ts,ts},6);
+						a.add_frame(map->surface, (SDL_Rect){ts*10,ts*4,ts,ts}, 6);
+						a.add_frame(map->surface, (SDL_Rect){ts*9,ts*4,ts,ts}, 6);
+						a.add_frame(map->surface, (SDL_Rect){ts*8,ts*4,ts,ts}, 6);
+						a.add_frame(map->surface, (SDL_Rect){ts*7,ts*4,ts,ts},6);
 					#else
 						a.add_frame(map->texture, (SDL_Rect){ts*10,ts*4,ts,ts}, 6);
 						a.add_frame(map->texture, (SDL_Rect){ts*9,ts*4,ts,ts}, 6);
@@ -534,7 +534,9 @@ class CLevel: public CStateMachine
 						a.add_frame(map->texture, (SDL_Rect){ts*7,ts*4,ts,ts}, 6);
 					#endif
 					map->add_animation(a, 'y'); // piche
-
+					
+					
+					
 					#if _WIN32 || _WIN64
 						#ifndef PREFIX
 							sprintf(path, "%s\\fonts\\inhouseedition.ttf", p2);

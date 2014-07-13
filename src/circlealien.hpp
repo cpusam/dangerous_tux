@@ -95,39 +95,33 @@ class CCircleAlien: public CGameEntity
 			
 			#ifndef USE_SDL2
 				aux = optimize_surface_alpha(IMG_Load(path));
-				anim[0].surface = aux;
-				if (!anim[0].surface)
+				if (!aux)
 					throw "CCircleAlien: não foi possível carregar circlealien.png\n";
 				
-				for (int i(1); i < anim.size(); i++)
-					anim[i].surface = anim[0].surface;
+				// animação de indo para esquerda pregado em cima do tile
+				anim[0].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+				// animação de indo para esquerda pregado em baixo do tile
+				anim[1].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+			
+				// animação de indo para baixo pregado a esquerda do tile
+				anim[2].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+				// animação de indo para baixo pregado a direita do tile
+				anim[3].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+			
+				// animação de indo para direita pregado em cima do tile
+				anim[4].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+				// animação de indo para direita pregado em baixo do tile
+				anim[5].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+			
+				// animação de indo para cima pregado a esquerda do tile
+				anim[6].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+				// animação de indo para cim pregado a direita do tile
+				anim[7].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
 			#else
 				SDL_Texture * texture = IMG_LoadTexture(r, path);
 				if (!texture)
 					throw "CCircleAlien: não foi possível carregar circlealien.png\n";
-			#endif
-			
-			#ifndef USE_SDL2
-				// animação de indo para esquerda pregado em cima do tile
-				anim[0].add_frame((SDL_Rect){0,0,36,35}, 1);
-				// animação de indo para esquerda pregado em baixo do tile
-				anim[1].add_frame((SDL_Rect){0,0,36,35}, 1);
-			
-				// animação de indo para baixo pregado a esquerda do tile
-				anim[2].add_frame((SDL_Rect){0,0,36,35}, 1);
-				// animação de indo para baixo pregado a direita do tile
-				anim[3].add_frame((SDL_Rect){0,0,36,35}, 1);
-			
-				// animação de indo para direita pregado em cima do tile
-				anim[4].add_frame((SDL_Rect){0,0,36,35}, 1);
-				// animação de indo para direita pregado em baixo do tile
-				anim[5].add_frame((SDL_Rect){0,0,36,35}, 1);
-			
-				// animação de indo para cima pregado a esquerda do tile
-				anim[6].add_frame((SDL_Rect){0,0,36,35}, 1);
-				// animação de indo para cim pregado a direita do tile
-				anim[7].add_frame((SDL_Rect){0,0,36,35}, 1);
-			#else
+
 				// animação de indo para esquerda pregado em cima do tile
 				anim[0].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
 				// animação de indo para esquerda pregado em baixo do tile
@@ -279,6 +273,15 @@ class CCircleAlien: public CGameEntity
 				default:
 					throw "CCircleAlien: tile não identificado\n";
 			}
+		}
+		
+		~CCircleAlien (  )
+		{
+			#ifndef USE_SDL2
+				anim[0].destroy_surfaces();
+			#else
+				anim[0].destroy_textures();
+			#endif
 		}
 		
 		void reset (  )

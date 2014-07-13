@@ -27,6 +27,8 @@ class CGameCredits: public CStateMachine
 			CGameCredits ( SDL_Renderer * r )
 		#endif
 		{
+			SDL_Surface * aux;
+			
 			#if _WIN32 || _WIN64
 				char path[FILENAME_MAX], bg_path[FILENAME_MAX];
 				char p2[FILENAME_MAX];
@@ -119,18 +121,18 @@ class CGameCredits: public CStateMachine
 				#endif
 			
 			#ifndef USE_SDL2
-				anim.add_frame((SDL_Rect){0,0,0,0}, 250);
+				anim.add_frame(NULL, (SDL_Rect){0,0,0,0}, 250);
 				
-				tux_anim.surface = optimize_surface_alpha(IMG_Load(path));
-				if (!tux_anim.surface)
+				aux = optimize_surface_alpha(IMG_Load(path));
+				if (!aux)
 					throw "CGameCredits: não foi possivel carregar tux_walk.png\n";
 				
-				tux_anim.add_frame((SDL_Rect){0,    0,214,234}, 3);
-				tux_anim.add_frame((SDL_Rect){0,  234,214,234}, 5); // meio
-				tux_anim.add_frame((SDL_Rect){0,2*234,214,234}, 3);
-				tux_anim.add_frame((SDL_Rect){0,  234,214,234}, 5); // meio
+				tux_anim.add_frame(aux, (SDL_Rect){0,    0,214,234}, 3);
+				tux_anim.add_frame(aux, (SDL_Rect){0,  234,214,234}, 5); // meio
+				tux_anim.add_frame(aux, (SDL_Rect){0,2*234,214,234}, 3);
+				tux_anim.add_frame(aux, (SDL_Rect){0,  234,214,234}, 5); // meio
 				//tux_pos.x = widget.get_pos().x - tux_anim.surface->w/2;
-				tux_pos.x = (960 - tux_anim.surface->w)/2;
+				tux_pos.x = (960 - aux->w)/2;
 				
 				if (!bg.set_surface(optimize_surface_alpha(IMG_Load(bg_path))))
 					throw "CGameCredits: não foi possível carregar credits_BG.png\n";
@@ -172,7 +174,7 @@ class CGameCredits: public CStateMachine
 
 			delete cam;
 			#ifndef USE_SDL2
-				SDL_FreeSurface(tux_anim.surface);
+				tux_anim.destroy_surfaces();
 			#else
 				tux_anim.destroy_textures();
 			#endif

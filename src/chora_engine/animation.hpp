@@ -62,6 +62,15 @@ struct STimer
 	}
 };
 
+enum EAnimationState
+{
+	START_ANIM, // começou a animação
+	CHANGE_FRAME_ANIM, // trocou de frame
+	RUNNING_ANIM, // rodando a animação
+	FINISHED_ANIM, // terminou a animação e vai começar a repetir os frames
+	STOPED_ANIM, // terminou a animação e parou
+	PAUSE_ANIM, // animação parada de trocar frames
+};
 
 class CAnimationFrame
 {
@@ -81,8 +90,15 @@ class CAnimationFrame
 		
 		CAnimationFrame ( int d, SDL_Rect s )
 		{
+			x = y = 0;
 			set_delay(d);
 			set_source(s);
+		}
+		
+		void set_anim ( int d, SDL_Rect src )
+		{
+			set_source(src);
+			set_delay(d);
 		}
 		
 		bool set_delay ( int d )
@@ -119,8 +135,8 @@ class CAnimation: protected CStateMachine
 		vector <CAnimationFrame> frames;
 
 		#ifndef USE_SDL2
-			public:
-				SDL_Surface * surface;
+			protected:
+				vector <SDL_Surface *> surface;
 		#else
 			protected:
 				vector <SDL_Texture *> texture;
@@ -129,30 +145,32 @@ class CAnimation: protected CStateMachine
 	public:
 		CAnimation (  )
 		{
-			set_state(1);
+			set_state(START_ANIM);
 			repeat = true;
 			index = 0;
 			timer.start();
-			#ifndef USE_SDL2
-				surface = 0;
-			#endif
 		}
 		
 		void play (  )
 		{
-			set_state(1);
+			if (get_state() == STOPED_ANIM)
+				set_state(START_ANIM);
+			else
+				set_state(RUNNING_ANIM);
+			
 			timer.start();
 		}
 		
 		void pause (  )
 		{
-			set_state(0);
+			set_state(PAUSE_ANIM);
 			timer.pause();
 		}
 		
 		void reset (  )
 		{
 			index = 0;
+			set_state(START_ANIM);
 			timer.reset();
 		}
 		
@@ -179,10 +197,19 @@ class CAnimation: protected CStateMachine
 				frames[i].set_delay(d);
 		}
 		
+		int get_frames_size (  )
+		{
+			return frames.size();
+		}
+		
 		void clear_frames ( bool destroy=false )
 		{
 			frames.clear();
-			#if USE_SDL2
+			#ifndef USE_SDL2
+				if (destroy)
+					destroy_surfaces();
+				surface.clear();
+			#else
 				if (destroy)
 					destroy_textures();
 				texture.clear();
@@ -190,18 +217,92 @@ class CAnimation: protected CStateMachine
 		}
 
 		#ifndef USE_SDL2
-			void add_frame ( SDL_Rect src, int d )
+			void add_frame ( SDL_Surface * s, SDL_Rect src, int d )
 			{
 				index = 0;
+				surface.push_back(s);
 				frames.push_back(CAnimationFrame(d, src));
 			}
 			
-			void add_frame ( CAnimationFrame f )
+			void add_frame ( SDL_Surface * s, CAnimationFrame f )
 			{
 				index = 0;
+				surface.push_back(s);
 				frames.push_back(f);
 			}
+			
+			void destroy_surfaces (  )
+			{
+				vector <SDL_Surface *> s;
+				
+				for (int i(0); i < surface.size(); i++)
+				{
+					SDL_Surface * aux = surface[i];
+					int count = 0;
+					for (int j(0); j < surface.size(); j++)
+						if (j != i && aux == surface[j])
+							count++;
+					
+					if (count == 0)
+					{
+						if (aux)
+							s.push_back(aux);
+					}
+					else
+					{
+						count = 0;
+						for (int j(0); j < s.size(); j++)
+							if (s[j] == aux)
+								count++;
+						
+						if (count > 0)
+							if (aux)
+								s.push_back(aux);
+					}
+				}
+				
+				for (int i(0); i < s.size(); i++)
+					if (s[i])
+						SDL_FreeSurface(s[i]);
+				
+				surface.clear();
+				s.clear();
+			}
+			
+			SDL_Surface * get_surface ( int i )
+			{
+				if (surface.size() > 0 && i < surface.size())
+					return surface[i];
+				
+				return NULL;
+			}
+			
+			bool has_surface ( SDL_Surface * s )
+			{
+				if (!s)
+					return false;
+				
+				for (int i(0); i < surface.size(); i++)
+					if (surface[i] == s)
+						return true;
+				
+				return false;
+			}
 		#else
+			void add_frame ( SDL_Texture * t, SDL_Rect src, int d )
+			{
+				index = 0;
+				texture.push_back(t);
+				frames.push_back(CAnimationFrame(d, src));
+			}
+			
+			void add_frame ( SDL_Texture * t, CAnimationFrame f )
+			{
+				index = 0;
+				texture.push_back(t);
+				frames.push_back(f);
+			}
+			
 			SDL_Texture * get_texture ( int i )
 			{
 				if (texture.size() > 0 && i < texture.size())
@@ -259,19 +360,6 @@ class CAnimation: protected CStateMachine
 				
 				return false;
 			}
-			
-			void add_frame ( SDL_Texture * t, SDL_Rect src, int d )
-			{
-				index = 0;
-				texture.push_back(t);
-				frames.push_back(CAnimationFrame(d, src));
-			}
-			
-			void add_frame ( SDL_Texture * t, CAnimationFrame f )
-			{
-				index = 0;
-				frames.push_back(f);
-			}
 		#endif
 		
 		bool set_index ( int i )
@@ -319,11 +407,11 @@ class CAnimation: protected CStateMachine
 			dest.h = source.h;
 			
 			#ifndef USE_SDL2
-				if (surface)
-					SDL_BlitSurface(surface, &source, screen, &dest);
+				if (surface.size() && surface.at(index))
+					SDL_BlitSurface(surface.at(index), &source, screen, &dest);
 			#else
-				if (texture.size() > 0 && texture.at(get_index()))
-					SDL_RenderCopy(renderer, texture.at(get_index()), &source, &dest);
+				if (texture.size() && texture.at(index))
+					SDL_RenderCopy(renderer, texture.at(index), &source, &dest);
 			#endif
 		}
 		
@@ -396,11 +484,11 @@ class CAnimation: protected CStateMachine
 			dest.h = source.h;
 			
 			#ifndef USE_SDL2
-				if (surface)
-					SDL_BlitSurface(surface, &source, screen, &dest);
+				if (surface.size() && surface.at(index))
+					SDL_BlitSurface(surface.at(index), &source, screen, &dest);
 			#else
-				if (texture.size() > 0)
-					SDL_RenderCopy(renderer, texture.at(get_index()), &source, &dest);
+				if (texture.size() && texture.at(index))
+					SDL_RenderCopy(renderer, texture.at(index), &source, &dest);
 			#endif
 		}
 		
@@ -408,9 +496,10 @@ class CAnimation: protected CStateMachine
 		{
 			switch (get_state())
 			{
-				case 1:
-				case 2:
-				case 3:
+				case START_ANIM:
+				case CHANGE_FRAME_ANIM:
+				case RUNNING_ANIM:
+				case FINISHED_ANIM:
 					if (frames.size() == 0)
 						throw "CAnimation: animação sem frames\n";
 
@@ -424,22 +513,22 @@ class CAnimation: protected CStateMachine
 							if (repeat)
 							{
 								index = 0;
-								set_state(3); // termina e repete a animação
+								set_state(FINISHED_ANIM); // termina e repete a animação
 								break;
 							}
 							else
 							{
-								index = frames.size() - 1;
-								set_state(4); // terminou a animação e fica parado
+								index = int(frames.size() - 1);
+								set_state(STOPED_ANIM); // terminou a animação e fica parado
 								break;
 							}
 						}
 						
-						set_state(2); // novo frame
+						set_state(CHANGE_FRAME_ANIM); // novo frame
 						break;
 					}
 
-					set_state(1); // rodando
+					set_state(RUNNING_ANIM); // rodando
 					break;
 
 				default:

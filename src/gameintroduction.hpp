@@ -56,9 +56,9 @@ class CGameIntroduction: public CStateMachine
 			CGameIntroduction ( SDL_Renderer * r )
 		#endif
 		{
+			SDL_Surface * aux = 0;
 			#if USE_SDL2
 				SDL_Texture * texture = 0;
-				SDL_Surface * aux = 0;
 			#endif
 			
 			#if _WIN32 || _WIN64
@@ -243,9 +243,14 @@ class CGameIntroduction: public CStateMachine
 			#endif
 			
 			#ifndef USE_SDL2
-				anim[0].surface = optimize_surface_alpha(IMG_Load(path));
-				if (!anim[0].surface)
+				aux = optimize_surface_alpha(IMG_Load(path));
+				if (!aux)
 					throw "CGameIntroduction: não foi possível carregar scene2-Enter.png\n";
+				
+				anim[0].set_repeat(false); // animação da tecla enter pressionada
+				anim[0].add_frame(aux, (SDL_Rect){0,    0,270,269},  1);
+				anim[0].add_frame(aux, (SDL_Rect){0,  269,270,269},  2);
+				anim[0].add_frame(aux, (SDL_Rect){0,269*2,270,269}, 20);
 			#else
 				texture = IMG_LoadTexture(r, path);
 				if (!texture)
@@ -272,9 +277,14 @@ class CGameIntroduction: public CStateMachine
 			#endif
 			
 			#ifndef USE_SDL2
-				anim[1].surface = optimize_surface_alpha(IMG_Load(path));
-				if (!anim[1].surface)
+				aux = optimize_surface_alpha(IMG_Load(path));
+				if (!aux)
 					throw "CGameIntroduction: não foi possível carregar scene2-Hand.png\n";
+				
+				anim[1].set_repeat(false); // animação da mão
+				anim[1].pause();
+				anim[1].add_frame(aux, (SDL_Rect){0,  0,698,585}, 15);
+				anim[1].add_frame(aux, (SDL_Rect){0,585,698,585}, 15);
 			#else
 				texture = IMG_LoadTexture(r, path);
 				if (!texture)
@@ -301,9 +311,13 @@ class CGameIntroduction: public CStateMachine
 			#endif
 			
 			#ifndef USE_SDL2
-				anim[3].surface = optimize_surface_alpha(IMG_Load(path));
-				if (!anim[3].surface)
+				aux = optimize_surface_alpha(IMG_Load(path));
+				if (!aux)
 					throw "CGameIntroduction: não foi possível carregar scene4.png\n";
+				
+				anim[3].set_repeat(false); // animação do rosto de Linus
+				anim[3].add_frame(aux, (SDL_Rect){0,  0,960,624}, 20);
+				anim[3].add_frame(aux, (SDL_Rect){0,624,960,624}, 75);
 			#else
 				texture = IMG_LoadTexture(r, path);
 				if (!texture)
@@ -335,9 +349,21 @@ class CGameIntroduction: public CStateMachine
 			#endif
 		
 			#ifndef USE_SDL2
-				anim[4].surface = optimize_surface_alpha(IMG_Load(path));
-				if (!anim[4].surface)
+				aux = optimize_surface_alpha(IMG_Load(path));
+				if (!aux)
 					throw "CGameIntroduction: não foi possível carregar scene1-Kernel.png\n";
+				
+				anim[4].add_frame(aux, (SDL_Rect){0,170*9,717,170}, 20); // animação de digitando
+				anim[4].add_frame(aux, (SDL_Rect){0,170*8,717,170}, 10);
+				anim[4].add_frame(aux, (SDL_Rect){0,170*7,717,170}, 10);
+				anim[4].add_frame(aux, (SDL_Rect){0,170*6,717,170}, 10);
+				anim[4].add_frame(aux, (SDL_Rect){0,170*5,717,170}, 10);
+				anim[4].add_frame(aux, (SDL_Rect){0,170*4,717,170}, 10);
+				anim[4].add_frame(aux, (SDL_Rect){0,170*3,717,170}, 10);
+				anim[4].add_frame(aux, (SDL_Rect){0,170*2,717,170}, 10);
+				anim[4].add_frame(aux, (SDL_Rect){0,170,717,170}, 10);
+				anim[4].add_frame(aux, (SDL_Rect){0,0,717,170}, 25);
+				anim[4].set_repeat(false);
 			#else
 				
 				#if _WIN32 || _WIN64
@@ -389,45 +415,17 @@ class CGameIntroduction: public CStateMachine
 			#endif
 			
 			#ifndef USE_SDL2
-				anim[0].set_repeat(false); // animação da tecla enter pressionada
-				anim[0].add_frame((SDL_Rect){0,    0,270,269},  1);
-				anim[0].add_frame((SDL_Rect){0,  269,270,269},  2);
-				anim[0].add_frame((SDL_Rect){0,269*2,270,269}, 20);
-
-				anim[1].set_repeat(false); // animação da mão
-				anim[1].pause();
-				anim[1].add_frame((SDL_Rect){0,  0,698,585}, 15);
-				anim[1].add_frame((SDL_Rect){0,585,698,585}, 15);
-
-				anim[3].set_repeat(false); // animação do rosto de Linus
-				anim[3].add_frame((SDL_Rect){0,  0,960,624}, 20);
-				anim[3].add_frame((SDL_Rect){0,624,960,624}, 75);
-
-				anim[4].add_frame((SDL_Rect){0,170*9,717,170}, 20); // animação de digitando
-				anim[4].add_frame((SDL_Rect){0,170*8,717,170}, 10);
-				anim[4].add_frame((SDL_Rect){0,170*7,717,170}, 10);
-				anim[4].add_frame((SDL_Rect){0,170*6,717,170}, 10);
-				anim[4].add_frame((SDL_Rect){0,170*5,717,170}, 10);
-				anim[4].add_frame((SDL_Rect){0,170*4,717,170}, 10);
-				anim[4].add_frame((SDL_Rect){0,170*3,717,170}, 10);
-				anim[4].add_frame((SDL_Rect){0,170*2,717,170}, 10);
-				anim[4].add_frame((SDL_Rect){0,170,717,170}, 10);
-				anim[4].add_frame((SDL_Rect){0,0,717,170}, 25);
-				anim[4].set_repeat(false);
-			#endif
-			
-			#ifndef USE_SDL2
 				// animação do hack do kernel
-				anim[2].add_frame((SDL_Rect){0,0,0,0}, 75); 
+				anim[2].add_frame(NULL, (SDL_Rect){0,0,0,0}, 75); 
 				anim[2].set_repeat(false);
 				 // em um universo paralelo
-				anim[5].add_frame((SDL_Rect){0,0,0,0}, 100);
+				anim[5].add_frame(NULL, (SDL_Rect){0,0,0,0}, 100);
 				anim[5].set_repeat(false);
 				// algum tempo depois
-				anim[6].add_frame((SDL_Rect){0,0,0,0}, 60); 
+				anim[6].add_frame(NULL, (SDL_Rect){0,0,0,0}, 60); 
 				anim[6].set_repeat(false);
 				// mostrando lado de fora do iglu
-				anim[7].add_frame((SDL_Rect){0,0,0,0}, 60); 
+				anim[7].add_frame(NULL, (SDL_Rect){0,0,0,0}, 60); 
 				anim[7].set_repeat(false);
 			#else
 				// animação do hack do kernel
@@ -445,8 +443,8 @@ class CGameIntroduction: public CStateMachine
 			#endif
 			
 			#ifndef USE_SDL2
-				init_hand = -anim[1].surface->w/2;
-				final_hand = -(anim[1].surface->w - 567); 
+				init_hand = -anim[1].get_surface(0)->w/2;
+				final_hand = -(anim[1].get_surface(0)->w - 567); 
 			#else
 				init_hand = -texture_width(anim[1].get_texture(0))/2;
 				final_hand = -(texture_width(anim[1].get_texture(0)) - 567); 
@@ -478,8 +476,7 @@ class CGameIntroduction: public CStateMachine
 					SDL_FreeSurface(igloo_bg);
 				
 				for (int i(0); i < anim.size(); i++)
-					if (anim[i].surface)
-						SDL_FreeSurface(anim[i].surface);
+					anim[i].destroy_surfaces();
 			#else
 				if (browser_bg)
 					SDL_DestroyTexture(browser_bg);

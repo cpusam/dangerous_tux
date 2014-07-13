@@ -71,6 +71,11 @@ class CCamera
 			return focus;
 		}
 		
+		SDL_Rect get_view (  )
+		{
+			return (SDL_Rect){int(position.x), int(position.y), dimension.w,dimension.h};
+		}
+		
 		void set_position ( SVect p )
 		{
 			position = p;

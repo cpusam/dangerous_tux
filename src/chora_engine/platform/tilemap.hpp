@@ -36,16 +36,16 @@ class CTileMap
 		vector <int> tiles;
 	
 	public:
-		CTileMap ( int tilesize )
+		CTileMap ( int ts )
 		{
-			width = height = tilesize;
-			tilesize = tilesize;
+			width = height = ts;
+			tilesize = ts;
 			dimension = (SDL_Rect){0,0,tilesize,tilesize};
 		}
 		
-		void set_tilesize ( int tilesize )
+		void set_tilesize ( int ts )
 		{
-			tilesize = tilesize;
+			tilesize = ts;
 		}
 		
 		bool set_tile ( int x, int y, int t )
@@ -78,7 +78,7 @@ class CTileMap
 			y = y / tilesize;
 			
 			if (y * width + x < tileset.size())
-				return tileset[y * width + x];
+				return tileset.at(y * width + x);
 			
 			return -1;
 		}
@@ -86,7 +86,7 @@ class CTileMap
 		int get_tile ( int i )
 		{
 			if (i > -1 && i < tileset.size())
-				return tileset[i];
+				return tileset.at(i);
 			
 			return -1;
 		}
@@ -174,7 +174,7 @@ class CTileMap
 				}
 			}
 
-			if (t[t.size() - 1] != -1)
+			if (t.back() != -1)
 				height++;
 
 			dimension = (SDL_Rect){0,0, width * tilesize, height * tilesize};
@@ -253,40 +253,43 @@ class CAnimatedTile: public CAnimation
 {
 	protected:
 		int tile;
-		#ifndef USE_SDL2
-			using CAnimation::surface;
-		#else
-			using CAnimation::texture;
-		#endif
-
+		
 	public:
 		CAnimatedTile (  )
 		{
 			tile = -1;
-		}
-		
-		int get_frames_size (  )
-		{
-			return frames.size();
+			#ifndef USE_SDL2
+				surface.push_back(NULL);
+			#else
+				texture.push_back(NULL);
+			#endif
 		}
 		
 		#ifndef USE_SDL2
 			SDL_Surface * get_surface (  )
 			{
-				return surface;
+				return surface[0];
 			}
 		
 			void set_surface ( SDL_Surface * s )
 			{
-				if (surface)
-					SDL_FreeSurface(surface);
+				if (surface[0] && surface[0] != s)
+					SDL_FreeSurface(surface[0]);
 
-				surface = s;
+				surface[0] = s;
 			}
 		#else
-			vector <SDL_Texture *> get_texture (  )
+			SDL_Texture * get_texture (  )
 			{
-				return texture;
+				return texture[0];
+			}
+			
+			void set_texture ( SDL_Texture * t )
+			{
+				if (texture[0] && texture[0] != t)
+					SDL_DestroyTexture(texture[0]);
+					
+				texture[0] = t;
 			}
 		#endif
 		
@@ -304,8 +307,8 @@ class CAnimatedTile: public CAnimation
 class CTileMapView: public CTileMap
 {
 	protected:
-		map <int, SDL_Rect> source; // par <tile, rect_sourcee>
-		map <int, CAnimatedTile> animation;
+		map <int, SDL_Rect> source; // par <tile, rect_source>
+		map <int, CAnimatedTile> animation; // par <tile, animação de tile>
 	public:
 		#ifndef USE_SDL2
 			SDL_Surface * surface;
@@ -350,8 +353,15 @@ class CTileMapView: public CTileMap
 		void add_animation ( CAnimatedTile a, int t )
 		{
 			#ifndef USE_SDL2
+				if (!surface)
+					throw "CTileMapView: surface nula";
 				a.set_surface(surface);
+			#else
+				if (!texture)
+					throw "CTileMapView: texture nula";
+				a.set_texture(texture);
 			#endif
+			
 			a.set_tile(t);
 			add_tile(t);
 			animation[t] = a;
@@ -391,8 +401,8 @@ class CTileMapView: public CTileMap
 			for (i = pos.x; i <= pos.x + dim.w; i++)
 				for (j = pos.y; j <= pos.y + dim.h; j++)
 				{
-					//t = get_tile(i * tilesize, j * tilesize);
-					t = tileset.at(i * width + j);
+					//t = tileset.at(i * width + j); <- BUGADO!
+					t = get_tile(i * tilesize, j * tilesize);
 					if (!has_tile(t))
 						continue;
 
@@ -445,7 +455,7 @@ class CTileMapView: public CTileMap
 						{
 							dest.w = src.w;
 							dest.h = src.h;
-							SDL_Blitilesizeurface(surface, &src, screen, &dest);
+							SDL_BlitSurface(surface, &src, screen, &dest);
 						}
 					#else
 						if (texture)

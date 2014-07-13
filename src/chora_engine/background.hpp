@@ -69,7 +69,7 @@ class CBackground
 			
 			bool set_surface ( SDL_Surface * s )
 			{
-				if (surface)
+				if (surface && surface != s)
 					SDL_FreeSurface(surface);
 				
 				surface = s;
@@ -84,7 +84,7 @@ class CBackground
 			
 			bool set_texture ( SDL_Texture * t )
 			{
-				if (texture)
+				if (texture && texture != t)
 					SDL_DestroyTexture(texture);
 				
 				texture = t;
@@ -367,35 +367,25 @@ class CAnimatedBackground: private CStateMachine
 		CAnimation anim[2];
 
 	public:
-		#ifndef USE_SDL2
-			CAnimatedBackground ( SDL_Surface * s )
-			{
-				anim[0].surface = anim[1].surface = s;
-				set_state(1);
-			}
-			
-			~CAnimatedBackground (  )
-			{
-				if (anim[0].surface)
-					SDL_FreeSurface(anim[0].surface);
-			}
-		#else
-			CAnimatedBackground (  )
-			{
-				set_state(1);
-			}
-			
-			~CAnimatedBackground (  )
-			{
+		CAnimatedBackground (  )
+		{
+			set_state(1);
+		}
+
+		~CAnimatedBackground (  )
+		{
+			#ifndef USE_SDL2
+				anim[0].destroy_surfaces();
+			#else
 				anim[0].destroy_textures();
-			}
-		#endif
+			#endif
+		}
 		
 		#ifndef USE_SDL2
-		void add_frame ( SDL_Rect f, int d )
+		void add_frame ( SDL_Surface * s, SDL_Rect f, int d )
 		{
-			anim[0].add_frame(f, d);
-			anim[1].add_frame(f, d);
+			anim[0].add_frame(s, f, d);
+			anim[1].add_frame(s, f, d);
 		}
 		#else
 		void add_frame ( SDL_Texture *t, SDL_Rect f, int d )
@@ -430,11 +420,11 @@ class CAnimatedBackground: private CStateMachine
 			int w, h;
 			
 			#ifndef USE_SDL2
-				if (!anim[0].surface)
+				if (!anim[0].get_surface(0))
 					return;
 				
-				w = anim[0].surface->w;
-				h = anim[0].surface->h;
+				w = anim[0].get_surface(0)->w;
+				h = anim[0].get_surface(0)->h;
 			#else
 				if (!anim[0].get_texture(0))
 					return;
@@ -468,7 +458,7 @@ class CAnimatedBackground: private CStateMachine
 			}
 			
 			#ifndef USE_SDL2
-				SDL_BlitSurface(anim[0].surface, &src, screen, &d);
+				SDL_BlitSurface(anim[0].get_surface(0), &src, screen, &d);
 			#else
 				SDL_RenderCopy(renderer, anim[0].get_texture(0), &src, &d);
 			#endif
@@ -484,7 +474,7 @@ class CAnimatedBackground: private CStateMachine
 			SDL_Rect d, dim, src, surf;
 			
 			#ifndef USE_SDL2
-				if (!anim[0].surface)
+				if (!anim[0].get_surface(0))
 					return;
 			#else
 				if (!anim[0].get_texture(0))
@@ -506,14 +496,14 @@ class CAnimatedBackground: private CStateMachine
 			src.h = dim.h;
 			d.x = dim.x;
 			#ifndef USE_SDL2
-				SDL_BlitSurface(anim[0].surface, &src, screen, &d);
+				SDL_BlitSurface(anim[0].get_surface(0), &src, screen, &d);
 
 				if (int(p.x) % surf.w > surf.w - dim.w)
 				{
 					src.x = surf.x;
 					src.w = int(p.x) % surf.w - (surf.w - dim.w);
 					d.x = dim.x + surf.w - int(p.x) % surf.w;
-					SDL_BlitSurface(anim[0].surface, &src, screen, &d);
+					SDL_BlitSurface(anim[0].get_surface(0), &src, screen, &d);
 				}
 			#else
 				SDL_RenderCopy(renderer, anim[0].get_texture(0), &src, &d);

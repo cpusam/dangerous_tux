@@ -69,19 +69,19 @@ class CFlyerAlien: public CGameEntity
 			#endif
 			
 			#ifndef USE_SDL2
-				anim[0].surface = optimize_surface_alpha(IMG_Load(path));
-				if (!anim[0].surface)
+				aux = optimize_surface_alpha(IMG_Load(path));
+				if (!aux)
 					throw "CFlyerAlien: não conseguiu abrir flyeralien.png\n";
 				
 				// animações
 				// voando
-				anim[0].add_frame((SDL_Rect){0,0,48,48}, 3);
+				anim[0].add_frame(aux, (SDL_Rect){0,0,48,48}, 3);
 				// atirando
-				anim[1].add_frame((SDL_Rect){0,0,48,48}, 3);
+				anim[1].add_frame(aux, (SDL_Rect){0,0,48,48}, 3);
 				// morrendo
-				anim[2].add_frame((SDL_Rect){0,48*2,48,48}, 6);
-				anim[2].add_frame((SDL_Rect){48,48*2,48,48}, 6);
-				anim[2].add_frame((SDL_Rect){48*2,48*2,48,48}, 6);
+				anim[2].add_frame(aux, (SDL_Rect){0,48*2,48,48}, 6);
+				anim[2].add_frame(aux, (SDL_Rect){48,48*2,48,48}, 6);
+				anim[2].add_frame(aux, (SDL_Rect){48*2,48*2,48,48}, 6);
 			#else
 				texture = IMG_LoadTexture(r, path);
 				if (!texture)
@@ -98,17 +98,13 @@ class CFlyerAlien: public CGameEntity
 				anim[2].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 6);
 			#endif
 			
-			#ifndef USE_SDL2
-				anim[1].surface = anim[2].surface = anim[0].surface;
-			#endif
 			reset();
 		}
 		
 		~CFlyerAlien (  )
 		{
 			#ifndef USE_SDL2
-				if (anim[0].surface)
-					SDL_FreeSurface(anim[0].surface);
+				anim[0].destroy_surfaces();
 			#else
 				anim[0].destroy_textures();
 			#endif

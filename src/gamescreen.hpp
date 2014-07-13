@@ -571,7 +571,7 @@ class CGameScreen: public CStateMachine
 				case INIT_LEVEL_SCREEN: // inicializando o level	
 					levels[curr_level]->set_state(0); // seta o level para estado de iniciando
 					levels[curr_level]->update(); // executa um update para inicializar variáveis
-					
+
 					player->jetpack.set_jetpack(false);
 					player->gun.set_gun(false);
 					player->set_kernel(false);

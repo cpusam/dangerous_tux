@@ -100,23 +100,23 @@ class CWalkerAlien: public CGameEntity
 			#endif
 			
 			#ifndef USE_SDL2
-				anim[0].surface = optimize_surface_alpha(IMG_Load(path));
-				if (!anim[0].surface)
+				aux = optimize_surface_alpha(IMG_Load(path));
+				if (!aux)
 					throw "CWalkerAlien: não foi possível abrir walkeralien_right.png\n";
 				
 				// virado para direita
 				// caminhando para direita
-				anim[0].add_frame((SDL_Rect){0,0,48,48}, 3);
-				anim[0].add_frame((SDL_Rect){48,0,48,48}, 5);
-				anim[0].add_frame((SDL_Rect){48*2,0,48,48}, 3);
+				anim[0].add_frame(aux, (SDL_Rect){0,0,48,48}, 3);
+				anim[0].add_frame(aux, (SDL_Rect){48,0,48,48}, 5);
+				anim[0].add_frame(aux, (SDL_Rect){48*2,0,48,48}, 3);
 				// atirando para direita
-				anim[1].add_frame((SDL_Rect){0,48,48,48}, 3);
-				anim[1].add_frame((SDL_Rect){48,48,48,48}, 3);
-				anim[1].add_frame((SDL_Rect){48*2,48,48,48}, 3);
+				anim[1].add_frame(aux, (SDL_Rect){0,48,48,48}, 3);
+				anim[1].add_frame(aux, (SDL_Rect){48,48,48,48}, 3);
+				anim[1].add_frame(aux, (SDL_Rect){48*2,48,48,48}, 3);
 				// morrendo
-				anim[4].add_frame((SDL_Rect){0,48*2,48,48}, 6);
-				anim[4].add_frame((SDL_Rect){48,48*2,48,48}, 6);
-				anim[4].add_frame((SDL_Rect){48*2,48*2,48,48}, 6);
+				anim[4].add_frame(aux, (SDL_Rect){0,48*2,48,48}, 6);
+				anim[4].add_frame(aux, (SDL_Rect){48,48*2,48,48}, 6);
+				anim[4].add_frame(aux, (SDL_Rect){48*2,48*2,48,48}, 6);
 			#else
 				texture = IMG_LoadTexture(r, path);
 				if (!texture)
@@ -153,23 +153,23 @@ class CWalkerAlien: public CGameEntity
 			#endif
 			
 			#ifndef USE_SDL2
-				anim[2].surface = optimize_surface_alpha(IMG_Load(path));
-				if (!anim[2].surface)
+				aux = optimize_surface_alpha(IMG_Load(path));
+				if (!aux)
 					throw "CWalkerAlien: não foi possível abrir walkeralien_left.png\n";
 				
 				// virado para esquerda
 				// caminhando para esquerda
-				anim[2].add_frame((SDL_Rect){0,0,48,48}, 3);
-				anim[2].add_frame((SDL_Rect){48,0,48,48}, 5);
-				anim[2].add_frame((SDL_Rect){48*2,0,48,48}, 3);
+				anim[2].add_frame(aux, (SDL_Rect){0,0,48,48}, 3);
+				anim[2].add_frame(aux, (SDL_Rect){48,0,48,48}, 5);
+				anim[2].add_frame(aux, (SDL_Rect){48*2,0,48,48}, 3);
 				// atirano para esquerda
-				anim[3].add_frame((SDL_Rect){0,48,48,48}, 3);
-				anim[3].add_frame((SDL_Rect){48,48,48,48}, 3);
-				anim[3].add_frame((SDL_Rect){48*2,48,48,48}, 3);
+				anim[3].add_frame(aux, (SDL_Rect){0,48,48,48}, 3);
+				anim[3].add_frame(aux, (SDL_Rect){48,48,48,48}, 3);
+				anim[3].add_frame(aux, (SDL_Rect){48*2,48,48,48}, 3);
 				//morrendo
-				anim[5].add_frame((SDL_Rect){0,48*2,48,48}, 6);
-				anim[5].add_frame((SDL_Rect){48,48*2,48,48}, 6);
-				anim[5].add_frame((SDL_Rect){48*2,48*2,48,48}, 6);
+				anim[5].add_frame(aux, (SDL_Rect){0,48*2,48,48}, 6);
+				anim[5].add_frame(aux, (SDL_Rect){48,48*2,48,48}, 6);
+				anim[5].add_frame(aux, (SDL_Rect){48*2,48*2,48,48}, 6);
 			#else
 				texture = IMG_LoadTexture(r, path);
 				if (!texture)
@@ -192,24 +192,14 @@ class CWalkerAlien: public CGameEntity
 
 			curr_anim = &anim[0];
 			
-			#ifndef USE_SDL2
-				anim[1].surface = anim[0].surface;
-				anim[3].surface = anim[2].surface;
-				anim[4].surface = anim[0].surface;
-				anim[5].surface = anim[2].surface;
-			#endif
 			reset();
-			
 		}
 		
 		~CWalkerAlien (  )
 		{
 			#ifndef USE_SDL2
-				if (anim[0].surface)
-					SDL_FreeSurface(anim[0].surface);
-			
-				if (anim[2].surface)
-					SDL_FreeSurface(anim[2].surface);
+				anim[0].destroy_surfaces();
+				anim[2].destroy_surfaces();
 			#else
 				anim[0].destroy_textures();
 				anim[2].destroy_textures();
