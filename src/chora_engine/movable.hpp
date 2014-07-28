@@ -21,16 +21,11 @@
     distribution.
 */
 
-<<<<<<< HEAD
 #ifndef CHORA_MOVABLE_HPP
 #define CHORA_MOVABLE_HPP
 
 #include "chora.hpp"
 #include "vect.hpp"
-=======
-#ifndef MOVABLE_HPP
-#define MOVABLE_HPP
->>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
 
 class CMovable
 {
@@ -41,7 +36,6 @@ class CMovable
 		SDL_Rect dim; // posição e dimensão
 
 	public:
-<<<<<<< HEAD
 		CMovable (  )
 		{
 			dim = (SDL_Rect){0,0,1,1};
@@ -62,47 +56,6 @@ class CMovable
 		void set_dim ( SDL_Rect d );
 		
 		SDL_Rect get_dim (  );
-=======
-		virtual void set_pos ( SVect p )
-		{
-			pos = p;
-		}
-		
-		virtual SVect get_pos (  )
-		{
-			return pos;
-		}
-		
-		virtual void set_vel ( SVect v )
-		{
-			vel = v;
-		}
-		
-		virtual SVect get_vel (  )
-		{
-			return vel;
-		}
-		
-		virtual void set_acc ( SVect a )
-		{
-			acc = a;
-		}
-		
-		virtual SVect get_acc (  )
-		{
-			return acc;
-		}
-		
-		virtual void set_dim ( SDL_Rect d )
-		{
-			dim = d;
-		}
-		
-		virtual SDL_Rect get_dim (  )
-		{
-			return dim;
-		}
->>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
 };
 
 #endif

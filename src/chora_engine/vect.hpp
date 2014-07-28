@@ -21,13 +21,8 @@
     distribution.
 */
 
-<<<<<<< HEAD
 #ifndef CHORA_VECT_HPP
 #define CHORA_VECT_HPP
-=======
-#ifndef VECT_HPP
-#define VECT_HPP
->>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
 
 #include <cmath>
 

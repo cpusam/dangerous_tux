@@ -27,7 +27,6 @@
 #if _WIN32 || _WIN64
 	#if __MINGW32__ || __MINGW64__
 		#ifndef USE_SDL2
-<<<<<<< HEAD
 			#include <SDL\\SDL.h>
 			#include <SDL\\SDL_ttf.h>
 			#include <SDL\\SDL_mixer.h>
@@ -43,50 +42,6 @@
 		#include "SDL_ttf.h"		
 		#include "SDL_mixer.h"
 		#include "SDL_image.h"
-=======
-			#include <SDL/SDL.h>
-			
-			#ifndef CHORA_NO_GUI
-				#include <SDL/SDL_ttf.h>
-			#endif
-			
-			#ifndef CHORA_NO_SOUND
-				#include <SDL/SDL_mixer.h>
-			#endif
-			
-			#ifndef CHORA_NO_IMAGE
-				#include <SDL/SDL_image.h>
-			#endif
-		#else
-			#include <SDL2/SDL.h>
-			
-			#ifndef CHORA_NO_GUI
-				#include <SDL2/SDL_ttf.h>
-			#endif
-			
-			#ifndef CHORA_NO_SOUND
-				#include <SDL2/SDL_mixer.h>
-			#endif
-			
-			#ifndef CHORA_NO_IMAGE
-				#include <SDL2/SDL_image.h>
-			#endif
-		#endif
-	#else
-		#include "SDL.h"
-		
-		#ifndef CHORA_NO_GUI
-			#include "SDL_ttf.h"
-		#endif
-		
-		#ifndef CHORA_NO_SOUND
-			#include "SDL_mixer.h"
-		#endif
-		
-		#ifndef CHORA_NO_IMAGE
-			#include "SDL_image.h"
-		#endif
->>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
 	#endif
 	
 	#undef main
@@ -94,7 +49,6 @@
 #else
 	#ifndef USE_SDL2
 		#include <SDL/SDL.h>
-<<<<<<< HEAD
 		#include <SDL/SDL_ttf.h>
 		#include <SDL/SDL_mixer.h>
 		#include <SDL/SDL_image.h>
@@ -107,41 +61,6 @@
 	#undef main
 #endif
 /*
-=======
-		#ifndef CHORA_NO_GUI
-			#include <SDL/SDL_ttf.h>
-		#endif
-		#ifndef CHORA_NO_SOUND
-			#include <SDL/SDL_mixer.h>
-		#endif
-		#ifndef CHORA_NO_IMAGE
-			#include <SDL/SDL_image.h>
-		#endif
-	#else
-		#include <SDL2/SDL.h>
-		#ifndef CHORA_NO_GUI
-			#include <SDL2/SDL_ttf.h>
-		#endif
-		#ifndef CHORA_NO_SOUND
-			#include <SDL2/SDL_mixer.h>
-		#endif
-		#ifndef CHORA_NO_IMAGE
-			#include <SDL2/SDL_image.h>
-		#endif
-	#endif
-	#undef main
-#endif
-
-#include <iostream>
-#include <vector>
-#include <fstream>
-#include <sstream>
-#include <map>
-#include <string>
-
-using namespace std;
-
->>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
 #include "statemachine.hpp"
 #include "vect.hpp"
 #include "camera.hpp"
@@ -151,7 +70,6 @@ using namespace std;
 #include "util.hpp"
 #include "SDL_gfx/SDL_framerate.hpp"
 #include "background.hpp"
-<<<<<<< HEAD
 // módulo de tiles
 #include "platform/tilemap.hpp"
 
@@ -166,26 +84,5 @@ using namespace std;
 // módulo de som
 #include "sound/soundplayer.hpp"
 */
-=======
-#ifndef CHORA_NO_TILE
-	// módulo de tiles
-	#include "platform/tilemap.hpp"
-#endif
-
-
-#ifndef CHORA_NO_GUI
-	// módulo de gui
-	#include "gui/writer.hpp"
-	#include "gui/widget.hpp"
-	#include "gui/label.hpp"
-	#include "gui/button.hpp"
-	#include "gui/bar.hpp"
-#endif
-
-#ifndef CHORA_NO_SOUND
-	// módulo de som
-	#include "sound/soundplayer.hpp"
-#endif
->>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
 #endif
 
