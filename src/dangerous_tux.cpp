@@ -33,12 +33,18 @@
 #include <ctime>
 
 #include "chora_engine/chora.hpp"
+<<<<<<< HEAD
 #include "chora_engine/SDL_gfx/SDL_framerate.hpp"
 
 #include "gamescreen.hpp" // contém todos os headers do jogo
 
 #ifndef USE_SDL2
 	#include "video.hpp"
+=======
+#include "gamescreen.hpp" // contém todos os headers do jogo
+#ifndef USE_SDL2
+	#include "gamevideo.hpp"
+>>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
 #endif
 
 #define TILESIZE 48
@@ -91,10 +97,19 @@ int main ( int argc, char **argv )
 
 		CCamera cam((SDL_Rect){0,0, TILESIZE * 20,TILESIZE * 13}, (SDL_Rect){0,0,0,0});
 		#ifndef USE_SDL2
+<<<<<<< HEAD
 			CGameScreen gamescreen(screen, &cam, TILESIZE);
 		#else
 			CWriter::instance()->set_renderer(renderer);
 			CGameScreen gamescreen(window, renderer, &cam, TILESIZE);
+=======
+			CPlayer player;
+			CGameScreen gamescreen(screen, &cam, &player, TILESIZE);
+		#else
+			CWriter::instance()->set_renderer(renderer);
+			CPlayer player(renderer);
+			CGameScreen gamescreen(window, renderer, &cam, &player, TILESIZE);
+>>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
 		#endif
 		
 		srand(time(0));
@@ -139,6 +154,7 @@ int main ( int argc, char **argv )
 			}
 
 			FPSManager::instance()->update();
+<<<<<<< HEAD
 			
 			if (FPSManager::instance()->get_delta())
 			{
@@ -161,6 +177,28 @@ int main ( int argc, char **argv )
 					SDL_RenderPresent(renderer);
 				#endif
 			}
+=======
+			#ifndef USE_SDL2
+				gamescreen.draw();
+				SDL_UpdateRect(screen, 0,0,0,0);
+			#else
+				SDL_SetRenderTarget(renderer, target_texture);
+				gamescreen.draw();
+				SDL_RenderCopy(renderer, target_texture, NULL, NULL);
+				SDL_SetRenderTarget(renderer, NULL);
+				
+				//SDL_RenderPresent(renderer);
+				
+				SDL_SetRenderDrawColor(renderer, 0,0,0,255);
+				SDL_RenderClear(renderer);
+				SDL_RenderCopyEx(renderer, target_texture, NULL, NULL, 0, NULL, SDL_FLIP_NONE);
+				SDL_RenderPresent(renderer);
+			#endif
+
+			if (FPSManager::instance()->get_delta())
+				if (gamescreen.update() == EXIT_SCREEN)
+					done = 1;
+>>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
 		}
 		
 		#ifdef USE_SDL2

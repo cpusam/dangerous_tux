@@ -21,6 +21,7 @@
     distribution.
 */
 
+<<<<<<< HEAD
 #ifndef CHORA_CAMERA_HPP
 #define CHORA_CAMERA_HPP
 
@@ -28,6 +29,10 @@
 
 #include "chora.hpp"
 #include "vect.hpp"
+=======
+#ifndef CAMERA_HPP
+#define CAMERA_HPP
+>>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
 
 class CCamera
 {
@@ -47,6 +52,7 @@ class CCamera
 			focus.y = d.h / 2.0f;
 			//lookat(SVect(0,0));
 			if (limit.w < dimension.w || limit.h < dimension.h)
+<<<<<<< HEAD
 				std::cout << "CCamera: atenção limit W ou H menor que dimension W ou H\n";
 		}
 		
@@ -59,6 +65,76 @@ class CCamera
 		SDL_Rect get_dimension (  );
 		SDL_Rect get_limit (  );
 		void set_limit ( SDL_Rect l );
+=======
+				cout << "CCamera: atenção limit W ou H menor que dimension W ou H\n";
+		}
+		
+		void lookat ( SVect p )
+		{
+			position.x = p.x - focus.x;
+			position.y = p.y - focus.y;
+			
+			if (position.x < limit.x)
+				position.x = limit.x;
+			else if (position.x + dimension.w > limit.x + limit.w)
+				position.x = limit.w - dimension.w;
+			
+			if (position.y < limit.y)
+				position.y = limit.y;
+			else if (position.y + dimension.h > limit.x + limit.h)
+				position.y = limit.h - dimension.h;
+		}
+		
+		SVect get_position (  )
+		{
+			return position;
+		}
+		
+		SVect get_focus (  )
+		{
+			return focus;
+		}
+		
+		SDL_Rect get_view (  )
+		{
+			return (SDL_Rect){int(position.x), int(position.y), dimension.w,dimension.h};
+		}
+		
+		void set_position ( SVect p )
+		{
+			position = p;
+			
+			if (position.x < limit.x)
+				position.x = limit.x;
+			else if (position.x + dimension.w > limit.x + limit.w)
+				position.x = limit.w - dimension.w;
+			
+			if (position.y < limit.y)
+				position.y = limit.y;
+			else if (position.y + dimension.h > limit.x + limit.h)
+				position.y = limit.h - dimension.h;
+		}
+		
+		void set_focus ( SVect f )
+		{
+			focus = f;
+		}
+		
+		SDL_Rect get_dimension (  )
+		{
+			return dimension;
+		}
+		
+		SDL_Rect get_limit (  )
+		{
+			return limit;
+		}
+		
+		void set_limit ( SDL_Rect l )
+		{
+			limit = l;
+		}
+>>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
 		
 };
 

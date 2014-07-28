@@ -1,13 +1,21 @@
 
 CXX = g++
+<<<<<<< HEAD
 CXXFLAGS = -g -w -march=i386 -Wall#-fno-stack-protector
 LDLIBS = src/chora_engine/chora.a `sdl-config --cflags  --libs` -lm -lSDL_image -lSDL_ttf -lSDL_mixer
 LDLIBS_SDL2 = src/chora_engine/chora-SDL2.a `sdl2-config --cflags --libs` -lm -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 DEPS = src/video.o src/save.o src/gameevent_manager.o src/gameentity.o src/score.o src/highscore.o src/gamesignal.o src/jetpack.o src/gun.o src/player.o src/flyeralien.o src/circlealien.o src/walkeralien.o src/level.o src/gamemenu.o src/gamecredits.o src/gameintroduction.o src/gametransition.o src/gameover.o src/gametitle.o src/gamescreen.o
+=======
+CXXFLAGS = -g -w -march=i386 #-fno-stack-protector
+LDLIBS = `sdl-config --cflags  --libs` -lm -lSDL_image -lSDL_ttf -lSDL_mixer
+LDLIBS_SDL2 = `sdl2-config --cflags --libs` -lm -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+DEPS = src/dangerous_tux.cpp src/gameentity.hpp src/player.hpp src/aliensdef.hpp src/walkeralien.hpp src/flyeralien.hpp src/circlealien.hpp src/jetpack.hpp src/gun.hpp src/level.hpp src/gamescreen.hpp src/gameover.hpp src/gamecredits.hpp src/gametransition.hpp src/gameintroduction.hpp src/gametitle.hpp src/gameevent_manager.hpp src/highscore.hpp src/score.hpp src/savegame.hpp src/gamesignal.hpp src/gamevideo.hpp src/gamemenu.hpp
+>>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
 
 all: DangerousTux
 
 DangerousTux: $(DEPS)
+<<<<<<< HEAD
 	$(CXX) -o $@ src/dangerous_tux.cpp $(DEPS) $(CXXFLAGS) $(LDLIBS)
 
 DangerousTux.SDL2: $(DEPS)
@@ -80,3 +88,12 @@ src/gamescreen.o: src/gamescreen.hpp src/gamescreen.cpp
 clean:
 	@rm -f DangerousTux src/*.o
 
+=======
+	$(CXX) -o $@ src/dangerous_tux.cpp $(CXXFLAGS) $(LDLIBS)
+
+DangerousTux.SDL2: $(DEPS)
+	$(CXX) -o DangerousTux src/dangerous_tux.cpp -DUSE_SDL2 $(CXXFLAGS) $(LDLIBS_SDL2)
+
+clean:
+	-rm -f DangerousTux
+>>>>>>> 1fba5f672f27675ef61fc15b644b461379515813

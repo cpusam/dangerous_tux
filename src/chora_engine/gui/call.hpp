@@ -21,41 +21,12 @@
     distribution.
 */
 
-<<<<<<< HEAD
-#ifndef CHORA_STATEMACHINE_HPP
-#define CHORA_STATEMACHINE_HPP
-=======
-#ifndef STATEMACHINE_HPP
-#define STATEMACHINE_HPP
->>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
+/*
+	classe usada para ser o 'callback' para outras classes
+*/
 
-class CStateMachine
-{
-	private:
-		int state;
-
-	public:
-		CStateMachine (  )
-		{
-			state = 0; // default
-		}
-<<<<<<< HEAD
-		
-		virtual ~CStateMachine (  )
-		{
-		}
-
-		void set_state ( int s );
-		int get_state (  );
-		virtual int update (  );
-=======
-
-		void set_state ( int s ){ state = s;}
-		int get_state (  ){ return state;}
-		virtual int update (  ) = 0;
->>>>>>> 1fba5f672f27675ef61fc15b644b461379515813
-};
+#ifndef CALL_HPP
+#define CALL_HPP
 
 #endif
-
 
