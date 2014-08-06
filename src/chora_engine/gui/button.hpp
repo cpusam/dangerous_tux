@@ -21,8 +21,8 @@
     distribution.
 */
 
-#ifndef BUTTON_HPP
-#define BUTTON_HPP
+#ifndef CHORA_BUTTON_HPP
+#define CHORA_BUTTON_HPP
 
 #include "widget.hpp"
 #include "label.hpp"

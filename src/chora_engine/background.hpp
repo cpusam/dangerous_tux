@@ -24,7 +24,7 @@
 #ifndef CHORA_BACKGROUND_HPP
 #define CHORA_BACKGROUND_HPP
 
-#include "chora.hpp"
+#include "sdl.hpp"
 #include "vect.hpp"
 #include "camera.hpp"
 #include "animation.hpp"

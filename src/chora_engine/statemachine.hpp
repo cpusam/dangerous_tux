@@ -24,6 +24,11 @@
 #ifndef CHORA_STATEMACHINE_HPP
 #define CHORA_STATEMACHINE_HPP
 
+#include <vector>
+
+#define DEFAULT_STATE 0
+#define DEFAULT_STATE_ID -9999
+
 class CStateMachine
 {
 	private:
@@ -32,16 +37,62 @@ class CStateMachine
 	public:
 		CStateMachine (  )
 		{
-			state = 0; // default
+			state = DEFAULT_STATE;
 		}
-		
+	
 		virtual ~CStateMachine (  )
 		{
 		}
 
-		void set_state ( int s );
-		int get_state (  );
+		virtual void set_state ( int s );
+		virtual int get_state (  );
 		virtual int update (  );
+};
+
+class CState
+{
+	private:
+		int id;
+	
+	public:
+		CState (  )
+		{
+			id = DEFAULT_STATE_ID;
+		}
+		
+		void set_id ( int i )
+		{
+			id = i;
+		}
+		
+		int get_id (  )
+		{
+			return id;
+		}
+};
+
+class CStatePatternMachine
+{
+	private:
+		CState * curr_state;
+		std::vector <CState *> state;
+	
+	public:
+		CStatePatternMachine (  )
+		{
+			curr_state = 0; // default
+		}
+	
+		virtual ~CStatePatternMachine (  )
+		{
+		}
+		
+		virtual bool have_state ( CState * s );
+		virtual bool add_state ( CState * s );
+		virtual bool set_state ( int id ); // troca de estado
+		virtual CState * get_state ( int id );
+		virtual CState * get_curr_state (  );
+		virtual int update (  ); // retorna o id do estado
 };
 
 #endif

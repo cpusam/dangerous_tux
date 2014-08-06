@@ -21,8 +21,8 @@
     distribution.
 */
 
-#ifndef LABEL_HPP
-#define LABEL_HPP
+#ifndef CHORA_LABEL_HPP
+#define CHORA_LABEL_HPP
 
 #include "widget.hpp"
 #include "writer.hpp"

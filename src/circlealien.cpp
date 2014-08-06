@@ -41,51 +41,63 @@
 	anim.resize(8);
 	curr_anim = &anim[0];
 	
-	SDL_Surface * aux = 0;
+	SDL_Surface * left = 0, * right = 0;
 	#if _WIN32 || _WIN64
-		char path[FILENAME_MAX];
+		char path_left[FILENAME_MAX];
+		char path_right[FILENAME_MAX];
 		char p2[FILENAME_MAX];
 		_getcwd(p2, sizeof(p2));
 		#ifndef PREFIX
-			sprintf(path, "%s\\images\\circlealien.png", p2);
+			sprintf(path_left, "%s\\images\\circlealien_left.png", p2);
+			sprintf(path_right, "%s\\images\\circlealien_right.png", p2);
 		#else
-			sprintf(path, "%s\\dangeroustux\\images\\circlealien.png", PREFIX);
+			sprintf(path_left, "%s\\dangeroustux\\images\\circlealien_left.png", PREFIX);
+			sprintf(path_right, "%s\\dangeroustux\\images\\circlealien_right.png", PREFIX);
 		#endif
 	#else
-		char path[1024];
+		char path_left[1024];
+		char path_right[1024];
 		#ifndef PREFIX
-			sprintf(path, "./images/circlealien.png");
+			sprintf(path_left, "./images/circlealien_left.png");
+			sprintf(path_right, "./images/circlealien_right.png");
 		#else
-			sprintf(path, "%s/share/games/dangeroustux/images/circlealien.png", PREFIX);
+			sprintf(path_left, "%s/share/games/dangeroustux/images/circlealien_left.png", PREFIX);
+			sprintf(path_right, "%s/share/games/dangeroustux/images/circlealien_right.png", PREFIX);
 		#endif
 	#endif
 	
 	#ifndef USE_SDL2
-		aux = optimize_surface_alpha(IMG_Load(path));
-		if (!aux)
-			throw "CCircleAlien: não foi possível carregar circlealien.png\n";
+		left = optimize_surface_alpha(IMG_Load(path_left));
+		if (!left)
+			throw "CCircleAlien: não foi possível carregar circlealien_left.png\n";
 		
+		// Sentido anti-horário
 		// animação de indo para esquerda pregado em cima do tile
-		anim[0].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+		anim[0].add_frame(left, (SDL_Rect){0,0,48,48}, 1);
 		// animação de indo para esquerda pregado em baixo do tile
-		anim[1].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+		anim[1].add_frame(left, (SDL_Rect){0,48*2,48,48}, 1);
 	
 		// animação de indo para baixo pregado a esquerda do tile
-		anim[2].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+		anim[2].add_frame(left, (SDL_Rect){0,48,48,48}, 1);
 		// animação de indo para baixo pregado a direita do tile
-		anim[3].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+		anim[3].add_frame(right, (SDL_Rect){0,0,48,48}, 1);
 	
+	  right = optimize_surface_alpha(IMG_Load(path_right));
+		if (!right)
+			throw "CCircleAlien: não foi possível carregar circlealien_right.png\n";
+	
+		// Sentido horário
 		// animação de indo para direita pregado em cima do tile
-		anim[4].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+		anim[4].add_frame(right, (SDL_Rect){0,0,48,48}, 1);
 		// animação de indo para direita pregado em baixo do tile
-		anim[5].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+		anim[5].add_frame(right, (SDL_Rect){0,48*2,48,48}, 1);
 	
 		// animação de indo para cima pregado a esquerda do tile
-		anim[6].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
-		// animação de indo para cim pregado a direita do tile
-		anim[7].add_frame(aux, (SDL_Rect){0,0,36,35}, 1);
+		anim[6].add_frame(right, (SDL_Rect){0,48*3,48,48}, 1);
+		// animação de indo para cima pregado a direita do tile
+		anim[7].add_frame(left, (SDL_Rect){0,48*3,48,48}, 1);
 	#else
-		SDL_Texture * texture = IMG_LoadTexture(r, path);
+		SDL_Texture * texture = IMG_LoadTexture(r, path_left);
 		if (!texture)
 			throw "CCircleAlien: não foi possível carregar circlealien.png\n";
 
@@ -607,6 +619,15 @@ int CCircleAlien::update (  )
 							pos.y = y - dim.y;
 						}
 					}
+					
+					/*
+					if (dir_y == DOWN_ALIEN)
+						curr_anim = &anim[0];
+					else if (dir_y == UP_ALIEN)
+						curr_anim = &anim[1];
+					
+					curr_anim->update();
+					*/
 					break;
 				
 				case RIGHT_ALIEN:

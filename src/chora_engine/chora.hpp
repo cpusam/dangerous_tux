@@ -24,43 +24,7 @@
 #ifndef CHORA_HPP
 #define CHORA_HPP
 
-#if _WIN32 || _WIN64
-	#if __MINGW32__ || __MINGW64__
-		#ifndef USE_SDL2
-			#include <SDL\\SDL.h>
-			#include <SDL\\SDL_ttf.h>
-			#include <SDL\\SDL_mixer.h>
-			#include <SDL\\SDL_image.h>
-		#else
-			#include <SDL2\\SDL.h>
-			#include <SDL2\\SDL_ttf.h>
-			#include <SDL2\\SDL_mixer.h>			
-			#include <SDL2\\SDL_image.h>
-		#endif
-	#else
-		#include "SDL.h"
-		#include "SDL_ttf.h"		
-		#include "SDL_mixer.h"
-		#include "SDL_image.h"
-	#endif
-	
-	#undef main
-	
-#else
-	#ifndef USE_SDL2
-		#include <SDL/SDL.h>
-		#include <SDL/SDL_ttf.h>
-		#include <SDL/SDL_mixer.h>
-		#include <SDL/SDL_image.h>
-	#else
-		#include <SDL2/SDL.h>
-		#include <SDL2/SDL_ttf.h>
-		#include <SDL2/SDL_mixer.h>
-		#include <SDL2/SDL_image.h>
-	#endif
-	#undef main
-#endif
-/*
+#include "sdl.hpp"
 #include "statemachine.hpp"
 #include "vect.hpp"
 #include "camera.hpp"
@@ -70,9 +34,9 @@
 #include "util.hpp"
 #include "SDL_gfx/SDL_framerate.hpp"
 #include "background.hpp"
+
 // módulo de tiles
 #include "platform/tilemap.hpp"
-
 
 // módulo de gui
 #include "gui/writer.hpp"
@@ -83,6 +47,6 @@
 
 // módulo de som
 #include "sound/soundplayer.hpp"
-*/
+
 #endif
 

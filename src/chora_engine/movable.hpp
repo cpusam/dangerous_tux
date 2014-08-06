@@ -24,7 +24,7 @@
 #ifndef CHORA_MOVABLE_HPP
 #define CHORA_MOVABLE_HPP
 
-#include "chora.hpp"
+#include "sdl.hpp"
 #include "vect.hpp"
 
 class CMovable
@@ -41,21 +41,21 @@ class CMovable
 			dim = (SDL_Rect){0,0,1,1};
 		}
 		
-		void set_pos ( SVect p );
+		virtual void set_pos ( SVect p );
 		
-		SVect get_pos (  );
+		virtual SVect get_pos (  );
 		
-		void set_vel ( SVect v );
+		virtual void set_vel ( SVect v );
 		
-		SVect get_vel (  );
+		virtual SVect get_vel (  );
 		
-		void set_acc ( SVect a );
+		virtual void set_acc ( SVect a );
 		
-		SVect get_acc (  );
+		virtual SVect get_acc (  );
 		
-		void set_dim ( SDL_Rect d );
+		virtual void set_dim ( SDL_Rect d );
 		
-		SDL_Rect get_dim (  );
+		virtual SDL_Rect get_dim (  );
 };
 
 #endif

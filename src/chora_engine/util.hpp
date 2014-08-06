@@ -27,9 +27,11 @@
 #ifndef CHORA_UTIL_HPP
 #define CHORA_UTIL_HPP
 
-#include "chora.hpp"
+#include "sdl.hpp"
 #include "camera.hpp"
 
+extern "C"
+{
 #ifndef USE_SDL2
 	extern SDL_Surface * optimize_surface ( SDL_Surface * s );
 
@@ -48,6 +50,7 @@
 
 	extern void draw_texture ( SDL_Texture * texture, int x, int y, CCamera * cam, SDL_Renderer * renderer );
 #endif
+};
 
 #endif
 

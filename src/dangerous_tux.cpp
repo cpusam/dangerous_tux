@@ -33,7 +33,6 @@
 #include <ctime>
 
 #include "chora_engine/chora.hpp"
-#include "chora_engine/SDL_gfx/SDL_framerate.hpp"
 
 #include "gamescreen.hpp" // contém todos os headers do jogo
 
@@ -129,7 +128,7 @@ int main ( int argc, char **argv )
 								fullscreen ^= SDL_WINDOW_FULLSCREEN_DESKTOP;
 								SDL_SetWindowFullscreen(window, fullscreen);
 							#else
-								cout << "Fullscreen desativado para seu sistema, sorry!\n";
+								std::cout << "Fullscreen desativado para seu sistema, sorry!\n";
 							#endif
 						#endif
 					}
@@ -171,7 +170,7 @@ int main ( int argc, char **argv )
 	}
 	catch (const char * e)
 	{
-		cout << "Erro: " << e << endl;
+		std::cout << "Erro: " << e << std::endl;
 		#ifdef USE_SDL2
 			SDL_Log(e);
 		#endif
@@ -180,15 +179,15 @@ int main ( int argc, char **argv )
 	// Erros com alguma lib SDL
 	catch (char * e)
 	{
-		cout << "Erro: " << e << endl;
+		std::cout << "Erro: " << e << std::endl;
 		#ifdef USE_SDL2
 			SDL_Log(e);
 		#endif
 		return 1;
 	}
-	catch (exception & e)
+	catch (std::exception & e)
 	{
-		cout << e.what() << endl;
+		std::cout << e.what() << std::endl;
 		#ifdef USE_SDL2
 			SDL_Log(e.what());
 		#endif

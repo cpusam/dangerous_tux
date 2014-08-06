@@ -21,13 +21,13 @@
     distribution.
 */
 
-#ifndef SOUNDPLAYER_HPP
-#define SOUNDPLAYER_HPP
+#ifndef CHORA_SOUNDPLAYER_HPP
+#define CHORA_SOUNDPLAYER_HPP
 
 #include <string>
 #include <vector>
 
-#include "../chora.hpp"
+#include "../sdl.hpp"
 #include "../statemachine.hpp"
 
 enum ESoundType

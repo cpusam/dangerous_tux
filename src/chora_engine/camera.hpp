@@ -26,7 +26,7 @@
 
 #include <iostream>
 
-#include "chora.hpp"
+#include "sdl.hpp"
 #include "vect.hpp"
 
 class CCamera

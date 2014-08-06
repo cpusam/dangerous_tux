@@ -29,7 +29,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "../chora.hpp"
+#include "../sdl.hpp"
 #include "../vect.hpp"
 #include "../camera.hpp"
 #include "../animation.hpp"

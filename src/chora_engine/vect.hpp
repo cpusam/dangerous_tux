@@ -47,13 +47,6 @@ struct SVect
 		return SVect(x + b.x, y + b.y);
 	}
 	
-	SVect operator += ( const SVect & b)
-	{
-		x += b.x;
-		y += b.y;
-		return *this;
-	}
-	
 	SVect operator - (  )
 	{
 		return SVect(-x, -y);
@@ -64,16 +57,17 @@ struct SVect
 		return SVect(x - b.x, y - b.y);
 	}
 	
-	SVect operator -= ( const SVect & b )
-	{
-		x -= b.x;
-		y -= b.y;
-		return *this;
-	}
-	
+	/*
+	// seria um vetor perpedicular no eixo Z
 	SVect operator * ( const SVect & b )
 	{
 		return SVect(x * b.x, y * b.y);
+	}
+	*/
+	
+	float operator * ( const SVect & b )
+	{
+		return x * b.x + y * b.y;
 	}
 	
 	SVect operator * ( float s )
@@ -86,21 +80,43 @@ struct SVect
 		return SVect(x / s, y / s);
 	}
 	
-	SVect operator *= ( const SVect & b )
+	SVect& operator += ( const SVect & b)
+	{
+		x += b.x;
+		y += b.y;
+		return *this;
+	}
+	
+	SVect operator -= ( const SVect & b )
+	{
+		x -= b.x;
+		y -= b.y;
+		return *this;
+	}
+	
+	/*
+	// seria um vetor perpedicular no eixo Z
+	SVect& operator *= ( const SVect & b )
 	{
 		x *= b.x;
 		y *= b.y;
 		return *this;
 	}
+	*/
 	
-	SVect operator *= ( float s )
+	SVect& operator *= ( float s )
 	{
 		x *= s;
 		y *= s;
 		return *this;
 	}
 	
-	SVect operator /= ( float s )
+	float operator *= ( const SVect & b )
+	{
+		return x * b.x + y * b.y;
+	}
+	
+	SVect& operator /= ( float s )
 	{
 		x /= s;
 		y /= s;
@@ -112,21 +128,79 @@ struct SVect
 		return sqrt(x * x + y * y);
 	}
 	
-	SVect normalize (  )
+	SVect normal (  )
+	{
+		float h = sqrt(x * x + y * y);
+		return SVect(x / h, y / h);
+	}
+	
+	SVect& normalize (  )
 	{
 		float h = sqrt(x * x + y * y);
 		x /= h;
 		y /= h;
 		return *this;
 	}
+	/*
+	float angle (  )
+	{
+		SVect a(x, y);
+		
+		a.normalize();
+		
+		return
+	}
+	*/
 	
-	SVect zero (  )
+	SVect& rotate ( float angle )
+	{
+		float c = cos(angle);
+		float s = sin(angle);
+		
+		float nx = x * c - y * s;
+		float ny = x * s + y * c;
+		
+		x = nx;
+		y = ny;
+		
+		return *this;
+	}
+	
+	float cos_theta ( SVect & b )
+	{
+		float d = (b.length() * (this)->length());
+		float c = ((*this) * b) / d;
+		
+		if (d == 0 || isnan(c))
+			return 1.0f;
+		
+		return c;
+	}
+	
+	SVect& project ( SVect & b )
+	{
+		float s = cos_theta(b);
+
+		x *= s;
+		y *= s;
+		
+		return *this;
+	}
+	
+	SVect& to_int (  )
+	{
+		x = int(x);
+		y = int(y);
+		return *this;
+	}
+	
+	SVect& zero (  )
 	{
 		x = y = 0.0f;
 		return *this;
 	}
 	
-	SVect set ( float _x, float _y )
+	SVect& set ( float _x, float _y )
 	{
 		x = _x;
 		y = _y;

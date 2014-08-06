@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-#include "../chora.hpp"
+#include "../sdl.hpp"
 #include "../util.hpp"
 
 struct SText

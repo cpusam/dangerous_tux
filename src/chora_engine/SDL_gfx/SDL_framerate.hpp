@@ -30,7 +30,7 @@ Andreas Schiffler -- aschiffler at ferzkopp dot net
 #ifndef CHORA_SDL_framerate_h
 #define CHORA_SDL_framerate_h
 
-#include "../chora.hpp"
+#include "../sdl.hpp"
 
 	/* --------- Definitions */
 
@@ -193,8 +193,6 @@ class FPSManager
 			return time_passed;
 		}
 };
-
-FPSManager * FPSManager::singleton = 0;
 
 #endif				/* _SDL_framerate_h */
 

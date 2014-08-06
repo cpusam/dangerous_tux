@@ -26,7 +26,7 @@
 
 #include <vector>
 
-#include "chora.hpp"
+#include "sdl.hpp"
 #include "statemachine.hpp"
 #include "vect.hpp"
 #include "camera.hpp"
@@ -156,18 +156,18 @@ class CAnimation: protected CStateMachine
 		void clear_frames ( bool destroy=false );
 
 		#ifndef USE_SDL2
-			void add_frame ( SDL_Surface * s, SDL_Rect src, int d );
+			virtual void add_frame ( SDL_Surface * s, SDL_Rect src, int d );
 			
-			void add_frame ( SDL_Surface * s, CAnimationFrame f );
+			virtual void add_frame ( SDL_Surface * s, CAnimationFrame f );
 			void destroy_surfaces (  );
 			
 			SDL_Surface * get_surface ( int i );
 			
 			bool has_surface ( SDL_Surface * s );
 		#else
-			void add_frame ( SDL_Texture * t, SDL_Rect src, int d );
+			virtual void add_frame ( SDL_Texture * t, SDL_Rect src, int d );
 			
-			void add_frame ( SDL_Texture * t, CAnimationFrame f );
+			virtual void add_frame ( SDL_Texture * t, CAnimationFrame f );
 			
 			SDL_Texture * get_texture ( int i );
 			
@@ -180,22 +180,22 @@ class CAnimation: protected CStateMachine
 		
 		int get_index (  );
 		
-		CAnimationFrame get_frame ( int i );
-		CAnimationFrame get_curr_frame (  );
+		virtual CAnimationFrame get_frame ( int i );
+		virtual CAnimationFrame get_curr_frame (  );
 		
 		#ifndef USE_SDL2
-			void draw ( int x, int y, SDL_Surface * screen );
+			virtual void draw ( int x, int y, SDL_Surface * screen );
 		#else
-			void draw ( int x, int y, SDL_Renderer * renderer );
+			virtual void draw ( int x, int y, SDL_Renderer * renderer );
 		#endif
 		
 		#ifndef USE_SDL2
-			void draw ( int x, int y, CCamera * cam, SDL_Surface * screen );
+			virtual void draw ( int x, int y, CCamera * cam, SDL_Surface * screen );
 		#else
-			void draw ( int x, int y, CCamera * cam, SDL_Renderer * renderer );
+			virtual void draw ( int x, int y, CCamera * cam, SDL_Renderer * renderer );
 		#endif
 		
-		int update (  );
+		virtual int update (  );
 };
 
 #endif

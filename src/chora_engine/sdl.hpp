@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2014 Samuel Leonardo
+ Copyright (C) 2014 Chora Engine (Samuel Leonardo)
 
  This software is provided 'as-is', without any express or implied
  warranty. In no event will the authors be held liable for any damages
@@ -21,21 +21,44 @@
     distribution.
 */
 
-#ifndef CHORA_COLLISION_HPP
-#define CHORA_COLLISION_HPP
+#ifndef CHORA_SDL_HPP
+#define CHORA_SDL_HPP
 
-#include "sdl.hpp"
-#include "vect.hpp"
-
-extern "C"
-{
-	extern bool boudingbox ( SDL_Rect a, SDL_Rect b );
-	extern bool pointbox ( SVect p, SDL_Rect b );
-
-	// verifica se "a" está completamente dentro de "b", mas não o contrário
-	extern bool rect_inside ( SDL_Rect a, SDL_Rect b );
-};
-
+#if _WIN32 || _WIN64
+	#if __MINGW32__ || __MINGW64__
+		#ifndef USE_SDL2
+			#include <SDL\\SDL.h>
+			#include <SDL\\SDL_ttf.h>
+			#include <SDL\\SDL_mixer.h>
+			#include <SDL\\SDL_image.h>
+		#else
+			#include <SDL2\\SDL.h>
+			#include <SDL2\\SDL_ttf.h>
+			#include <SDL2\\SDL_mixer.h>			
+			#include <SDL2\\SDL_image.h>
+		#endif
+	#else
+		#include "SDL.h"
+		#include "SDL_ttf.h"		
+		#include "SDL_mixer.h"
+		#include "SDL_image.h"
+	#endif
+	
+	#undef main
+	
+#else
+	#ifndef USE_SDL2
+		#include <SDL/SDL.h>
+		#include <SDL/SDL_ttf.h>
+		#include <SDL/SDL_mixer.h>
+		#include <SDL/SDL_image.h>
+	#else
+		#include <SDL2/SDL.h>
+		#include <SDL2/SDL_ttf.h>
+		#include <SDL2/SDL_mixer.h>
+		#include <SDL2/SDL_image.h>
+	#endif
 #endif
 
+#endif
 
