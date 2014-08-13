@@ -179,6 +179,8 @@ int CWidget::child_update (  )
 	for (std::vector <CWidget *>::iterator i = child.begin(); i != child.end(); i++)
 		if ((*i)->is_visible() && visible)
 			(*i)->update();
+	
+	return DEFAULT_STATE;
 }
 
 #ifndef USE_SDL2

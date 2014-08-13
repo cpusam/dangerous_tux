@@ -95,7 +95,7 @@ void CHighScore::set_widgets (  )
 	#else
 		char path[1024];
 		#ifndef PREFIX
-			sprintf(path, "./fonts/inhouseedition.ttf");
+			sprintf(path, "fonts/inhouseedition.ttf");
 		#else
 			sprintf(path, "%s/share/games/dangeroustux/fonts/inhouseedition.ttf", PREFIX);
 		#endif
@@ -176,12 +176,12 @@ bool CHighScore::save ( SPlayerScore p )
 	for (int i(0); i < 10; i++)
 		if (pscore[10] >= pscore[i])
 		{
-			SDL_memcpy(aux, ps, sizeof(ps));
+			memcpy(aux, ps, sizeof(ps));
 			for (int j(i); j < 9; j++)
 				aux[j + 1] = ps[j];
 			aux[i].clear();
 			aux[i] = p;
-			SDL_memcpy(ps, aux, sizeof(aux));
+			memcpy(ps, aux, sizeof(aux));
 
 			FILE * file = fopen(path, "wb+");
 			if (!file)
@@ -223,7 +223,7 @@ bool CHighScore::read (  )
 	}
 	fclose(file);
 
-	SDL_memcpy(ps, aux, sizeof(ps));
+	memcpy(ps, aux, sizeof(ps));
 	set_widgets();
 
 	return true;

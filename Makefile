@@ -3,7 +3,7 @@ CXX = g++
 CXXFLAGS = -g -w -march=i386 -Wall#-fno-stack-protector
 LDLIBS = src/chora_engine/chora.a `sdl-config --cflags  --libs` -lm -lSDL_image -lSDL_ttf -lSDL_mixer
 LDLIBS_SDL2 = src/chora_engine/chora-SDL2.a `sdl2-config --cflags --libs` -lm -lSDL2_image -lSDL2_ttf -lSDL2_mixer
-DEPS = src/video.o src/save.o src/gameevent_manager.o src/gameentity.o src/score.o src/highscore.o src/gamesignal.o src/jetpack.o src/gun.o src/player.o src/flyeralien.o src/circlealien.o src/walkeralien.o src/level.o src/gamemenu.o src/gamecredits.o src/gameintroduction.o src/gametransition.o src/gameover.o src/gametitle.o src/gamescreen.o
+DEPS = src/video.o src/save.o src/gameevent_manager.o src/gameentity.o src/score.o src/highscore.o src/gamesignal.o src/jetpack.o src/gun.o src/player.o src/flyeralien.o src/gyroalien.o src/walkeralien.o src/level.o src/gamemenu.o src/gamecredits.o src/gameintroduction.o src/gametransition.o src/gameover.o src/gametitle.o src/gamescreen.o
 
 all: DangerousTux
 
@@ -47,8 +47,8 @@ src/player.o: src/player.hpp src/player.cpp
 src/flyeralien.o: src/flyeralien.hpp src/flyeralien.cpp
 	$(CXX) -c src/flyeralien.cpp -o $@ $(CXXFLAGS)
 
-src/circlealien.o: src/circlealien.hpp src/circlealien.cpp
-	$(CXX) -c src/circlealien.cpp -o $@ $(CXXFLAGS)
+src/gyroalien.o: src/gyroalien.hpp src/gyroalien.cpp
+	$(CXX) -c src/gyroalien.cpp -o $@ $(CXXFLAGS)
 
 src/walkeralien.o: src/walkeralien.hpp src/walkeralien.cpp
 	$(CXX) -c src/walkeralien.cpp -o $@ $(CXXFLAGS)

@@ -325,11 +325,11 @@ int CLevel::update (  )
 					p.x = (i % map->get_width()) * map->get_tilesize();
 					p.y = (i / map->get_width()) * map->get_tilesize();
 					#ifndef USE_SDL2
-						CGameEntity * circle = new CCircleAlien(player, p, tile);
+						CGameEntity * gyro = new CGyroAlien(player, p, tile);
 					#else
-						CGameEntity * circle = new CCircleAlien(renderer, player, p, tile);
+						CGameEntity * gyro = new CGyroAlien(renderer, player, p, tile);
 					#endif
-					aliens.push_back(circle);
+					aliens.push_back(gyro);
 				}
 				else if (tile == 'K')
 				{

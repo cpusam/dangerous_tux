@@ -1,12 +1,12 @@
-#include "circlealien.hpp"
+#include "gyroalien.hpp"
 
 #ifndef USE_SDL2
-	CCircleAlien::CCircleAlien ( CPlayer * p, SVect i_p, int t )
+	CGyroAlien::CGyroAlien ( CPlayer * p, SVect i_p, int t )
 #else
-	CCircleAlien::CCircleAlien ( SDL_Renderer * r, CPlayer * p, SVect i_p, int t )
+	CGyroAlien::CGyroAlien ( SDL_Renderer * r, CPlayer * p, SVect i_p, int t )
 #endif
 {
-	id = "circlealien";
+	id = "gyroalien";
 	player = p;
 	map = player->get_map();
 	dim = (SDL_Rect){10,9,15,15};
@@ -69,7 +69,7 @@
 	#ifndef USE_SDL2
 		left = optimize_surface_alpha(IMG_Load(path_left));
 		if (!left)
-			throw "CCircleAlien: não foi possível carregar circlealien_left.png\n";
+			throw "CGyroAlien: não foi possível carregar circlealien_left.png\n";
 		
 		// Sentido anti-horário
 		// animação de indo para esquerda pregado em cima do tile
@@ -84,7 +84,7 @@
 	
 	  right = optimize_surface_alpha(IMG_Load(path_right));
 		if (!right)
-			throw "CCircleAlien: não foi possível carregar circlealien_right.png\n";
+			throw "CGyroAlien: não foi possível carregar circlealien_right.png\n";
 	
 		// Sentido horário
 		// animação de indo para direita pregado em cima do tile
@@ -99,7 +99,7 @@
 	#else
 		SDL_Texture * texture = IMG_LoadTexture(r, path_left);
 		if (!texture)
-			throw "CCircleAlien: não foi possível carregar circlealien.png\n";
+			throw "CGyroAlien: não foi possível carregar circlealien.png\n";
 
 		// animação de indo para esquerda pregado em cima do tile
 		anim[0].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
@@ -195,13 +195,13 @@
 			break;
 		
 		default:
-			throw "CCircleAlien: tile não identificado\n";
+			throw "CGyroAlien: tile não identificado\n";
 	}
 	
 	init_pos = i_p;
 }
 
-CCircleAlien::~CCircleAlien (  )
+CGyroAlien::~CGyroAlien (  )
 {
 	#ifndef USE_SDL2
 		anim[0].destroy_surfaces();
@@ -211,7 +211,7 @@ CCircleAlien::~CCircleAlien (  )
 }
 
 
-void CCircleAlien::reset_pos (  )
+void CGyroAlien::reset_pos (  )
 {
 	pos = init_pos;
 	
@@ -260,26 +260,26 @@ void CCircleAlien::reset_pos (  )
 			break;
 		
 		default:
-			throw "CCircleAlien: tile não identificado\n";
+			throw "CGyroAlien: tile não identificado\n";
 	}
 }
 	
-void CCircleAlien::reset (  )
+void CGyroAlien::reset (  )
 {
 	reset_pos();
 	set_state(STOPED_ALIEN);
 }
 
-void CCircleAlien::input ( SDL_Event & event )
+void CGyroAlien::input ( SDL_Event & event )
 {
 	
 }
 
-void CCircleAlien::process (  )
+void CGyroAlien::process (  )
 {
 }
 
-int CCircleAlien::collision_hor (  )
+int CGyroAlien::collision_hor (  )
 {
 	int ret = 0;
 	float p;
@@ -324,7 +324,7 @@ int CCircleAlien::collision_hor (  )
 	return ret;
 }
 
-int CCircleAlien::collision_ver (  )
+int CGyroAlien::collision_ver (  )
 {
 	int ret = 0;
 	float p;
@@ -369,7 +369,7 @@ int CCircleAlien::collision_ver (  )
 	return ret;
 }
 
-bool CCircleAlien::has_coll_tile ( int t )
+bool CGyroAlien::has_coll_tile ( int t )
 {
 	for (int i(0); i < coll_tiles.size(); i++)
 		if (t == coll_tiles[i])
@@ -378,7 +378,7 @@ bool CCircleAlien::has_coll_tile ( int t )
 	return false;
 }
 
-bool CCircleAlien::ground_right (  )
+bool CGyroAlien::ground_right (  )
 {
 	SVect p;
 	
@@ -397,7 +397,7 @@ bool CCircleAlien::ground_right (  )
 	return false;
 }
 
-bool CCircleAlien::ground_left (  )
+bool CGyroAlien::ground_left (  )
 {
 	SVect p;
 	
@@ -416,7 +416,7 @@ bool CCircleAlien::ground_left (  )
 	return false;
 }
 
-bool CCircleAlien::ground_down (  )
+bool CGyroAlien::ground_down (  )
 {
 	SVect p;
 	
@@ -435,7 +435,7 @@ bool CCircleAlien::ground_down (  )
 	return false;
 }
 
-bool CCircleAlien::ground_up (  )
+bool CGyroAlien::ground_up (  )
 {
 	SVect p;
 	
@@ -455,9 +455,9 @@ bool CCircleAlien::ground_up (  )
 }
 
 #ifndef USE_SDL2
-	void CCircleAlien::draw ( CCamera * cam, SDL_Surface * screen )
+	void CGyroAlien::draw ( CCamera * cam, SDL_Surface * screen )
 #else
-	void CCircleAlien::draw ( CCamera * cam, SDL_Renderer * renderer )
+	void CGyroAlien::draw ( CCamera * cam, SDL_Renderer * renderer )
 #endif
 {
 	#ifndef USE_SDL2
@@ -504,7 +504,7 @@ bool CCircleAlien::ground_up (  )
 				break;
 			
 			default:
-				throw "CCircleAlien: direção desconhecida\n";
+				throw "CGyroAlien: direção desconhecida\n";
 		}
 		
 		curr_anim->reset();
@@ -535,7 +535,7 @@ bool CCircleAlien::ground_up (  )
 	}
 }
 
-int CCircleAlien::update (  )
+int CGyroAlien::update (  )
 {
 	int coll_ver, coll_hor;
 	SVect p;
@@ -857,6 +857,8 @@ int CCircleAlien::update (  )
 		case INACTIVE_ALIEN:
 			break;
 	}
+	
+	return get_state();
 }
 
 

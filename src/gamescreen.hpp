@@ -17,6 +17,7 @@
 // enumeração das telas
 enum EScreenState
 {
+	CHORA_SCREEN,
 	CREDITS_SCREEN,
 	INTRODUCTION,
 	TITLE_SCREEN,
@@ -51,7 +52,9 @@ class CGameScreen: public CStateMachine
 		CPlayer * player;
 		int any_key, enter_key, pause_key;
 		int tilesize;
-
+		
+		SVect chora_pos;
+		CAnimation chora;
 		CSaveGame * save[3];		
 		CGameOver gameover;
 		CGameTitle title;

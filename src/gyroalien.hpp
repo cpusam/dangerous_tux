@@ -10,14 +10,14 @@
 		  'D'
 */
 
-#ifndef CIRCLEALIEN_HPP
-#define CIRCLEALIEN_HPP
+#ifndef GYROALIEN_HPP
+#define GYROALIEN_HPP
 
 #include "gameentity.hpp"
 #include "aliensdef.hpp"
 #include "player.hpp"
 
-class CCircleAlien: public CGameEntity
+class CGyroAlien: public CGameEntity
 {
 	protected:
 		int dir, dir_x, dir_y;
@@ -36,12 +36,12 @@ class CCircleAlien: public CGameEntity
 	public:
 		// get é em que lado do tile o alien está inicialmente pregado, get é a direção
 		#ifndef USE_SDL2
-			CCircleAlien ( CPlayer * p, SVect i_p, int t );
+			CGyroAlien ( CPlayer * p, SVect i_p, int t );
 		#else
-			CCircleAlien ( SDL_Renderer * r, CPlayer * p, SVect i_p, int t );
+			CGyroAlien ( SDL_Renderer * r, CPlayer * p, SVect i_p, int t );
 		#endif
 		
-		virtual ~CCircleAlien (  );
+		virtual ~CGyroAlien (  );
 		
 		void reset_pos (  );	
 		

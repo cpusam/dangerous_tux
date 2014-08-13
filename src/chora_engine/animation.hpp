@@ -138,6 +138,8 @@ class CAnimation: protected CStateMachine
 			timer.start();
 		}
 		
+		using CStateMachine::get_state;
+		
 		void play (  );
 		void pause (  );
 		

@@ -270,15 +270,15 @@ void CTextInput::input ( SDL_Event & event )
 				std::stringstream s;
 				s << str;
 
-				if (event.key.keysym.unicode >= 'a' && event.key.keysym.unicode <= 'z')
+				if (event.key.keysym.sym >= SDLK_a && event.key.keysym.sym <= SDLK_z)
 				{
 					if (caps_lock || shift_key)
-						s << char(toupper(char(event.key.keysym.unicode)));
+						s << char(toupper(char(event.key.keysym.sym)));
 					else
-						s << char(event.key.keysym.unicode);
+						s << char(event.key.keysym.sym);
 				}
 				else
-					s << char(event.key.keysym.unicode);
+					s << char(event.key.keysym.sym);
 			
 				str = s.str();
 				str_to_surface(str);

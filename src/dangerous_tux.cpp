@@ -34,6 +34,7 @@
 
 #include "chora_engine/chora.hpp"
 
+
 #include "gamescreen.hpp" // contém todos os headers do jogo
 
 #ifndef USE_SDL2
@@ -42,12 +43,26 @@
 
 #define TILESIZE 48
 
+#ifdef __clang__
+	#include <emscripten/emscripten.h>
+#endif
+
 int main ( int argc, char **argv )
 {
 	try
 	{
-		#ifndef USE_SDL2
-			SDL_putenv("SDL_VIDEO_CENTERED=center");
+		// quando compilando com clang para emscripten
+		#ifdef __clang__
+				EM_ASM(
+					FS.currentPath = '/';
+					FS.mkdir('images');
+				);
+		#endif
+		
+		#ifndef USE_SDL2 
+			#ifndef __clang__
+				SDL_putenv("SDL_VIDEO_CENTERED=center");
+			#endif
 		#else
 			#if _WIN32 || _WIN64
 				SDL_SetMainReady();
@@ -193,9 +208,11 @@ int main ( int argc, char **argv )
 		#endif
 		return 1;
 	}
-
-	IMG_Quit();
-	TTF_Quit();
+	
+	#ifndef __clang__
+		IMG_Quit();
+		TTF_Quit();
+	#endif
 	CSoundPlayer::instance()->free_sounds();
 	Mix_CloseAudio();
 	SDL_Quit();

@@ -6,6 +6,8 @@ add_definitions(-DPREFIX="${CMAKE_INSTALL_PREFIX}")
 
 option(USE_SDL2 "Usar SDL2 ao invés de SDL1.2" OFF)
 
+add_subdirectory(src/chora_engine)
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Escolha o tipo de build" FORCE)
 endif()

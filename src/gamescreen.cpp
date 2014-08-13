@@ -109,8 +109,30 @@
 	#endif
 	
 	any_key = enter_key = pause_key = 0;
-	title.reset();
-	set_state(TITLE_SCREEN);
+	
+	#if _WIN32 || _WIN64
+		#ifndef PREFIX
+			sprintf(path, "%s\\images\\chora_logo.png", p2);
+		#else
+			sprintf(path, "%s\\dangeroustux\\images\\chora_logo.png", PREFIX);
+		#endif
+	#else
+		#ifndef PREFIX
+			sprintf(path, "./images/chora_logo.png");
+		#else
+			sprintf(path, "%s/share/games/dangeroustux/images/chora_logo.png", PREFIX);
+		#endif
+	#endif
+	
+	#ifndef USE_SDL2
+		SDL_Surface * aux = IMG_Load(path);
+		chora.add_frame(aux, (SDL_Rect){0,0,aux->w,aux->h}, 60);
+	#else
+		SDL_Texture * aux = IMG_LoadTexture(r, path);
+		chora.add_frame(aux, (SDL_Rect){0,0,texture_width(aux),texture_height(aux)}, 60);
+	#endif
+	chora.set_repeat(false);
+	set_state(CHORA_SCREEN);
 	//credits.reset();
 	//set_state(CREDITS_SCREEN); // tela de créditos
 	//set_state(LOAD_GAME);
@@ -124,6 +146,11 @@ CGameScreen::~CGameScreen (  )
 		clear_levels();
 	}
 	
+	#ifndef USE_SDL2
+		chora.destroy_surfaces();
+	#else
+		chora.destroy_textures();
+	#endif
 	delete save[0];
 	delete save[1];
 	delete save[2];
@@ -213,6 +240,15 @@ void CGameScreen::draw (  )
 {
 	switch (get_state())
 	{
+		case CHORA_SCREEN:
+			#ifndef USE_SDL2
+				SDL_FillRect(screen, NULL, 0x0);
+			#else
+				SDL_SetRenderDrawColor(renderer, 0,0,0,0xff);
+				SDL_RenderClear(renderer);
+			#endif
+			chora.draw(chora_pos.x, chora_pos.y, screen);
+			break;
 		case CREDITS_SCREEN:
 			#ifndef USE_SDL2
 				credits.draw(screen);
@@ -308,6 +344,16 @@ int CGameScreen::update (  )
 {
 	switch (get_state())
 	{
+		case CHORA_SCREEN:
+			if (any_key || chora.update() == STOPED_ANIM)
+			{
+				any_key = 0;
+				enter_key = 0;
+				title.reset();
+				set_state(TITLE_SCREEN);
+			}
+			break;
+		
 		case CREDITS_SCREEN:
 			if (any_key || credits.update() == INACTIVE_CREDITS)
 			{
@@ -370,7 +416,7 @@ int CGameScreen::update (  )
 			{
 				SSaveData d = menu->options.get_curr_save()->get_data();
 				int aux[3];
-				SDL_memset(aux, 0x0, sizeof(aux));
+				memset(aux, 0x0, sizeof(aux));
 				sscanf(d.curr_level, "%d", &curr_level);
 				sscanf(d.lives, "%d", &aux[0]);
 				sscanf(d.score, "%d", &aux[1]);
@@ -648,8 +694,8 @@ int CGameScreen::update (  )
 				player->score.set_score(0);
 				any_key = 0;
 				enter_key = 0;
-				title.reset();
-				set_state(TITLE_SCREEN); // vai para tela de tÃ­tulo
+				chora.reset();
+				set_state(CHORA_SCREEN); // vai para tela de logo
 			}
 			break;
 
@@ -658,7 +704,7 @@ int CGameScreen::update (  )
 			{
 				SPlayerScore s;
 				
-				if (textinput->get_str().length() <= 1)
+				if (textinput->get_str().size() <= 1)
 					sprintf(s.name, "PLAYER");
 				else
 					sprintf(s.name, "%s", textinput->get_str().c_str());

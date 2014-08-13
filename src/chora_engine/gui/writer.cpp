@@ -111,17 +111,18 @@ bool CWriter::resize_font ( int s )
 				case UTF8_TEXT:
 					tmp.push_back(TTF_RenderUTF8_Solid(font, str.c_str(), c));
 					break;
-				case UNICODE_TEXT:
-					{
-						Uint16 * s = (Uint16 *)malloc(sizeof(Uint16) * (str.length() + 1));
-						for (int i(0); i < str.length(); i++)
-							s[i] = str[i];
-						s[str.length()] = '\0';
-						tmp.push_back(TTF_RenderUNICODE_Solid(font, s, c));
-						free(s);
-					}
-					break;
-
+				#ifndef __clang__
+					case UNICODE_TEXT:
+						{
+							Uint16 * s = (Uint16 *)malloc(sizeof(Uint16) * (str.length() + 1));
+							for (int i(0); i < str.length(); i++)
+								s[i] = str[i];
+							s[str.length()] = '\0';
+							tmp.push_back(TTF_RenderUNICODE_Solid(font, s, c));
+							free(s);
+						}
+						break;
+				#endif
 				default:
 					tmp.push_back(TTF_RenderText_Solid(font, str.c_str(), c));
 					break;
@@ -142,19 +143,19 @@ bool CWriter::resize_font ( int s )
 				
 			case UTF8_TEXT:
 				return TTF_RenderUTF8_Solid(font, text.c_str(), c);
-				
-			case UNICODE_TEXT:
-				{
-						Uint16 * s = (Uint16 *)malloc(sizeof(Uint16) * (str.length() + 1));
-						for (int i(0); i < str.length(); i++)
-							s[i] = str[i];
-						s[str.length()] = '\0';
-						SDL_Surface * srf = TTF_RenderUNICODE_Solid(font, s, c);
-						free(s);
-						return srf;
-				}
-				break;
-				
+			#ifndef __clang__
+				case UNICODE_TEXT:
+					{
+							Uint16 * s = (Uint16 *)malloc(sizeof(Uint16) * (str.length() + 1));
+							for (int i(0); i < str.length(); i++)
+								s[i] = str[i];
+							s[str.length()] = '\0';
+							SDL_Surface * srf = TTF_RenderUNICODE_Solid(font, s, c);
+							free(s);
+							return srf;
+					}
+					break;
+			#endif
 			default:
 				return TTF_RenderText_Solid(font, text.c_str(), c);
 		}

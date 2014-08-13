@@ -1,14 +1,24 @@
-CXX = g++.exe
-CXXFLAGS = -DUSE_SDL2 -g -w -mwindows
-LDLIBS = src/chora_engine/chora-WIN.a -lm -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_mixer
-DEPS = src/video.o src/save.o src/gameevent_manager.o src/gameentity.o src/score.o src/highscore.o src/gamesignal.o src/jetpack.o src/gun.o src/player.o src/flyeralien.o src/gyroalien.o src/walkeralien.o src/level.o src/gamemenu.o src/gamecredits.o src/gameintroduction.o src/gametransition.o src/gameover.o src/gametitle.o src/gamescreen.o
+CLANG_DIR = ~/Desktop/emsdk-portable/clang/fastcomp/build_master_32/bin
+EMS_DIR = /home/samuel/Desktop/emsdk-portable/emscripten/master
+CXX = ${CLANG_DIR}/clang++
+CXXFLAGS = -emit-llvm -target asmjs-unknown-emscripten -I${EMS_DIR}/system/include/ -I${EMS_DIR}/system/include/libcxx
+EM++ = ${EMS_DIR}/em++
+LDLIBS = src/chora_engine/*.o src/chora_engine/platform/*.o src/chora_engine/gui/*.o src/chora_engine/sound/*.o src/chora_engine/SDL_gfx/*.o
+LDLIBS_SDL2 = src/chora_engine/chora-SDL2.a
+DEPS = src/dangerous_tux.o src/video.o src/save.o src/gameevent_manager.o src/gameentity.o src/score.o src/highscore.o src/gamesignal.o src/jetpack.o src/gun.o src/player.o src/flyeralien.o src/gyroalien.o src/walkeralien.o src/level.o src/gamemenu.o src/gamecredits.o src/gameintroduction.o src/gametransition.o src/gameover.o src/gametitle.o src/gamescreen.o
 
-all: DangerousTux.exe
+all: DangerousTux.html
 
-DangerousTux.exe: $(DEPS)
-	$(CXX) -o DangerousTux.exe src/dangerous_tux.cpp $(DEPS) $(CXXFLAGS) $(LDLIBS)
+DangerousTux.html: $(DEPS)
+	$(EM++) -o $@ $(DEPS) $(LDLIBS) --preload-file ./images
+
+DangerousTux.SDL2: $(DEPS)
+	$(EM++) -o DangerousTux -s USE_SDL2=1 $(DEPS) $(LDLIBS_SDL2)
 
 # $(CXX) -c src/.cpp -o $@ $(CXXFLAGS)
+src/dangerous_tux.o: src/dangerous_tux.cpp
+	$(CXX) -c src/dangerous_tux.cpp -o $@ $(CXXFLAGS) -I${EMS_DIR}/system/include
+
 src/video.o: src/video.hpp src/video.cpp
 	$(CXX) -c src/video.cpp -o $@ $(CXXFLAGS)
 
@@ -73,4 +83,4 @@ src/gamescreen.o: src/gamescreen.hpp src/gamescreen.cpp
 	$(CXX) -c src/gamescreen.cpp -o $@ $(CXXFLAGS)
 
 clean:
-	@rm -f DangerousTux src/*.o
+	rm -f DangerousTux.html DangerousTux.js src/*.o

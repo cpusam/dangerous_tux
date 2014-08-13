@@ -40,7 +40,11 @@
 	#endif
 	
 	if (!background)
+	{
+		printf("path = %s\n", path);
+		printf("SDL_Error: %s\n", SDL_GetError());
 		throw "SGameOver: não conseguiu abrir gameover_BG\n";
+	}
 	
 	#if _WIN32 || _WIN64
 		#ifndef PREFIX

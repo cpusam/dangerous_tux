@@ -154,7 +154,7 @@ void CGameTransition::reset ( int curr_level, int num_levels )
 	SVect p;
 	
 	int i, tile;
-	for (i = 0, tile; (tile = map->get_tile(i)) != -1; i++)
+	for (i = 0, tile = -1; (tile = map->get_tile(i)) != -1; i++)
 		if (tile == 'P')
 		{
 			p.x = (i % map->get_width()) * map->get_tilesize();

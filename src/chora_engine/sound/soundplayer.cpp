@@ -134,8 +134,10 @@ bool CSound::resume (  )
 				set_state(INACTIVE_SOUND);
 			else
 				set_state(UNLOADED_SOUND);
-			return false;
+			ret = false;
 	}
+	
+	return ret;
 }
 
 void CSound::free (  )

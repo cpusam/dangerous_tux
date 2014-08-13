@@ -318,15 +318,18 @@ void CAnimatedBackground::add_frame ( SDL_Texture *t, SDL_Rect f, int d )
 
 int CAnimatedBackground::update (  )
 {
+	int ret = DEFAULT_STATE;
 	switch (get_state())
 	{
 		case 0:
 			break;
 		case 1:
 			anim[0].update();
-			anim[1].update();
+			ret = anim[1].update();
 			break;
 	}
+	
+	return ret;
 }
 
 #ifndef USE_SDL2

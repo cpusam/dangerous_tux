@@ -7,7 +7,7 @@
 #include "player.hpp"
 #include "walkeralien.hpp"
 #include "flyeralien.hpp"
-#include "circlealien.hpp"
+#include "gyroalien.hpp"
 #include "gamesignal.hpp"
 
 #include "chora_engine/background.hpp"

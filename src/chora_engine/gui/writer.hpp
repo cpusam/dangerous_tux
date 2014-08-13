@@ -65,8 +65,10 @@ class CWriter
 				renderer = 0;
 			#endif
 			
+			#ifndef __clang__
 			if (!TTF_WasInit())
 				throw "CWriter: SDL_ttf não inicializada\n";
+			#endif
 		}
 		
 	public:

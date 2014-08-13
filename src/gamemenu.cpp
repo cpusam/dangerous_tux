@@ -180,16 +180,16 @@ void CGameOptions::reset (  )
 			char p2[FILENAME_MAX];
 			_getcwd(p2, sizeof(p2));
 			#ifndef PREFIX
-				sprintf(path, "%s\\fonts\\inhouseedition.ttf", p2);
+				sprintf(path, "%s\\fonts\\BubblegumSans-Regular.otf", p2);
 			#else
-				sprintf(path, "%s\\dangeroustux\\fonts\\inhouseedition.ttf", PREFIX);
+				sprintf(path, "%s\\dangeroustux\\fonts\\BubblegumSans-Regular.otf", PREFIX);
 			#endif
 		#else
 			char path[1024];
 			#ifndef PREFIX
-				sprintf(path, "./fonts/inhouseedition.ttf");
+				sprintf(path, "./fonts/BubblegumSans-Regular.otf");
 			#else
-				sprintf(path, "%s/share/games/dangeroustux/fonts/inhouseedition.ttf", PREFIX);
+				sprintf(path, "%s/share/games/dangeroustux/fonts/BubblegumSans-Regular.otf", PREFIX);
 			#endif
 		#endif
 
@@ -301,16 +301,16 @@ void CGameOptions::reset (  )
 						char p2[FILENAME_MAX];
 						_getcwd(p2, sizeof(p2));
 						#ifndef PREFIX
-							sprintf(path, "%s\\fonts\\inhouseedition.ttf", p2);
+							sprintf(path, "%s\\fonts\\BubblegumSans-Regular.otf", p2);
 						#else
-							sprintf(path, "%s\\dangeroustux\\fonts\\inhouseedition.ttf", PREFIX);
+							sprintf(path, "%s\\dangeroustux\\fonts\\BubblegumSans-Regular.otf", PREFIX);
 						#endif
 					#else
 						char path[1024];
 						#ifndef PREFIX
-							sprintf(path, "./fonts/inhouseedition.ttf");
+							sprintf(path, "./fonts/BubblegumSans-Regular.otf");
 						#else
-							sprintf(path, "%s/share/games/dangeroustux/fonts/inhouseedition.ttf", PREFIX);
+							sprintf(path, "%s/share/games/dangeroustux/fonts/BubblegumSans-Regular.otf", PREFIX);
 						#endif
 					#endif
 
@@ -411,16 +411,16 @@ CGameMenu::CGameMenu ( CSaveGame *save[3] ): options(save)
 		char p2[FILENAME_MAX];
 		_getcwd(p2, sizeof(p2));
 		#ifndef PREFIX
-			sprintf(path, "%s\\fonts\\inhouseedition.ttf", p2);
+			sprintf(path, "%s\\fonts\\BubblegumSans-Regular.otf", p2);
 		#else
-			sprintf(path, "%s\\dangeroustux\\fonts\\inhouseedition.ttf", PREFIX);
+			sprintf(path, "%s\\dangeroustux\\fonts\\BubblegumSans-Regular.otf", PREFIX);
 		#endif
 	#else
 		char path[1024];
 		#ifndef PREFIX
-			sprintf(path, "./fonts/inhouseedition.ttf");
+			sprintf(path, "./fonts/BubblegumSans-Regular.otf");
 		#else
-			sprintf(path, "%s/share/games/dangeroustux/fonts/inhouseedition.ttf", PREFIX);
+			sprintf(path, "%s/share/games/dangeroustux/fonts/BubblegumSans-Regular.otf", PREFIX);
 		#endif
 	#endif
 

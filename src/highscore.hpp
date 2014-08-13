@@ -20,9 +20,9 @@ struct SPlayerScore
 	
 	void clear (  )
 	{
-		SDL_memset(name, 0x0, sizeof(name));
-		SDL_memset(score, 0x0, sizeof(score));
-		SDL_memset(level, 0x0, sizeof(level));
+		memset(name, 0x0, sizeof(name));
+		memset(score, 0x0, sizeof(score));
+		memset(level, 0x0, sizeof(level));
 	}
 };
 
