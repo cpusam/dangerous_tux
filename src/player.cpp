@@ -79,6 +79,7 @@
 	dim.h = 37;
 	
 	anim.resize(16);
+
 	
 	#if _WIN32 || _WIN64
 		char path[FILENAME_MAX];

@@ -7,11 +7,14 @@ void CTileMap::set_tilesize ( int ts )
 
 bool CTileMap::set_tile ( int x, int y, int t )
 {
+	if (x < 0 || y < 0)
+		throw "CTileMap: get_tile posições negativas!\n";
+	
 	x = x / tilesize;
 	y = y / tilesize;
 	
 	int p = y*width + x;
-	if (p > tileset.size())
+	if (p >= tileset.size())
 		return false;
 	else
 		tileset[p] = t;
@@ -31,11 +34,21 @@ void CTileMap::set_tile ( int i, int t )
 
 int CTileMap::get_tile ( int x, int y )
 {
-	x = x / tilesize;
-	y = y / tilesize;
+	if (x < 0 || y < 0)
+	{
+		printf("CTilaMap: get_tile posições negativas x = %d, y = %d\n", x, y);
+		//throw "CTileMap: get_tile posições negativas!\n";
+		return -1;
+	}
 	
+	x = int(x / tilesize);
+	y = int(y / tilesize);
+
 	if (y * width + x < tileset.size())
-		return tileset.at(y * width + x);
+	{
+		//if (x < width && y < height)
+			return tileset.at(y * width + x);
+	}
 	
 	return -1;
 }
@@ -238,6 +251,8 @@ void CTileMapView::update_animation (  )
 	}
 }
 
+
+
 #ifndef USE_SDL2
 	void CTileMapView::draw ( CCamera * cam, SDL_Surface * screen )
 #else
@@ -254,6 +269,8 @@ void CTileMapView::update_animation (  )
 	pos.y = int(pos.y) / tilesize;
 	dim.w /= tilesize;
 	dim.h /= tilesize;
+	int mod_x = int(p.x) % tilesize;
+	int mod_y = int(p.y) % tilesize;
 	
 	for (i = pos.x; i <= pos.x + dim.w; i++)
 		for (j = pos.y; j <= pos.y + dim.h; j++)
@@ -277,36 +294,42 @@ void CTileMapView::update_animation (  )
 		
 			if (i == pos.x)
 			{
-				src.x += int(p.x) % tilesize;
-				src.w = tilesize - int(p.x) % tilesize;
+				src.x += mod_x;
+				src.w = tilesize - mod_x;
 				dest.x = dim.x;
 			}
 			else if (i == pos.x + dim.w)
 			{
-				src.w = int(p.x) % tilesize;
+				if (mod_x == 0)
+					continue;
+				
+				src.w = mod_x;
 				dest.x = dim.x + dim.w * tilesize - src.w;
 			}
 			else
 			{
-				dest.x = dim.x + (i - pos.x) * tilesize - (int(p.x) % tilesize);
+				dest.x = dim.x + (i - pos.x) * tilesize - (mod_x);
 			}
 			
 			if (j == pos.y)
 			{
-				src.y += int(p.y) % tilesize;
-				src.h = tilesize - int(p.y) % tilesize;
+				src.y += mod_y;
+				src.h = tilesize - mod_y;
 				dest.y = dim.y;
 			}
 			else if (j == pos.y + dim.h)
 			{
-				src.h = int(p.y) % tilesize;
+				if (mod_y == 0)
+					continue;
+				
+				src.h = mod_y;
 				dest.y = dim.y + dim.h * tilesize - src.h;
 			}
 			else
 			{
-				dest.y = dim.y + (j - pos.y) * tilesize - (int(p.y) % tilesize);
+				dest.y = dim.y + (j - pos.y) * tilesize - (mod_y);
 			}
-			
+
 			#ifndef USE_SDL2
 				if (surface)
 				{

@@ -45,6 +45,36 @@
 
 #ifdef __clang__
 	#include <emscripten/emscripten.h>
+	
+	struct SGameData
+	{
+		#ifndef USE_SDL2
+			SDL_Surface * screen;
+		#else
+			SDL_Renderer * renderer;
+		#endif
+		CGameScreen * gamescreen;
+	};
+	
+	void main_loop ( void * arg )
+	{
+		SGameData * gd = static_cast<SGameData *>(arg);
+		
+		SDL_Event event;
+		while (SDL_PollEvent(&event))
+			gd->gamescreen->input(event);
+
+		#ifndef USE_SDL2
+				SDL_FillRect(gd->screen, NULL, SDL_MapRGBA(gd->screen->format, 0,0,0,255));
+		#else
+			SDL_SetRenderDrawColor(gd->renderer, 0,0,0,0xff);
+			SDL_RenderClear(gd->renderer);
+		#endif
+		
+		gd->gamescreen->update();
+		
+		gd->gamescreen->draw();
+	}
 #endif
 
 int main ( int argc, char **argv )
@@ -53,10 +83,12 @@ int main ( int argc, char **argv )
 	{
 		// quando compilando com clang para emscripten
 		#ifdef __clang__
+				/*
 				EM_ASM(
 					FS.currentPath = '/';
 					FS.mkdir('images');
 				);
+				*/
 		#endif
 		
 		#ifndef USE_SDL2 
@@ -84,7 +116,7 @@ int main ( int argc, char **argv )
 		Mix_AllocateChannels(20); // aloca 20 canais para tocar sons
 
 		SDL_Event event;
-
+		
 		int fullscreen = 0;
 		#ifndef USE_SDL2
 			// no tamanho aproximado do dangerous dave original
@@ -112,75 +144,88 @@ int main ( int argc, char **argv )
 		#endif
 		
 		srand(time(0));
-		
-		int done = 0;
-		FPSManager::instance()->set_framerate(40);
-		while (!done)
-		{
-			//time_now = SDL_GetTicks();
-			while (SDL_PollEvent(&event))
+
+		#ifdef __clang__
+			SGameData gdata;
+			gdata.gamescreen = &gamescreen;
+			#ifndef USE_SDL2
+				gdata.screen = screen;
+			#else
+				gdata.renderer = renderer;
+			#endif
+			emscripten_set_main_loop_arg(main_loop, (void *)&gdata, 40, 1);
+		#else
+			int done = 0;
+			FPSManager::instance()->set_framerate(40);
+			
+			while (!done)
 			{
-				if (event.type == SDL_QUIT)
-					done = 1;
-				
-				if (event.type == SDL_KEYDOWN)
+				//time_now = SDL_GetTicks();
+				while (SDL_PollEvent(&event))
 				{
-					if (event.key.keysym.sym == SDLK_ESCAPE)
+					if (event.type == SDL_QUIT)
 						done = 1;
-					else if (event.key.keysym.sym == SDLK_f)
+				
+					if (event.type == SDL_KEYDOWN)
 					{
-						/*
-						#ifndef USE_SDL2
-							fullscreen = screen->flags;
-							fullscreen ^= SDL_FULLSCREEN;
-							screen = SDL_SetVideoMode(screen->w, screen->h, screen->format->BitsPerPixel, fullscreen);
-							if (!screen)
-								throw SDL_GetError();
-						#else
-						*/
-						#if USE_SDL2
-							#if _WIN32 || _WIN64 || !__linux__
-								fullscreen ^= SDL_WINDOW_FULLSCREEN_DESKTOP;
-								SDL_SetWindowFullscreen(window, fullscreen);
+						if (event.key.keysym.sym == SDLK_ESCAPE)
+							done = 1;
+						else if (event.key.keysym.sym == SDLK_f)
+						{
+							/*
+							#ifndef USE_SDL2
+								fullscreen = screen->flags;
+								fullscreen ^= SDL_FULLSCREEN;
+								screen = SDL_SetVideoMode(screen->w, screen->h, screen->format->BitsPerPixel, fullscreen);
+								if (!screen)
+									throw SDL_GetError();
 							#else
-								std::cout << "Fullscreen desativado para seu sistema, sorry!\n";
+							*/
+							#if USE_SDL2
+								#if _WIN32 || _WIN64 || !__linux__
+									fullscreen ^= SDL_WINDOW_FULLSCREEN_DESKTOP;
+									SDL_SetWindowFullscreen(window, fullscreen);
+								#else
+									std::cout << "Fullscreen desativado para seu sistema, sorry!\n";
+								#endif
 							#endif
-						#endif
+						}
 					}
+
+					gamescreen.input(event);
 				}
 
-				gamescreen.input(event);
-			}
-
-			FPSManager::instance()->update();
+				FPSManager::instance()->update();
 			
-			if (FPSManager::instance()->get_delta())
-			{
-				if (gamescreen.update() == EXIT_SCREEN)
-					done = 1;
-				#ifndef USE_SDL2
-					gamescreen.draw();
-					SDL_UpdateRect(screen, 0,0,0,0);
-				#else
-					SDL_SetRenderTarget(renderer, target_texture);
-					gamescreen.draw();
-					SDL_RenderCopy(renderer, target_texture, NULL, NULL);
-					SDL_SetRenderTarget(renderer, NULL);
+				if (FPSManager::instance()->get_delta())
+				{
+					if (gamescreen.update() == EXIT_SCREEN)
+						done = 1;
+					#ifndef USE_SDL2
+						SDL_FillRect(screen, NULL, SDL_MapRGBA(screen->format, 0,0,0,255));
+						gamescreen.draw();
+						SDL_UpdateRect(screen, 0,0,0,0);
+					#else
+						SDL_SetRenderTarget(renderer, target_texture);
+						gamescreen.draw();
+						SDL_RenderCopy(renderer, target_texture, NULL, NULL);
+						SDL_SetRenderTarget(renderer, NULL);
 				
-					//SDL_RenderPresent(renderer);
+						//SDL_RenderPresent(renderer);
 				
-					SDL_SetRenderDrawColor(renderer, 0,0,0,255);
-					SDL_RenderClear(renderer);
-					SDL_RenderCopyEx(renderer, target_texture, NULL, NULL, 0, NULL, SDL_FLIP_NONE);
-					SDL_RenderPresent(renderer);
-				#endif
+						SDL_SetRenderDrawColor(renderer, 0,0,0,255);
+						SDL_RenderClear(renderer);
+						SDL_RenderCopyEx(renderer, target_texture, NULL, NULL, 0, NULL, SDL_FLIP_NONE);
+						SDL_RenderPresent(renderer);
+					#endif
+				}
 			}
-		}
 		
-		#ifdef USE_SDL2
-			SDL_DestroyTexture(target_texture);
-			SDL_DestroyWindow(window);
-			SDL_DestroyRenderer(renderer);
+			#ifdef USE_SDL2
+				SDL_DestroyTexture(target_texture);
+				SDL_DestroyWindow(window);
+				SDL_DestroyRenderer(renderer);
+			#endif
 		#endif
 	}
 	catch (const char * e)

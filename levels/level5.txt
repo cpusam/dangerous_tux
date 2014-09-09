@@ -1,4 +1,4 @@
-background_lava.jpg
+background_volcano.png
 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 b...................a....F...a.......o.o.ob

@@ -116,7 +116,6 @@ void CLevel::draw (  )
 		player->draw(cam, screen);
 		kernel_signal.draw(screen);
 		exit_signal.draw(screen);
-	
 		for (vector <CGameEntity *>::iterator i = aliens.begin(); i != aliens.end(); i++)
 			(*i)->draw(cam, screen);
 	
@@ -288,8 +287,10 @@ int CLevel::update (  )
 					break;
 				}
 			
+			#ifndef __clang__
 			if (i >= map->get_width() * map->get_height())
 				throw "CLevel: player NÃO está no mapa, cadê o caractere P?\n";
+			#endif
 			
 			for (i = 0; (tile = map->get_tile(i)) >= 0; i++)
 			{
@@ -740,7 +741,7 @@ int CLevel::update (  )
 					
 					if (((*i)->get_state() != DYING_ALIEN && (*i)->get_state() != INACTIVE_ALIEN) && 
 					(player->get_state() != DYING_PLAYER && player->get_state() != FINISHED_LEVEL) &&
-					boudingbox(a, b))
+					boundingbox(a, b))
 					{
 						SGameEvent ev;
 						ev.receiver = player;

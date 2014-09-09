@@ -173,12 +173,14 @@
 	version = new CLabel("BETA VERSION - 2014", (SDL_Color){0,255,0,255});
 	#ifndef USE_SDL2
 		version->set_pos(SVect((960 - version->get_surface()->w)/2, 624 - version->get_surface()->h));
-		p_enter.add_frame(NULL, (SDL_Rect){0,0,0,0}, 25);
+		aux = press_enter->get_surface();
+		p_enter.add_frame(aux, (SDL_Rect){0,0,aux->w,aux->h}, 25);
 		p_enter.add_frame(NULL, (SDL_Rect){0,0,0,0}, 25);
 
 	#else
 		version->set_pos(SVect((960 - version->get_texture_width())/2, 624 - version->get_texture_height()));
-		p_enter.add_frame(0, (SDL_Rect){0,0,0,0}, 25);
+		texture = press_enter->get_texture();
+		p_enter.add_frame(texture, (SDL_Rect){0,0,texture_width(texture),texture_height(texture)}, 25);
 		p_enter.add_frame(0, (SDL_Rect){0,0,0,0}, 25);
 	#endif
 }
@@ -233,10 +235,6 @@ int CGameTitle::update (  )
 			tux_rocket.update();
 	
 			p_enter.update();
-			if (p_enter.get_index() == 1)
-				press_enter->show(false);
-			else
-				press_enter->show();
 			break;
 		
 		case BACKGROUND_GAMETITLE:
@@ -269,7 +267,7 @@ int CGameTitle::update (  )
 				SDL_BlitSurface(title_name, NULL, screen, &d);
 
 				tux_rocket.draw(tr_pos.x, tr_pos.y, screen);
-				press_enter->draw(screen);
+				p_enter.draw(press_enter->get_pos().x, press_enter->get_pos().y, screen);
 				version->draw(screen);
 				break;
 			
@@ -302,7 +300,7 @@ int CGameTitle::update (  )
 				SDL_RenderCopy(renderer, title_name, NULL, &d);
 
 				tux_rocket.draw(tr_pos.x, tr_pos.y, renderer);
-				press_enter->draw(renderer);
+				p_enter.draw(press_enter->get_pos().x, press_enter->get_pos().y, renderer);
 				version->draw(renderer);
 				break;
 			

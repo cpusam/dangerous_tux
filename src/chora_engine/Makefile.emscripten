@@ -1,21 +1,19 @@
-CLANG_DIR = ~/Desktop/emsdk-portable/clang/fastcomp/build_master_32/bin
 EMS_DIR = /home/samuel/Desktop/emsdk-portable/emscripten/master
-CXX = ${CLANG_DIR}/clang
-AR = ${CLANG_DIR}/llvm-ar
-CXXFLAGS = -emit-llvm -target asmjs-unknown-emscripten -I${EMS_DIR}/system/include/libcxx
-DEPS = statemachine.o vect.o collision.o movable.o util.o camera.o animation.o background.o platform/tilemap.o SDL_gfx/SDL_framerate.o sound/soundplayer.o gui/widget.o gui/writer.o gui/label.o gui/button.o gui/bar.o
+CXX = $(EMS_DIR)/em++
+AR = $(EMS_DIR)/emar
+RANLIB = $(EMS_DIR)/emranlib
+CXXFLAGS = -g
+BASE = statemachine.o vect.o collision.o movable.o util.o camera.o animation.o background.o platform/tilemap.o sound/soundplayer.o
+GUI = gui/widget.o gui/writer.o gui/label.o gui/button.o gui/bar.o
+DEPS = $(BASE) $(GUI) SDL_gfx/SDL_framerate.o SDL_gfx/SDL_rotozoom.o 
 
-all: chora.a
+all: libchoraEmscripten.a
 	@echo "lembrar de remover flag '-g' da compilação"
 	
-
-chora.a: $(DEPS) chora.hpp
-	$(AR) rc $@ $(DEPS)
-	ranlib chora.a
+libchoraEmscripten.a: $(DEPS) chora.hpp
+	$(AR) ruc $@ $(DEPS)
+	$(RANLIB) $@
 	
-chora-SDL2.a: $(DEPS)
-	$(AR) rc $@ $(DEPS)
-
 # $(CXX) -c .cpp -o $@ $(CXXFLAGS)
 statemachine.o: statemachine.hpp statemachine.cpp
 	$(CXX) -c statemachine.cpp -o $@ $(CXXFLAGS)
@@ -44,12 +42,14 @@ background.o: background.hpp background.cpp
 platform/tilemap.o: platform/tilemap.hpp platform/tilemap.cpp
 	$(CXX) -c platform/tilemap.cpp -o $@ $(CXXFLAGS)
 
-SDL_gfx/SDL_framerate.o: SDL_gfx/SDL_framerate.hpp SDL_gfx/SDL_framerate.cpp
-	$(CXX) -c SDL_gfx/SDL_framerate.cpp -o $@ $(CXXFLAGS)
-
 sound/soundplayer.o: sound/soundplayer.hpp sound/soundplayer.cpp
 	$(CXX) -c sound/soundplayer.cpp -o $@ $(CXXFLAGS)	
 
+SDL_gfx/SDL_framerate.o: SDL_gfx/SDL_framerate.hpp SDL_gfx/SDL_framerate.cpp
+	$(CXX) -c SDL_gfx/SDL_framerate.cpp -o $@ $(CXXFLAGS)
+
+SDL_gfx/SDL_rotozoom.o: SDL_gfx/SDL_rotozoom.hpp SDL_gfx/SDL_rotozoom.cpp
+	$(CXX) -c SDL_gfx/SDL_rotozoom.cpp -o $@ $(CXXFLAGS)
 
 #################################################
 gui/widget.o: gui/widget.hpp gui/widget.cpp
@@ -68,5 +68,5 @@ gui/bar.o: gui/bar.hpp gui/bar.cpp
 	$(CXX) -c gui/bar.cpp -o $@ $(CXXFLAGS)
 
 clean:
-	-rm -f chora.a chora-SDL2.a *.o platform/*.o SDL_gfx/*.o sound/*.o gui/*.o
+	rm -f chora-Emscripten.a *.o platform/*.o SDL_gfx/*.o sound/*.o gui/*.o
 

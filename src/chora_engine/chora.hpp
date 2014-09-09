@@ -32,8 +32,9 @@
 #include "animation.hpp"
 #include "movable.hpp"
 #include "util.hpp"
-#include "SDL_gfx/SDL_framerate.hpp"
 #include "background.hpp"
+#include "SDL_gfx/SDL_framerate.hpp"
+#include "SDL_gfx/SDL_rotozoom.hpp"
 
 // módulo de tiles
 #include "platform/tilemap.hpp"

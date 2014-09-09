@@ -29,7 +29,7 @@
 
 extern "C"
 {
-	extern bool boudingbox ( SDL_Rect a, SDL_Rect b );
+	extern bool boundingbox ( SDL_Rect a, SDL_Rect b );
 	extern bool pointbox ( SVect p, SDL_Rect b );
 
 	// verifica se "a" está completamente dentro de "b", mas não o contrário

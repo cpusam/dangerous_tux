@@ -94,7 +94,7 @@ int CShot::update (  )
 				b.x += (*i)->get_pos().x;
 				b.y += (*i)->get_pos().y;
 				
-				if (boudingbox(a, b))
+				if (boundingbox(a, b))
 				{
 					SGameEvent e;
 					e.receiver = (*i);
@@ -173,11 +173,11 @@ CGun::CGun ( bool h )
 				sprintf(path, "%s/share/games/dangeroustux/sounds/beam_fire.wav", PREFIX);
 			#endif
 		#endif
-		
+		/*
 		sound.set_chunk(path);
 		Mix_VolumeChunk(sound.get_chunk(), 64);
 		CSoundPlayer::instance()->add_sound(sound);
-		
+		*/
 		loaded = 1;
 	}
 }

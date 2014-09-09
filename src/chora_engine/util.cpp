@@ -44,8 +44,14 @@
 
 	void draw_surface ( SDL_Surface * surface, int x, int y, CCamera * cam, SDL_Surface * screen )
 	{
+		if (!surface)
+			return;
+		
 		SDL_Rect dest, source = {0,0,surface->w,surface->h};
-	
+		
+		if (source.w == 0 && source.h == 0)
+			return;
+		
 		SVect pos = cam->get_position();
 		SDL_Rect dim = cam->get_dimension();
 
@@ -58,7 +64,8 @@
 			if (((dim.x + pos.x) - dest.x) < source.w)
 				source.w -= ((dim.x + pos.x) - dest.x);
 			else
-				source.w = 0;
+				//source.w = 0; // não pode ser 0 no emscripten
+				return;
 
 			dest.x = dim.x;
 		}
@@ -67,7 +74,8 @@
 			if (dest.x + dest.w - (pos.x + dim.x + dim.w) < source.w)
 				source.w -= dest.x + dest.w - (pos.x + dim.x + dim.w);
 			else
-				source.w = 0;
+				//source.w = 0; // não pode ser 0 no emscripten
+				return;
 		
 			dest.x = dest.x - pos.x;
 		}
@@ -82,7 +90,8 @@
 			if (((dim.y + pos.y) - dest.y) < source.h)
 				source.h -= ((dim.y + pos.y) - dest.y);
 			else
-				source.h = 0;
+				//source.h = 0; // não pode ser 0 no emscripten
+				return;
 
 			dest.y = dim.y;
 		}
@@ -91,7 +100,8 @@
 			if (dest.y + dest.h - (pos.y + dim.y + dim.h) < source.h)
 				source.h -= dest.y + dest.h - (pos.y + dim.y + dim.h);
 			else
-				source.h = 0;
+				//source.h = 0; // não pode ser 0 no emscripten
+				return;
 		
 			dest.y = dest.y - pos.y;
 		}
@@ -103,8 +113,7 @@
 		dest.w = source.w;
 		dest.h = source.h;
 	
-		if (surface)
-			SDL_BlitSurface(surface, &source, screen, &dest);
+		SDL_BlitSurface(surface, &source, screen, &dest);
 	}
 
 #else
@@ -158,7 +167,10 @@
 		int w, h;
 		SDL_QueryTexture(texture, NULL, NULL, &w, &h);
 		SDL_Rect dest, source = {0,0,w,h};
-	
+		
+		if (source.w == 0 && source.h == 0)
+			return;
+			
 		SVect pos = cam->get_position();
 		SDL_Rect dim = cam->get_dimension();
 
@@ -171,7 +183,8 @@
 			if (((dim.x + pos.x) - dest.x) < source.w)
 				source.w -= ((dim.x + pos.x) - dest.x);
 			else
-				source.w = 0;
+				//source.w = 0; // não pode ser zero no emscripten
+				return;
 
 			dest.x = dim.x;
 		}
@@ -180,7 +193,8 @@
 			if (dest.x + dest.w - (pos.x + dim.x + dim.w) < source.w)
 				source.w -= dest.x + dest.w - (pos.x + dim.x + dim.w);
 			else
-				source.w = 0;
+				//source.w = 0; // não pode ser zero no emscripten
+				return;
 		
 			dest.x = dest.x - pos.x;
 		}
@@ -195,7 +209,8 @@
 			if (((dim.y + pos.y) - dest.y) < source.h)
 				source.h -= ((dim.y + pos.y) - dest.y);
 			else
-				source.h = 0;
+				//source.h = 0; // não pode ser zero no emscripten
+				return;
 
 			dest.y = dim.y;
 		}
@@ -204,7 +219,8 @@
 			if (dest.y + dest.h - (pos.y + dim.y + dim.h) < source.h)
 				source.h -= dest.y + dest.h - (pos.y + dim.y + dim.h);
 			else
-				source.h = 0;
+				//source.h = 0; // não pode ser zero no emscripten
+				return;
 		
 			dest.y = dest.y - pos.y;
 		}

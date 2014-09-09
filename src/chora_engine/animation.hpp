@@ -27,6 +27,7 @@
 #include <vector>
 
 #include "sdl.hpp"
+#include "SDL_gfx/SDL_rotozoom.hpp"
 #include "statemachine.hpp"
 #include "vect.hpp"
 #include "camera.hpp"
@@ -79,11 +80,26 @@ enum EAnimationState
 	PAUSE_ANIM, // animação parada de trocar frames
 };
 
+/*
+	CAnimationFrame contém uma cópia da surface em src quando usando SDL1.2 e um ponteiro para a 
+	textura quando usando SDL2.
+	Para usar rotação de surfaces na animação é preciso setar para false o use_rot da animação
+	antes de adicionar qualquer frame da animação. Por padrão as animações não tem rotação.
+	Isso é preciso para economizar memória, apenas válido para SDL1.2.
+*/
 class CAnimationFrame
 {
 	protected:
 		int delay;
 		SDL_Rect source;
+		float angle; // em radianos
+		SVect orientation;
+		#ifndef USE_SDL2
+			SDL_Surface * surface;
+			SDL_Surface * master_surface;
+		#else
+			SDL_Texture * texture;
+		#endif
 	public:
 		int x, y; // posições relativas ao destino
 	
@@ -93,6 +109,13 @@ class CAnimationFrame
 			x = y = 0;
 			delay = 0;
 			source = (SDL_Rect){0,0,0,0};
+			#ifndef USE_SDL2
+				surface = master_surface = 0;
+			#else
+				texture = 0;
+			#endif
+			angle = 0;
+			orientation.set(1,0);
 		}
 		
 		CAnimationFrame ( int d, SDL_Rect s )
@@ -100,6 +123,13 @@ class CAnimationFrame
 			x = y = 0;
 			set_delay(d);
 			set_source(s);
+			#ifndef USE_SDL2
+				surface = master_surface = 0;
+			#else
+				texture = 0;
+			#endif
+			angle = 0;
+			orientation.set(1,0);
 		}
 		
 		void set_anim ( int d, SDL_Rect src );
@@ -110,17 +140,41 @@ class CAnimationFrame
 		void set_source ( SDL_Rect s );
 		
 		SDL_Rect get_source (  );
+
+		SVect get_orientation (  );
+
+		float get_angle (  );
+
+		// rotaciona a imagem em 'a' radianos
+		void rotate ( float a );
+		#ifndef USE_SDL2
+			void set_master_surface ( SDL_Rect src, SDL_Surface * s );
+			SDL_Surface * get_surface (  );
+		#else
+			void set_texture ( SDL_Texture * t );
+			SDL_Texture * get_texture (  );
+		#endif
+
+		bool destroy (  );
 };
 
+/*
+	Setar use_center faz com que a posição no blit da animação use o centro do frame
+	como a posição do blit.
+*/
 class CAnimation: protected CStateMachine
 {
 	protected:
 		STimer timer;
 		int state;
 		int index;
+		bool use_rot; // usar rotação
+		bool use_center; // usar centro do frame como posição do blit
 		bool repeat;
+		float angle; // em radianos
+		SVect orientation;
 		std::vector <CAnimationFrame> frames;
-
+		
 		#ifndef USE_SDL2
 			protected:
 				std::vector <SDL_Surface *> surface;
@@ -136,9 +190,13 @@ class CAnimation: protected CStateMachine
 			repeat = true;
 			index = 0;
 			timer.start();
+			angle = 0;
+			orientation.set(1,0);
+			use_rot = false;
+			use_center = false;
 		}
 		
-		using CStateMachine::get_state;
+		//using CStateMachine::get_state;
 		
 		void play (  );
 		void pause (  );
@@ -157,6 +215,21 @@ class CAnimation: protected CStateMachine
 		
 		void clear_frames ( bool destroy=false );
 
+		SVect get_orientation (  );
+
+		float get_angle (  );
+
+		void rotate ( float a );
+		
+		void set_use_rot ( bool u );
+		
+		bool get_use_rot (  );
+		
+		void set_use_center ( bool u );
+		
+		bool get_use_center (  );
+		
+		
 		#ifndef USE_SDL2
 			virtual void add_frame ( SDL_Surface * s, SDL_Rect src, int d );
 			

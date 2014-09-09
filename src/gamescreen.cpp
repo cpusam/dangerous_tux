@@ -15,6 +15,7 @@
 		renderer = r;
 	#endif
 	cam = c;
+
 	#ifndef USE_SDL2
 		player = new CPlayer();
 	#else
@@ -242,7 +243,7 @@ void CGameScreen::draw (  )
 	{
 		case CHORA_SCREEN:
 			#ifndef USE_SDL2
-				SDL_FillRect(screen, NULL, 0x0);
+				SDL_FillRect(screen, NULL, SDL_MapRGBA(screen->format, 0,0,0,255));
 			#else
 				SDL_SetRenderDrawColor(renderer, 0,0,0,0xff);
 				SDL_RenderClear(renderer);

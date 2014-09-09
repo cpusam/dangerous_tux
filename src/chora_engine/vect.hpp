@@ -26,6 +26,9 @@
 
 #include <cmath>
 
+#define TO_RADIANS(a) ((a) * M_PI) / 180.0f
+#define TO_DEGREES(a) ((a) * 180.0f) / M_PI
+
 struct SVect
 {
 	float x;

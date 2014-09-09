@@ -1,6 +1,6 @@
 #include "collision.hpp"
 
-bool boudingbox ( SDL_Rect a, SDL_Rect b )
+bool boundingbox ( SDL_Rect a, SDL_Rect b )
 {
 	if (a.x > b.x + b.w - 1)	return false;
 	if (a.x + a.w < b.x)	return false;

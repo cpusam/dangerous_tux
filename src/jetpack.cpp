@@ -1,4 +1,5 @@
 #include "jetpack.hpp"
+#include <stdio.h>
 
 CJetpack::CJetpack ( float f_max, float s, bool h )
 {

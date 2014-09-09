@@ -162,7 +162,7 @@ void CFlyerAlien::kill (  )
 		c.w = dim.w;
 		c.h = dim.h;
 	
-		if (!boudingbox(a, b) && !boudingbox(c, a))
+		if (!boundingbox(a, b) && !boundingbox(c, a))
 		{
 			reset();
 		}

@@ -1,20 +1,21 @@
 
 CXX = g++
 AR = ar
+RANLIB = ranlib
 CXXFLAGS = -g -w -march=i386 #-fno-stack-protector
-DEPS = statemachine.o vect.o collision.o movable.o util.o camera.o animation.o background.o platform/tilemap.o SDL_gfx/SDL_framerate.o sound/soundplayer.o gui/widget.o gui/writer.o gui/label.o gui/button.o gui/bar.o
+BASE = statemachine.o vect.o collision.o movable.o util.o camera.o animation.o background.o platform/tilemap.o sound/soundplayer.o
+GUI = gui/widget.o gui/writer.o gui/label.o gui/button.o gui/bar.o
+GFX = SDL_gfx/SDL_framerate.o SDL_gfx/SDL_rotozoom.o #SDL_gfx/SDL_gfxPrimitives.o
+DEPS = $(BASE) $(GUI) $(GFX)
 
-all: chora.a
+all: libchora.a
 	@echo "lembrar de remover flag '-g' da compilação"
-	
+	@echo "Preciso separar em outra versão o SDL_rotozoom que é da SDL1.2"
 
-chora.a: $(DEPS) chora.hpp
+libchora.a: $(DEPS) chora.hpp
 	$(AR) rc $@ $(DEPS)
-	ranlib chora.a
+	$(RANLIB) $@
 	
-chora-SDL2.a: $(DEPS)
-	$(AR) rc $@ $(DEPS)
-
 # $(CXX) -c .cpp -o $@ $(CXXFLAGS)
 statemachine.o: statemachine.hpp statemachine.cpp
 	$(CXX) -c statemachine.cpp -o $@ $(CXXFLAGS)
@@ -43,11 +44,17 @@ background.o: background.hpp background.cpp
 platform/tilemap.o: platform/tilemap.hpp platform/tilemap.cpp
 	$(CXX) -c platform/tilemap.cpp -o $@ $(CXXFLAGS)
 
+sound/soundplayer.o: sound/soundplayer.hpp sound/soundplayer.cpp
+	$(CXX) -c sound/soundplayer.cpp -o $@ $(CXXFLAGS)	
+
 SDL_gfx/SDL_framerate.o: SDL_gfx/SDL_framerate.hpp SDL_gfx/SDL_framerate.cpp
 	$(CXX) -c SDL_gfx/SDL_framerate.cpp -o $@ $(CXXFLAGS)
 
-sound/soundplayer.o: sound/soundplayer.hpp sound/soundplayer.cpp
-	$(CXX) -c sound/soundplayer.cpp -o $@ $(CXXFLAGS)	
+SDL_gfx/SDL_rotozoom.o: SDL_gfx/SDL_rotozoom.hpp SDL_gfx/SDL_rotozoom.cpp
+	$(CXX) -c SDL_gfx/SDL_rotozoom.cpp -o $@ $(CXXFLAGS)
+
+#SDL_gfx/SDL_gfxPrimitives.o: SDL_gfx/SDL_gfxPrimitives.hpp SDL_gfx/SDL_gfxPrimitives.cpp
+#	$(CXX) -c SDL_gfx/SDL_gfxPrimitives.cpp -o $@ $(CXXFLAGS)
 
 
 #################################################
@@ -67,5 +74,6 @@ gui/bar.o: gui/bar.hpp gui/bar.cpp
 	$(CXX) -c gui/bar.cpp -o $@ $(CXXFLAGS)
 
 clean:
-	-rm -f chora.a chora-SDL2.a *.o platform/*.o SDL_gfx/*.o sound/*.o gui/*.o
-
+	rm -f libchora.a *.o platform/*.o SDL_gfx/*.o sound/*.o gui/*.o
+clean_objs:
+	rm -f *.o platform/*.o SDL_gfx/*.o sound/*.o gui/*.o

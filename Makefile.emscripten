@@ -1,23 +1,17 @@
-CLANG_DIR = ~/Desktop/emsdk-portable/clang/fastcomp/build_master_32/bin
 EMS_DIR = /home/samuel/Desktop/emsdk-portable/emscripten/master
-CXX = ${CLANG_DIR}/clang++
-CXXFLAGS = -emit-llvm -target asmjs-unknown-emscripten -I${EMS_DIR}/system/include/ -I${EMS_DIR}/system/include/libcxx
-EM++ = ${EMS_DIR}/em++
-LDLIBS = src/chora_engine/*.o src/chora_engine/platform/*.o src/chora_engine/gui/*.o src/chora_engine/sound/*.o src/chora_engine/SDL_gfx/*.o
-LDLIBS_SDL2 = src/chora_engine/chora-SDL2.a
+CXX = $(EMS_DIR)/em++
+CXXFLAGS = -g 
+LDLIBS = -I./src/chora_engine/ src/chora_engine/libchoraEmscripten.a
 DEPS = src/dangerous_tux.o src/video.o src/save.o src/gameevent_manager.o src/gameentity.o src/score.o src/highscore.o src/gamesignal.o src/jetpack.o src/gun.o src/player.o src/flyeralien.o src/gyroalien.o src/walkeralien.o src/level.o src/gamemenu.o src/gamecredits.o src/gameintroduction.o src/gametransition.o src/gameover.o src/gametitle.o src/gamescreen.o
 
 all: DangerousTux.html
 
 DangerousTux.html: $(DEPS)
-	$(EM++) -o $@ $(DEPS) $(LDLIBS) --preload-file ./images
-
-DangerousTux.SDL2: $(DEPS)
-	$(EM++) -o DangerousTux -s USE_SDL2=1 $(DEPS) $(LDLIBS_SDL2)
+	$(CXX) -o $@ $(DEPS) $(LDLIBS) -s TOTAL_MEMORY=128000000 --preload-files ./images --preload-files ./levels --preload-files ./sounds --preload-files ./fonts
 
 # $(CXX) -c src/.cpp -o $@ $(CXXFLAGS)
 src/dangerous_tux.o: src/dangerous_tux.cpp
-	$(CXX) -c src/dangerous_tux.cpp -o $@ $(CXXFLAGS) -I${EMS_DIR}/system/include
+	$(CXX) -c src/dangerous_tux.cpp -o $@ $(CXXFLAGS)
 
 src/video.o: src/video.hpp src/video.cpp
 	$(CXX) -c src/video.cpp -o $@ $(CXXFLAGS)
@@ -83,4 +77,6 @@ src/gamescreen.o: src/gamescreen.hpp src/gamescreen.cpp
 	$(CXX) -c src/gamescreen.cpp -o $@ $(CXXFLAGS)
 
 clean:
-	rm -f DangerousTux.html DangerousTux.js src/*.o
+	rm -f DangerousTux.html DangerousTux.js DangerousTux.data DangerousTux.html.map src/*.o
+clean_exe:
+	rm -f DangerousTux.html DangerousTux.js DangerousTux.data DangerousTux.html.map

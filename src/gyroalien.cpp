@@ -134,9 +134,15 @@
 			dir_x = LEFT_ALIEN;
 			
 			if (player->get_pos().y < i_p.y)
+			{
 				dir_y = UP_ALIEN;
+				curr_anim = &anim[7];
+			}
 			else
+			{
 				dir_y = DOWN_ALIEN;
+				curr_anim = &anim[3];
+			}
 			
 			dir = dir_y;
 			break;
@@ -151,9 +157,15 @@
 			i_p = pos;
 			
 			if (player->get_pos().x < i_p.x)
+			{
 				dir_x = LEFT_ALIEN;
+				curr_anim = &anim[0];
+			}
 			else
+			{
 				dir_x = RIGHT_ALIEN;
+				curr_anim = &anim[4];
+			}
 
 			dir_y = DOWN_ALIEN;
 			dir = dir_x;
@@ -170,9 +182,15 @@
 			i_p = pos;
 
 			if (player->get_pos().y < i_p.y)
+			{
 				dir_y = UP_ALIEN;
+				curr_anim = &anim[6];
+			}
 			else
+			{
 				dir_y = DOWN_ALIEN;
+				curr_anim = &anim[2];
+			}
 
 			dir = dir_y;
 			break;
@@ -186,9 +204,15 @@
 			i_p = pos;
 			
 			if (player->get_pos().x < i_p.x)
+			{
 				dir_x = LEFT_ALIEN;
+				curr_anim = &anim[1];
+			}
 			else
+			{
 				dir_x = RIGHT_ALIEN;
+				curr_anim = &anim[5];
+			}
 
 			dir_y = UP_ALIEN;
 			dir = dir_x;
@@ -205,8 +229,10 @@ CGyroAlien::~CGyroAlien (  )
 {
 	#ifndef USE_SDL2
 		anim[0].destroy_surfaces();
+		anim[4].destroy_surfaces();
 	#else
 		anim[0].destroy_textures();
+		anim[4].destroy_textures();
 	#endif
 }
 
@@ -220,19 +246,31 @@ void CGyroAlien::reset_pos (  )
 		case 'A': // pega a esquerda do alien e direita do tile
 			dir_x = LEFT_ALIEN;
 			
-			if (player->get_pos().y < pos.y)
+			if (player->get_pos().y < init_pos.y)
+			{
 				dir_y = UP_ALIEN;
+				curr_anim = &anim[7];
+			}
 			else
+			{
 				dir_y = DOWN_ALIEN;
+				curr_anim = &anim[3];
+			}
 			
 			dir = dir_y;
 			break;
 		
 		case 'B': // pega abaixo do alien e acima do tile
-			if (player->get_pos().x < pos.x)
+			if (player->get_pos().x < init_pos.x)
+			{
 				dir_x = LEFT_ALIEN;
+				curr_anim = &anim[0];
+			}
 			else
+			{
 				dir_x = RIGHT_ALIEN;
+				curr_anim = &anim[4];
+			}
 
 			dir_y = DOWN_ALIEN;
 			dir = dir_x;
@@ -241,19 +279,31 @@ void CGyroAlien::reset_pos (  )
 		case 'C': // pega a direita do alien e a esquerda do tile
 			dir_x = RIGHT_ALIEN;
 
-			if (player->get_pos().y < pos.y)
+			if (player->get_pos().y < init_pos.y)
+			{
 				dir_y = UP_ALIEN;
+				curr_anim = &anim[6];
+			}
 			else
+			{
 				dir_y = DOWN_ALIEN;
+				curr_anim = &anim[2];
+			}
 
 			dir = dir_y;
 			break;
 		
 		case 'D': // pega acima do alien e abaixo do tile
-			if (player->get_pos().x < pos.x)
+			if (player->get_pos().x < init_pos.x)
+			{
 				dir_x = LEFT_ALIEN;
+				curr_anim = &anim[1];
+			}
 			else
+			{
 				dir_x = RIGHT_ALIEN;
+				curr_anim = &anim[5];
+			}
 
 			dir_y = UP_ALIEN;
 			dir = dir_x;
@@ -528,7 +578,7 @@ bool CGyroAlien::ground_up (  )
 		c.w = dim.w;
 		c.h = dim.h;
 
-		if (!boudingbox(a, b) && !boudingbox(c, a))
+		if (!boundingbox(a, b) && !boundingbox(c, a))
 		{
 			reset();
 		}
@@ -549,7 +599,7 @@ int CGyroAlien::update (  )
 		case MOVING_ALIEN:
 			switch (dir)
 			{
-				case LEFT_ALIEN:
+				case LEFT_ALIEN: // tile pregado a esquerda do alien
 					acc.x = -config.circle_acc.x;
 					vel.x += acc.x;
 					if (vel.x > config.circle_vel_max.x)
@@ -573,11 +623,13 @@ int CGyroAlien::update (  )
 						{
 							pos.y = y + (map->get_tilesize() - (dim.y + dim.h));
 							dir_y = UP_ALIEN;
+							curr_anim = &anim[1];
 						}
 						else if (dir_y == UP_ALIEN)
 						{
 							pos.y = y - dim.y;
 							dir_y = DOWN_ALIEN;
+							curr_anim = &anim[0];
 						}
 						
 						dir_x = LEFT_ALIEN;
@@ -600,6 +652,7 @@ int CGyroAlien::update (  )
 							dir = dir_y;
 							pos.x = x + (map->get_tilesize() - (dim.x + dim.w));
 							pos.y = y + (map->get_tilesize() - (dim.y + dim.h));
+							curr_anim = &anim[5];
 						}
 					}
 					else if (dir_y == UP_ALIEN)
@@ -617,20 +670,14 @@ int CGyroAlien::update (  )
 							dir = dir_y;
 							pos.x = x + (map->get_tilesize() - (dim.x + dim.w));
 							pos.y = y - dim.y;
+							curr_anim = &anim[4];
 						}
 					}
 					
-					/*
-					if (dir_y == DOWN_ALIEN)
-						curr_anim = &anim[0];
-					else if (dir_y == UP_ALIEN)
-						curr_anim = &anim[1];
-					
 					curr_anim->update();
-					*/
 					break;
 				
-				case RIGHT_ALIEN:
+				case RIGHT_ALIEN: // tile pregado a direita do alien
 					acc.x = config.circle_acc.x;
 					
 					vel.x += acc.x;
@@ -654,11 +701,13 @@ int CGyroAlien::update (  )
 						{
 							pos.y = y + (map->get_tilesize() - (dim.y + dim.h));
 							dir_y = UP_ALIEN;
+							curr_anim = &anim[5];
 						}
 						else if (dir_y == UP_ALIEN)
 						{
 							pos.y = y - dim.y;
 							dir_y = DOWN_ALIEN;
+							curr_anim = &anim[4];
 						}
 						
 						dir_x = RIGHT_ALIEN;
@@ -700,6 +749,8 @@ int CGyroAlien::update (  )
 							pos.y = y - dim.y;
 						}
 					}
+
+					curr_anim->update();
 					break;
 				
 				case DOWN_ALIEN:
