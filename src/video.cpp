@@ -14,7 +14,7 @@ SDL_Surface * set_screen ( int w, int h )
 		flags |= SDL_FULLSCREEN;
 	
 	flags |= SDL_SRCALPHA;
-	SDL_Surface * screen = SDL_SetVideoMode(w, h, info->vfmt->BitsPerPixel, flags);
+	SDL_Surface * screen = SDL_SetVideoMode(w, h, 32/*info->vfmt->BitsPerPixel*/, flags);
 	SDL_SetAlpha(screen, SDL_SRCALPHA, 0);
 
 	return screen;

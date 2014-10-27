@@ -105,7 +105,10 @@ void CWidget::show_child ( bool s )
 {
 	if (visible)
 		for (std::vector <CWidget *>::iterator i = child.begin(); i != child.end(); i++)
+		{
 			(*i)->show(s);
+			(*i)->show_child(s);
+		}
 }
 
 bool CWidget::add_child ( CWidget * w )

@@ -58,6 +58,7 @@
 	
 	void main_loop ( void * arg )
 	{
+		static int set_main_loop = 0;
 		SGameData * gd = static_cast<SGameData *>(arg);
 		
 		SDL_Event event;
@@ -71,7 +72,17 @@
 			SDL_RenderClear(gd->renderer);
 		#endif
 		
-		gd->gamescreen->update();
+		if (gd->gamescreen->update() == MAIN_LOOP)
+		{
+			if (!set_main_loop)
+			{
+				set_main_loop = 1;
+				emscripten_cancel_main_loop();
+				emscripten_set_main_loop_arg(main_loop, (void *)&gd, 60, 1);
+			}
+		}
+		else
+			set_main_loop = 0;
 		
 		gd->gamescreen->draw();
 	}
@@ -81,16 +92,6 @@ int main ( int argc, char **argv )
 {
 	try
 	{
-		// quando compilando com clang para emscripten
-		#ifdef __clang__
-				/*
-				EM_ASM(
-					FS.currentPath = '/';
-					FS.mkdir('images');
-				);
-				*/
-		#endif
-		
 		#ifndef USE_SDL2 
 			#ifndef __clang__
 				SDL_putenv("SDL_VIDEO_CENTERED=center");

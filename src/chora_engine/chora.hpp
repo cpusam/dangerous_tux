@@ -30,6 +30,7 @@
 #include "camera.hpp"
 #include "collision.hpp"
 #include "animation.hpp"
+#include "sprite.hpp"
 #include "movable.hpp"
 #include "util.hpp"
 #include "background.hpp"

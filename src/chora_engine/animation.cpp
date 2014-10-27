@@ -134,6 +134,19 @@ void CAnimationFrame::rotate ( float a )
 		return surface;
 	}
 #else
+	void set_flip ( int f )
+	{
+		if (f < SDL_FLIP_NONE || f > SDL_FLIP_VERTICAL)
+			f = SDL_FLIP_NONE;
+
+		flip = f;
+	}
+
+	int get_flip (  )
+	{
+		return flip;
+	}
+
 	void CAnimationFrame::set_texture ( SDL_Texture * t )
 	{
 		texture = t;
@@ -524,11 +537,11 @@ CAnimationFrame CAnimation::get_curr_frame (  )
 		if (texture.size() && texture.at(index))
 		{
 			if (use_rot == false)
-				SDL_RenderCopy(renderer, texture.at(index), &source, &dest);
+				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, 0, NULL, flip);
 			else
 			{
 				SDL_Point center = {frames[index].get_source().w/2, frames[index].get_source().h/2};
-				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, TO_DEGREES(frames[index].get_angle()), &center, SDL_FLIP_NONE);
+				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, TO_DEGREES(frames[index].get_angle()), &center, flip);
 			}
 		}
 	#endif
@@ -630,11 +643,11 @@ CAnimationFrame CAnimation::get_curr_frame (  )
 		if (texture.size() && texture.at(index))
 		{
 			if (use_rot == false)
-				SDL_RenderCopy(renderer, texture.at(index), &source, &dest);
+				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, 0, NULL, flip);
 			else
 			{
 				SDL_Point center = {frames[index].get_source().w/2, frames[index].get_source().h/2};
-				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, TO_DEGREES(frames[index].get_angle()), &center, SDL_FLIP_NONE);
+				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, TO_DEGREES(frames[index].get_angle()), &center, flip);
 			}
 		}
 	#endif

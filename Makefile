@@ -5,10 +5,7 @@ LDLIBS = src/chora_engine/libchora.a `sdl-config --cflags  --libs` -lm -lSDL_ima
 LDLIBS_SDL2 = src/chora_engine/libchora-SDL2.a `sdl2-config --cflags --libs` -lm -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 DEPS = src/video.o src/save.o src/gameevent_manager.o src/gameentity.o src/score.o src/highscore.o src/gamesignal.o src/jetpack.o src/gun.o src/player.o src/flyeralien.o src/gyroalien.o src/walkeralien.o src/level.o src/gamemenu.o src/gamecredits.o src/gameintroduction.o src/gametransition.o src/gameover.o src/gametitle.o src/gamescreen.o
 
-all: DangerousTux test
-
-test: test.cpp
-	$(CXX) -o $@ $< $(LDLIBS)
+all: DangerousTux 
 
 DangerousTux: $(DEPS)
 	$(CXX) -o $@ src/dangerous_tux.cpp $(DEPS) $(CXXFLAGS) $(LDLIBS)
@@ -82,3 +79,6 @@ src/gamescreen.o: src/gamescreen.hpp src/gamescreen.cpp
 
 clean:
 	@rm -f DangerousTux src/*.o
+
+clean_objs:
+	@rm -f src/*.o

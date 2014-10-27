@@ -68,5 +68,6 @@ gui/bar.o: gui/bar.hpp gui/bar.cpp
 	$(CXX) -c gui/bar.cpp -o $@ $(CXXFLAGS)
 
 clean:
-	rm -f chora-Emscripten.a *.o platform/*.o SDL_gfx/*.o sound/*.o gui/*.o
-
+	rm -f libchoraEmscripten.a *.o platform/*.o SDL_gfx/*.o sound/*.o gui/*.o
+clean_objs:
+	rm -f *.o platform/*.o SDL_gfx/*.o sound/*.o gui/*.o

@@ -88,7 +88,7 @@
 		name_msg->set_pos(SVect(230, 110));
 		textinput = new CTextInput(80, (SDL_Color){255,0,0,0});
 		textinput->set_pos(SVect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_texture_height()));
-		final_msg = new CLabel("   final_msg\npress any key", (SDL_Color){255,0,0,0});
+		final_msg = new CLabel("   FINAL\npress any key", (SDL_Color){255,0,0,0});
 		final_msg->set_pos(SVect((width - final_msg->get_texture_width())/2, (height - final_msg->get_texture_height())/2));
 	#endif
 	
@@ -475,7 +475,7 @@ int CGameScreen::update (  )
 					levels[0]->widget->show(false);
 					final_msg->show(true);
 					any_key = 0;
-					set_state(final_msg_SCREEN); // vai para tela de final_msg
+					set_state(FINAL_SCREEN); // vai para tela de final_msg
 					break;
 				}
 			}
@@ -600,7 +600,7 @@ int CGameScreen::update (  )
 			}
 			break;
 		
-		case final_msg_SCREEN: // tela do final_msg do jogo
+		case FINAL_SCREEN: // tela do final_msg do jogo
 			if (any_key)
 			{
 				widget.show_child(false);

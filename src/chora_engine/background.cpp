@@ -61,7 +61,7 @@
 	
 	if (cam)
 	{
-		p = cam->get_position();
+		p = cam->get_position() + pos;
 		d = cam->get_dimension();
 		src = d;
 	}
@@ -127,16 +127,115 @@
 		SDL_QueryTexture(texture, NULL, NULL, &w, &h);
 	#endif
 	
-	p = cam->get_position();
+	p = cam->get_position() + pos;
 	d = dim = cam->get_dimension();
 	src = d;
 	
+	if (repeat == false)
+	{
+		/*
+		#ifndef USE_SDL2
+			draw_surface(surface, pos.x, pos.y, cam, screen);
+		#else
+			draw_texture(texture, pos.x, pos.y, cam, renderer);
+		#endif
+
+		return;
+		*/
+
+		SVect cp = cam->get_position();
+
+		if (cp.x < pos.x)
+		{
+			src.x = 0;
+			if (dim.w - int(pos.x - cp.x) > 0)
+				src.w = dim.w - int(pos.x - cp.x);
+			else
+				return;
+
+			d.x = dim.x + (pos.x - cp.x);
+			d.w = src.w;
+		}
+		else if (cp.x + dim.w > pos.x + w)
+		{
+			src.x = w - (int(pos.x + w) - int(cp.x));
+
+			if (w - src.x > 0)
+				src.w = w - src.x;
+			else
+				return;
+
+			d.x = dim.x;
+			d.w = src.w;
+		}
+		else
+		{
+			src.x = int(cp.x - pos.x);
+			src.w = dim.w;			
+
+			if (src.w > w)
+				src.w = w;
+			else if (src.w == 0)
+				return;
+
+			d.x = dim.x;
+			d.w = src.w;
+		}
+
+		if (cp.y < pos.y)
+		{
+			src.y = 0;
+			if (dim.h - int(pos.y - cp.y) > 0)
+				src.h = dim.h - int(pos.y - cp.y);
+			else
+				return;
+
+			d.y = dim.y + (pos.y - cp.y);
+			d.h = src.h;
+		}
+		else if (cp.y + dim.h > pos.y + h)
+		{
+			src.y = h - (int(pos.y + h) - int(cp.y));
+
+			if (h - src.y > 0)
+				src.h = h - src.y;
+			else
+				return;
+
+			d.y = dim.y;
+			d.h = src.h;
+		}
+		else
+		{
+			src.y = int(cp.y - pos.y);
+			src.h = dim.h;			
+
+			if (src.h > h)
+				src.h = h;
+			else if (src.h == 0)
+				return;
+
+			d.y = dim.y;
+			d.h = src.h;
+		}
+
+		#ifndef USE_SDL2
+			SDL_BlitSurface(surface, &src, screen, &d);
+		#else
+			SDL_RenderCopy(renderer, texture, &src, &d);
+		#endif
+
+		return;
+	}
+
 	src.y = int(p.y);
 	if (p.y < 0)
 		src.y = 0;
 	else if (p.y + dim.h > h)
 		src.y = h - dim.h;
 	
+
+
 	if (p.x < 0)
 	{
 		if (int(p.x) % w < -dim.w)
@@ -224,7 +323,7 @@
 		SDL_QueryTexture(texture, NULL, NULL, &w, &h);
 	#endif
 	
-	p = cam->get_position();
+	p = cam->get_position() + pos;
 	d = dim = cam->get_dimension();
 	src = d;
 	

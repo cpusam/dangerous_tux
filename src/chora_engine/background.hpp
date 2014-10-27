@@ -25,6 +25,7 @@
 #define CHORA_BACKGROUND_HPP
 
 #include "sdl.hpp"
+#include "util.hpp"
 #include "vect.hpp"
 #include "camera.hpp"
 #include "animation.hpp"
@@ -41,17 +42,25 @@ class CBackground
 		#else
 			SDL_Texture * texture;
 		#endif
+		// se é para repetir o background no scrolling
+		bool repeat;
+
+		// posição do background no mundo
+		// seria como posição inicial quando repeat = true
+		SVect pos;
 	
 	public:
 		#ifndef USE_SDL2
 			CBackground ( SDL_Surface * s=0 )
 			{
 				surface = s;
+				repeat = true;
 			}
 		#else
 			CBackground ( SDL_Texture * t=0 )
 			{
 				texture = t;
+				repeat = true;
 			}
 		#endif
 		
@@ -66,6 +75,26 @@ class CBackground
 			#endif
 		}
 		
+		void set_repeat ( bool r )
+		{
+			repeat = r;
+		}
+
+		bool get_repeat (  )
+		{
+			return repeat;
+		}
+
+		void set_pos ( SVect p )
+		{
+			pos = p;
+		}
+
+		SVect get_pos (  )
+		{
+			return pos;
+		}
+
 		#ifndef USE_SDL2
 			SDL_Surface * get_surface (  );
 			

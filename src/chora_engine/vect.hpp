@@ -173,8 +173,12 @@ struct SVect
 	{
 		float d = (b.length() * (this)->length());
 		float c = ((*this) * b) / d;
-		
-		if (d == 0 || isnan(c))
+
+		#if _WIN32 || _WIN64
+			if (d == 0 || std::isnan(c))
+		#else
+			if (d == 0 || isnan(c))
+		#endif
 			return 1.0f;
 		
 		return c;

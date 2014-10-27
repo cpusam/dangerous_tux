@@ -84,7 +84,7 @@ class CSimpleButton: public CWidget
 			
 		void input ( SDL_Event & event );
 		
-		int update (  );
+		virtual int update (  );
 		
 		#ifndef USE_SDL2
 			void draw ( SDL_Surface * screen );

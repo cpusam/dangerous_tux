@@ -99,6 +99,7 @@ class CAnimationFrame
 			SDL_Surface * master_surface;
 		#else
 			SDL_Texture * texture;
+			int flip;
 		#endif
 	public:
 		int x, y; // posições relativas ao destino
@@ -113,6 +114,7 @@ class CAnimationFrame
 				surface = master_surface = 0;
 			#else
 				texture = 0;
+				flip = SDL_FLIP_NONE;
 			#endif
 			angle = 0;
 			orientation.set(1,0);
@@ -151,6 +153,8 @@ class CAnimationFrame
 			void set_master_surface ( SDL_Rect src, SDL_Surface * s );
 			SDL_Surface * get_surface (  );
 		#else
+			void set_flip ( int f );
+			int get_flip (  );
 			void set_texture ( SDL_Texture * t );
 			SDL_Texture * get_texture (  );
 		#endif
