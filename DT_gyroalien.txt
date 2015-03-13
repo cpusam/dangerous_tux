@@ -1,0 +1,19 @@
+// Sentido anti-horário
+		// animação de indo para esquerda pregado em cima do tile
+		anim[0]
+		// animação de indo para esquerda pregado em baixo do tile
+		anim[1]
+		// animação de indo para baixo pregado a esquerda do tile
+		anim[2]
+		// animação de indo para baixo pregado a direita do tile
+		anim[3]
+
+// Sentido horário
+		// animação de indo para direita pregado em cima do tile
+		anim[4]
+		// animação de indo para direita pregado em baixo do tile
+		anim[5]	
+		// animação de indo para cima pregado a esquerda do tile
+		anim[6]
+		// animação de indo para cima pregado a direita do tile
+		anim[7]

@@ -32,6 +32,9 @@
 
 extern "C"
 {
+	extern Uint32 get_pixel ( SDL_Surface * surface, int x, int y );
+	extern void put_pixel ( SDL_Surface *surface, int x, int y, Uint32 pixel );
+
 #ifndef USE_SDL2
 	extern SDL_Surface * optimize_surface ( SDL_Surface * s );
 
@@ -41,7 +44,15 @@ extern "C"
 
 	extern void draw_surface ( SDL_Surface * surface, int x, int y, CCamera * cam, SDL_Surface * screen );
 
+	extern SDL_Surface * clone_surface ( SDL_Surface * surf, SDL_Rect src );
+
+	#define FLIP_HOR 0
+	#define FLIP_VER 1
+
+	extern SDL_Surface * mirror_surface ( SDL_Surface * surface, int flip=FLIP_HOR );
 #else
+	extern SDL_Surface * optimize_surface ( SDL_Surface * s, SDL_Surface * screen );
+
 	extern int texture_width ( SDL_Texture * t );
 	
 	extern int texture_height ( SDL_Texture * t );

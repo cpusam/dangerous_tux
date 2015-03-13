@@ -1,0 +1,545 @@
+	Log: projeto iniciado em 25/01/2014
+	-[RESOLVIDO]falta melhorar os controles, ele fica deslizando quando muda de direção
+	-[RESOLVIDO]falta melhorar os controles do jetpack, ele fica deslizando no ar
+	-[RESOLVIDO]falta colocar para coletar itens
+	-[RESOLVIDO]falta programar estado de parado e caminhando na árvore
+	-[RESOLVIDO]falta verificar como que se sobe em árvores.
+	 Talvez seja com o up_key e então ao se afastar muito da árvore ele dá um pulo 
+	 automacamente. (verificado: Não tem pulo automático, ele só cai.)
+	-[RESOLVIDO]falta implementar um método de reset para o jogador.
+	-[RESOLVIDO]Falta implementar o SCORE ao coletar itens
+	-[RESOLVIDO]falta colocar no meio do tronco de árvore e fazer pular a partir dele
+	-[RESOLVIDO]ele não entra num tile aberto, passa direto ou engancha um pouco e cai.
+	 Por exemplo:
+	 bbbb
+	 .... <- não passa aqui se vier caindo de b para a
+	 aaaa
+	 E ele ainda anda 5 pixels para o lado oposto no eixo X, no Y deve ser o mesmo.
+	 (Precisava só fazer pos.x depois de collision_hor e pos.y depois de collision_ver)
+	-[RESOLVIDO]falta programar a arma
+	-[RESOLVIDO]falta consertar o tiro que tá saindo estranho
+	-[RESOLVIDO]falta implementar a morte do jogador
+	-[RESOLVIDO]level está sendo blitado errado
+	-[RESOLVIDO]falta consertar o blit das animações em CTileMapView
+	-[RESOLVIDO]falta fazer com que CTileMapView contenha animações de tiles
+	-[RESOLVIDO]fazer uma classe para as fases
+	-[RESOLVIDO]consertar bug ao passar da última fase e reiniciar o jogo
+	-[RESOLVIDO]colocar pra ler qualquer arquivo de mapa em ordem na pasta level
+	-[RESOLVIDO]criar um estado para a transição de fase
+	-[RESOLVIDO]falta verificar no main se tem a chave e entrou na porta, seria bom
+	 criar um estado para indicar isso.
+	-[RESOLVIDO]falta implementar o trocar de estado em game over em main
+	-[RESOLVIDO]Falta colocar pra ler outro MAPA para nova FASE quando passar de fase
+	-[RESOLVIDO]falta implementar tiles que matam para testar estados 7 e 8 
+	-[RESOLVIDO]falta programar as telas do jogo: main loop, apresentação, transição de 
+	 fase e tela de comandos
+	-[RESOLVIDO]falta colocar para ir para estado de final game em game screen
+	-[RESOLVIDO]tem um problema com o caractere tileset[0] ele aparece errado no blit
+	-[RESOLVIDO]fazer o high score, salvar e ler de um arquivo binário
+	-[RESOLVIDO]o highscore está sendo salvo normalmente mas não é mostrado depois de 
+	 salvar
+	-[RESOLVIDO]high score não lê arquivo highscore de primeira
+	-[RESOLVIDO]high score tá só mostrando pontos quando preenche todo o ps
+	-[RESOLVIDO]não está indo da tela final para a tela de digitar nome
+	-[RESOLVIDO]fazer a bala bater em tiles
+	-[RESOLVIDO]falta fazer os tiles do jetpack e da arma
+	-[RESOLVIDO]está sobrescrevendo high scores anteriores e iguais ao novo
+	-[RESOLVIDO]high score não exibe score, só name, score e level
+	-[RESOLVIDO]cmake dando erro no PREFIX da instalação sendo errado.
+	 Bastava botar um / ou \ no path do CMakeList.txt
+	-[RESOLVIDO]BUG fatal no construtor de CGameScreen, talvez foi porque atualizei a 
+	 libc-bin. Pelos testes que fiz, o problema está em algum dos arquivos fontes, é 
+	 algo que a libstdc++ não consegue manipular. Deve ter sido alguma das modificações 
+	 que fiz. Abaixo estão as últimas modificações com [RESOLVIDO]
+	 Era bug no delete_child de high score :)
+	-[RESOLVIDO]jogo trava na tela de final, não há transição de estado
+	-[RESOLVIDO]colocar CWriter::set_font para retornar erro e processar erro no código
+	 pois assim poderia testar carregar a fonte se não desse tentava outra
+	-[RESOLVIDO]saber como está organizado os arquivos em /usr/share ou /usr/local/
+	 share pra instalar ou saber como pegar o PREFIX no cmake
+	-[RESOLVIDO]criar um arquivo para compilar com cmake
+	-[RESOLVIDO]dividir os widgets da tela de high score em colunas
+	-[RESOLVIDO]colocar para ter 3 ou mais vidas iniciais
+	-[RESOLVIDO]falta colocar a mensagem "go through the door!" ao pegar a chave
+	-[RESOLVIDO]pedir ao Gustavo para fazer os gráficos do jogo
+	-[RESOLVIDO]consertar a imagem de tiro parado ou pulando
+	-[RESOLVIDO]colocar para ligar ou desligar o jetpack sem precisar segurar botão
+	-[RESOLVIDO]não estar resetando o jogador apos dar gameover e passar tela highscore
+	-[RESOLVIDO]setar os limites de movimento do jogador no mapa
+	-[RESOLVIDO]falta ajeitar para abrir arquivos no windows, inclusive as imagens
+	-[RESOLVIDO]colocar animação na chave e no jetpack (fazer subir e descer)
+	-[RESOLVIDO]colocar o jogador para aparecer lá em cima ao passar de map->height
+	-[RESOLVIDO]fazer uma imagem do tux de frente esperando ser controlado (estado 0)
+	-[RESOLVIDO]adicionar background para os levels. O formato do arquivo level.txt 
+	-[RESOLVIDO]talvez fazer um "save game"
+	-[RESOLVIDO]testar compilar com o mingw no wine e executar
+	-[RESOLVIDO]fazer enumerações dos estados do jogador e de outras máquinas de estado
+	-[RESOLVIDO]compilar só para teste a versão windows
+	-[RESOLVIDO]verificar se no mapa de tiles tem o caractere do kernel o K
+	-[RESOLVIDO]colocar para usar surfaces otimizadas com optimize_surface() de util.hpp
+	-[RESOLVIDO]otimizar os widgets com optimize_surface(), e cwriter
+	-[RESOLVIDO]colocar um pause game
+	-[RESOLVIDO]consertar posição inicial do tiro do tux que está começando fora do
+	 corpo quando direção para esquerda
+	-[RESOLVIDO]ajustar high score, centralizar os filhos de name, score e level
+	-[RESOLVIDO]reposicionar widgets de textinput e name_msg em CGameScreen
+	-[RESOLVIDO]retirar atirar quando estiver na árvore
+	-[RESOLVIDO]fazer gameevent_manager.hpp para eventos entre os objetos do jogo
+	-[RESOLVIDO]ajusta o dim do jogador Ã s sprites
+	-[RESOLVIDO]processar o evento "shot_at" das balas dos aliens contra o jogador
+	-[RESOLVIDO]talvez fazer um objeto entidade para poder ter uma melhor visão um dos 
+	 outros através de CGameEvenManager ou outro gerenciador qualquer
+	-[RESOLVIDO]adicionar rewind ou não a animação
+	-[RESOLVIDO]refazer gun.hpp, a bala agora não tem direção inteira
+	-[RESOLVIDO]jogador só ta morrendo uma vez por tiros dos aliens
+	-[RESOLVIDO]talvez adicionar um método process() Ã  CGameEntity para processar 
+	 eventos externos vindo de outras entidades através de CGameEntity	 
+	-[RESOLVIDO]alien ao morrer não era visto, faltava só definir a surface do alien
+	 que estava nula, ou seja, não setada no construtor
+	-[RESOLVIDO]retestar CWriter::render_text() com novo código, testar tipos textos
+	-[RESOLVIDO]a bala do jogador tá colidindo com os itens de coletar (não era com os 
+	 itens era com os aliens que ficaram invisíveis)
+	-[RESOLVIDO]o walker alien está dando erro ao mudar de direção, fica trocando as 
+	 direções direto quando chega a um buraco
+	-[RESOLVIDO]walkeralien está caindo em buracos e não está voltando para trás ao 
+	 encostar na parede
+	-[RESOLVIDO]fazer os aliens serem ativados pela posição da camera, refazer isso
+	-[RESOLVIDO]fazer alguns sprites dos aliens que caminham, só para inspiração
+	-[RESOLVIDO]finalizar animação de apresentação e falar ao Gustavo sobre como é o 
+	 final
+	-[RESOLVIDO]fazer a tela de título do jogo com o título deslizando
+	-[RESOLVIDO]fazer o flyer alien colidir com a bala do jogador
+	-[RESOLVIDO]lembrar de processar colisão com o corpo do jogador contra os dos aliens
+	-preciso ensinar de alguma forma como se joga o jogo
+	-[RESOLVIDO]adicionar tile dos aliens ao mapa de fase
+	-[RESOLVIDO]lembrar de inicializar os aliens no mapa em level.hpp
+	-[RESOLVIDO]processar o evento "shot_at" das balas do jogador contra os aliens
+	-[RESOLVIDO]verificar se o jogador encostou no alien, matar o alien e o jogador
+	-[RESOLVIDO]adiconar os aliens ao alvo da bala do jogador, fazer o mesmo com os 
+	 aliens e balas
+	-[RESOLVIDO]pensar em como serão os aliens visual e comportamentalmente
+	-[RESOLVIDO]falta fazer o alvo para o tiro atingir
+	-[RESOLVIDO]ajustar o pos_dir das balas dos walker aliens
+	-[RESOLVIDO]colocar um sinalizador que ficará nas bordas da camera sinalizando 
+	 a posição do kernel, assim o gamer poderá se orientar por ele. E talvez colocar um 
+	 para achar a saída
+	-[RESOLVIDO]o jogador continua invencível contra balas, tipo quando está parado 
+	 atirando a bala não mata
+	-[RESOLVIDO]está paralisando quando o jogador encosta no alien
+	-[RESOLVIDO]fazer o flyer alien atirar
+	-[RESOLVIDO]colocar para colidir com os tiles que matam um pouco mais afastado do 
+	 que os atuais
+	-[RESOLVIDO]fazer uma tela própia para os créditos, colocar ela em primeiro lugar
+	-[RESOLVIDO]falta carregar as imagens do CGameIntrodution
+	-[RESOLVIDO]na animação de introdução colocar a mão do Linus vindo de lado da 
+	-[RESOLVIDO]fazer os frames da animação de digitando o endereço kernel.org
+	 da introdução
+	-[RESOLVIDO]a bala não está matando o tux e ele se movendo, parece que é quando 
+	 mata um alien e fica um rect que protege o jogador das balas.
+	 É assim, mata um alien depois se ficar parado onde ele morreu
+	 e outro alien atira uma primeira vez a bala não acerta, mas se atira
+	 uma segunda vez aí a bala acerta o jogador.
+	 Mesmo o tux se movendo na mesma direção que a bala vai indo não mata o tux,
+	 talvez seja algum problema com os eventos.
+	 (Parece que resolvi, era só botar para atualizar o jogador depois dos aliens)
+	-[RESOLVIDO]falta retestar a transição para o último level que foi modificado
+	-[RESOLVIDO]organizar o código do jogo numa pasta src
+	-[RESOLVIDO]implementar tela de transição de fase como no Dangerous Dave
+	-[RESOLVIDO]colocar a lightegine num diretório src com título de light_engine
+	-[RESOLVIDO]fazer os arquivos de transição de fase, levels/transition1.txt e 2.txt
+	-[RESOLVIDO]na segunda fase se pegar a arma usando o jetpack e der um tiro 
+	 dá falha de segmentação. Parece que é assim: se passar da primeira fase
+	 e depois na segunda pegar a arma e tentar atirar usando jetpack
+	 dá falha de segmentação. Saida GDB:
+	 [Switching to Thread -1214134592 (LWP 19673)]
+	 0x0805a3d2 in CShot::update (this=0xbfddbe6c) at src/gun.hpp:106
+	 b = (*i)->get_dim();
+	 (FALTAVA só remover os aliens passados do level anterior)
+	-[RESOLVIDO]fazer o jetpack reaparecer no level quando o jogador pegá-lo e morrer ou 
+	 usá-lo completamente
+	-[RESOLDIVO]consegui consertar os erros de compilação no kurumin 7 \o/ 
+	 era só remover a libc2.8 que instalei, agora é possível compilar qualquer programa
+	-[RESOLVIDO]terminar suporte a SDL2.0
+	-[RESOLVIDO]parece que o alien que voa está matando o que anda com o laser.
+	 Não sei como aconteceu mas eu vi o alien que anda da fase 2 morrendo.
+	 Acho que era porque faltava colocar o CGameEventManager::instance()->update()
+	 que o maldito git fez eu remover sem querer
+	-[RESOLVIDO]escolher outro som de efeito para a arma ou testar o atual
+	-[RESOLVIDO]fazer um programa teste que testará a classe CSoundPlayer
+	-[RESOLVIDO]colocar alguns tipos de transições com backgrounds diferentes, talvez
+	 com o background do level passado
+	-[RESOLVIDO]colocar a animação de introdução no depois da tela de título antes 
+	 de começar a primeira fase
+	-[RESOLVIDO]fazer os aliens atirarem e setar suas armas para o mapa de colisão
+	-[RESOLVIDO]identificar informações do harware (SDL_VideoInfo) para usar hardware 
+	 surfaces
+	-[RESOLVIDO]aumentar o tempo do frame final de morrendo
+	-[RESOLVIDO]falta implementar os inimigos voadores e terrestres os aliens
+	-[RESOLVIDO]colocar uma tela de créditos pelo jogo
+	-[RESOLVIDO]tomar cuidado ao fazer os levels pois se o level depender do jetpack
+	 para passar e o gamer gastar todo o combustível dele não terá como passar, a não ser
+	 que reinicie o jogo para poder recolocar o jetpack no lugar antigo.
+	 Talvez readicionar jetpack quando o gamer morrer e não tiver pegado o jetpack
+	 assim terá como passar de fase mesmo que devendo morrer pra isso
+	-[RESOLVIDO]tem um bug na colisão do jogador com os tiles. Se estiver fora das 
+	 dimensões do mapa de tiles então acontece colisão com tiles do lado inverso onde o 
+	 jogador estiver. Para resolver basta checar se o ponto de colisão está dentro do 
+	 mapa de tiles.
+	-[RESOLVIDO]fazer um menu interativo onde o jogador controla o Tux e 
+	 as opções são em portas que, ao encostar, mostra sobre ela informações 
+	 sobre aquela porta.
+	-[RESOLVIDO]fazer um alien que anda ao redor de plataformas
+	-[RESOLVIDO]fazer apertar enter para trocar de gamescreen, e não qualquer tecla.
+	 É preciso ensinar ao jogador para pressionar enter
+	-[RESOLVIDO][BUG CRITICO] testar em algum windows de verdade o novo controle de FPS
+	 [parece que em windows roda normal, somente no wine que é lento]
+	-[RESOLVIDO]tem um bug nos aliens que voam (talvez em todos), se a camera estiver com
+	 a borda sobre a posição inicial então o alien ao sair da visão volta a posição 
+	 inicial imediatamente. 
+	 UPDATE: É parece que em todos está acontecendo o mesmo bug.
+	-[RESOLVIDO]mudei wiget.set_rel_pos() e os créditos ficaram desarrumados, ajeitar
+	-[RESOLVIDO]fazer uma classe para pegar o delta time do fps para mover mais
+	 suavemente os objetos do jogo, estilo libgdx, detalhe procurar saber como implementar
+	 um bom controle de fps ou usar o do SDL_gfx
+
+
+	comandos iniciais do git
+	git init
+	git remote add origin ssh://samleo@git.code.sf.net/p/dangeroustux/code
+	git branch --set-upstream master origin/master
+
+	comandos para atualizar o git
+	 rm -f DT_highscore DT_save* *~ levels/*~ src/*~ src/chora_engine/*~ src/chora_engine/gui/*~ src/chora_engine/sound/*~ src/chora_engine/SDL_gfx/*~ src/chora_engine/platform/*~ src/chora_engine/*.a src/*.o src/chora_engine/*.o src/chora_engine/gui/*.o src/chora_engine/sound/*.o src/chora_engine/SDL_gfx/*.o src/chora_engine/platform/*.o
+	 git add .
+	 git commit -a -m 'MENSAGEM AQUI'
+	 git push origin master
+
+	Tarefas a fazer: tem 91 para resolver
+	[Uma tática mais interessante que se aplica a uma ampla gama de jogos é pedir ao jogador 
+	 para ser cuidadoso. Esta é uma habilidade maior de sobrevivência. Esta é uma grande 
+	 habilidade de sobrevivência. Requer paciência, e um certo divertimento em descobrir. Ele  
+	 também trabalha contra a nossa inclinação de trabalhar diretamente no objetivo final.
+	 "Returado do theory of fun"]
+	 [talvez no Dangerous Tux 2, faremos uma cópia do new super mario bros wii e renomearemos o 
+	  jogo de New Dangerous Tux]
+	 [temos esses tiles (09/11/2014): "PGFABCDKEq" e "LMNOQRabcdefgEijklmnstuvw01234" e "opqrKxy"]
+	 -tá dando uns bugs no jogo mas acho que sei porque, é que talvez aquelas 
+	  gambiarras de usar animações para contar o tempo e elas não tinham nenhuma surface.
+	  E agora as novas CAnimation::add_frame exigem uma surface válida ou lançam uma exceção.
+	 
+	 -poderia colocar para mudar a imagem de tiles apenas trocando o arquivo de 
+	  imagem. Seria preciso adicionar mais uma linha aos arquivos de fases.
+	 -fazer o flip das caixas de colisão na classe de sprite e posicionar o centro
+	  não no meio da sprite mas em qualquer posição
+	 -tem um bug no text input, quando aperta as setas ele vai pro lado mas 
+	  quando sai da tela e depois volta o cursor está lá na frente na última posição onde foi 
+	  deixado pelas setas, quando deveria estar no começo ou ser possível voltar o cursor para 
+	  trás com as setas e não dá isso.
+	 -o jogo parou de produzir sons de tiro, deve ter sido por causa da modificação 
+	  do emscripten.
+	 -adicionar o floco de neve para as fases com tiles de beve sobre tiles
+	  Automaticamente é ativado se encontrar algum tile de neve sobre tile no mapa da fase.
+	  Fazer os flocos cairem de cima e girando variavelmente para algum lado, redimensiná-lo 
+	  para tamanhos diferentes para melhor efeito.
+	 -perguntar pro Gustavo se ele pode fazer um tile de lava borbulhante
+	 -fazer uma plataforma que fica dentro de tiles liquidos (como lava)
+	  então quando o gamer está sobre ela, ela afunda devagar. Elas podem ser feito de tiles
+	  usando um caractere no mapa para posicioná-las, mas ai será preciso que faça com tamanhos 
+	  pré-definidos ou pode usar mais caracteres no mapa para montar elas, bastaria ler eles e 
+	  depois removê-los do mapa da fase.
+	 -fazer um efeito de quando pega uma jóia ela vai na direção dos pontos e só 
+	  então faz a soma dos pontos.
+	 -talvez fazer um tile de rampa de colisão de 45 graus
+	 -falar pro Gustavo fazer tiles menos definidos, como se estivessem no plano mais afastado
+	  tipo um imagem de fundo um pouco mais escura. Eles não teria colisão serve apenas para 
+	  decorar o cenário.
+	 -adicionar um carrinho de mineiro como naquele jogo do mario acho que era
+	  new super mario bros wii, onde tinha umas caveiras que serviam para levar o mario através 
+	  de "trilhos" por uma fase de fogo
+	 -adicionar meteoros caindo na fase de fogo
+	 -tem um bug nos sinais, eles aparecem do outro lado quando uma das bordas 
+	  da camera está sobre os tiles do kernel ou da porta
+	 -talvez seja bom reduzir o tamanho das imagens na versão online com emscripten.
+	  Isso pode fazer o jogo rodar mais rápido
+	 -poderia adicionar uma espécie de poder de fazer clones de si mesmo
+	  e serão controlados ao mesmo tempo pelo jogador. Quando um morre a camera vai suavemente
+	  para o tux que está mais no meio. Ou poderia limitar a quantidade e então usar para 
+	  resolver puzzles, isso adicionaria mais elementos ao jogo. Será preciso talvez reduzir
+	  o número de fases diferentes pois tem muitas. Os clones poderiam seguir o tux como os
+	  ovos do yoshi no smw2 do snes. Ou poderia apenas fazer eles pegarem a posição um do outro
+	  tipo um snake e se for quebrado terá de voltar para buscar o pedaço
+	 -talvez adicionar um novo objeto, uma nave para o tux, uma espécie de nave
+	  parecida com aquela do metal slug do PS2 e arcade (metal slug x). A nave atiraria 
+	  continuamente como no metal slug e teria rotação. Poderia adicionar uma animação
+	  com a nave para a mudança de fase. Poderia até usar o mouse para controlar a nave, só 
+	  precisa ensinar o jogador a usar. Usar um life para a nave.
+	 -talvez coloque uma opção de "área de teste" para ensinar como joga o jogo
+	 -adicionar botão no menu para ver o score local
+	 -colocar um score fake no score local, tipo mais do que simplesmente "X tux 1000"
+	  Isso deve dar alguma motivação para o gamer superar o score
+	 -adicionar enviar score para o site do jogo e colocar um botão para ver os scores online
+	 -no emscripten o som fica como se estivesse executando a função de tocar
+	  direto sem intervalo
+	 -no chrome o jogo roda muito lento e deixa todo o pc lento também, firefox wins!
+	 -[RESOLVIDO]no emscripten tem um bug por causa de valores negativos ao acessar um vetor, 
+	  deve ser na classe dos mapas. Não é bem no vetor mas sim no gyroalien que está bugado 
+	  mesmo e está atrapalhando na execução do programa. Parece que os tiles que são removidos 
+	  não estão funcionando na versão emscripten, deve ser um bug no std::map, mas não sei bem o 
+	  que acontece ainda. O problema está na função que desenha mapa de tiles, de algum modo ela 
+	  termina inesperadamente. [era só não deixar que o source do blit fosse igual a zero]
+	 -[RESOLVIDO]Quase roda o jogo no emscripten, aparece o tux e quando desaparece o programa
+	  quebra.
+	 -O jogo funciona no emscripten mas ainda tem que otimizar pois está muito pesado
+	  o blit do mapa, talvez colocar a opção de fazer uma surface única ou conjunto 
+	  de texturas para blitar o mapa somente uma vez sem as animações
+	 -alterar tamanho da fonte do menu que foi trocada
+	 -tem um bug no screen GET_SCORE_NAME de gamescreen, se não difitar nada não é colocado
+	  a string "PLAYER" no lugar.
+	 -[Aí CARALHO! RESOLVIDO][26/07/2014] tentando salvar onovo código do Dangerous Tux, que na 
+	 verdade não tem nada de novo é apenas arquivos.cpp adicionados. Tente colocar as inclusões 
+	 de headers no começo dos arquivos.cpp . Ou poderia tentar incluir não o arquivo chora.hpp e 
+	 sim só os headers necessários, essa deve ser a melhor.
+	 O erro era undefined reference to vtable for class
+	 [COMO RESOLVI: apenas compilei o dangerous_tux.cpp em separado e depois só juntei os .o]
+	 [COMO ERA PRA TER FEITO: bastava apenas ter adicinado o $(DEPS) na compilação do 
+	  DangerousTux no Makefile, PQP ERA SÓ ISSO!]
+	-os aliens estão executando o som de atirar quando não estão na tela, corrigir isso
+	-adicionar mais controle ao pulo, tipo quando pressionar o botão pular fazer com que o tux 
+	 fique no ar até que o gamer solte o botão ou acabe o impulso do pulo (estilo Super Mario)
+	-criar CMakeList.txt e makefiles da engine
+	-atualizar o CMakeList.txt e makefiles do jogo.
+	-[RESOLVIDO][ATENÇÃO: BUG FATAL!] o jogo não roda mais depois da tela de titulo e não
+	 mostra mais animações, isso depois que eu mudei CAnimation e CTileMap e CTileMapView.
+	 Por enquanto só não está passando da tela de apresentação, de alguma maneira o 
+	 programa fecha.
+	 [ERA que tentando acessar um tile no tileset com i * width + j em 
+	  CTileMapView.draw não tava dando certo por isso troquei por get_tile()]
+	-pedir pro Gustavo fazer um logo para a Chora engine, que será baseado no da Cryengine
+	-adicionar joystick para controlar o menu principal
+	-possivel som para pulo: https://www.freesound.org/people/fins/sounds/146726/
+	-fazer um objeto guardar o video do jogo, assim poderia só blitar quando houvesse
+	 certos eventos que precisassem fazer isso. Poderia usar gamevideo.hpp para guardar o 
+	 objeto
+	-adicionar os novos tiles que o Gustavo fez
+	-[ABANDONADO]fazer fases completamente na água como no super mario original
+	-[ABANDONADO]pedir pro Gustavo fazer tiles de água ondulando (superfície de água)
+	-adicionar um tile que é uma mola para impulsionar o pulo
+	-refazer exit e kernel signal para imagem maior que possa ser melhor vista
+	-que tal adicionar uma animação de entrando na porta, tipo super mario bros 2
+	-terminar a introdução e fazer o Linus balançar a cabeça via código
+	-[ABANDONADO]colocar para ler somente um arquivo de save o DT_save
+	-fazer usar os tamanhos do renderer como base para colocar objetos na tela.
+	-tem um bug ao subir até o topo de um tronco de arvore e a ponta do tronco estiver
+	 no tile.y = 0. Se subir além o tux não cai de lá. Provavelmente porque não é 
+	 verificado se o ponto do meio que mantém o tux no tronco está dentro dos limites
+	 do mapa de tiles
+	-[ABANDONADO]colocar para selecionar idioma, português ou inglês no jogo
+	-tem uma falta de sincronização do tiro do tux. Ele inicia a animação de atirar
+	 antes de o tiro sair da arma, isso acontece quando a bala sai pelas laterais
+	 da fase, talvez aconteça em todos as entidades
+	-fazer um editor de fase precário, usa apenas o mouse e cliques/arrasto 
+	 para colocar tiles
+	-colocar o Dangerous Tux final no indie data base, site de jogos indie.
+	-fazer uma dica para o viva o linux mostrando como instalar o jogo e compilá-lo
+	-fazer uns créditos finais pelos recursos do jogo e algo relacionado a ele.
+	 Colocar um background scrolling no fundo e subindo as letras.
+	 Por enquanto os recusos são: libSDL_gfx(framerate), sons do jogo, idéia do jogo 
+	 (Dangerous Dave da SoftDisk)
+	-colocar as conversas no iglu na animação de apresentação do jogo
+	-resetar as vidas para 10 ao recarregar o arquivo de save
+	-na tela de pegar o nome do jogador está deixando passar o nome vazio.
+	 E detalhe se for somente de espaços a string passará também
+	-adicionar mais um estado em CGameOptions para pegar as teclas delete e os enters
+	 pois é preciso paralizar um pouco para dar tempo de executar o callback dos
+	 COptions ao ser pressinada as teclas (delete ou os enters)
+	-na versão para o viva o linux colocar uns screenshots no pacote talvez
+	 com isso incentive a baixar o jogo no sourceforge.net
+	-fazer um menu para escolher se apaga o save game antigo ou continua o jogo.
+	 Se o gamer no menu passar a porta de saída e não tiver nenhum save então não será 
+	 mostrado o menu, se tiver será mostrado um menu de opções.
+	 Talvez fazer esse menu com um mapa de tiles como background
+	-[ABANDONADO]pedir pro Gustavo pra gente fazer um menu muito mais atrativo 
+	 com imagens legais. Tipo, como se fosse feito à mão
+	-[ABANDONADO]fazer com que os widgets suportem desenhar com a câmera.
+	 (Deixa para o programador criar os widgets que dependem da câmera)
+	-ao terminar o jogo compilar uma versão para SDL1.2 para linux.
+	 SDL2 é muito rápida mas SDL1.2 tem um blit mais suave.
+	 Compilar estaticamente a versão final para linux com SDL1.2 (detalhe a GPL não 
+	 permite isso, mas então pra quê a opção compilar estaticamente?)
+	-fazer o index.html no sourceforge
+	-[ABANDONADO]fazer uma única função optimize_surface()
+	-[ABANDONADO]jogo está rodando lento com 16 bpp, talvez fazer uma cor chave para 
+	 transparência e usar optimize_surface() ao inves de _alpha()
+	-[ABANDONADO]adicionar gamevideo.hpp e control_fps() ao arquivo util.hpp
+	-[ABANDONADO]colocar para salvar as fases a partir de 5 ou mais fases finalizadas
+	-[IMPOSSÍVEL]colocar os créditos na tela de título
+	-[ABANDONADO]aprimorar a tela de créditos com imagens do jogo em movimento,
+	 talvez colocar apenas um scrolling background com vários tuxes
+	-[ABANDONADO]obrigar o jogador a ver a tela de introdução, então não poderá sair 
+	 dela até terminar a animação
+	-colocar para tocar som de digitando
+	-colocar para carregar pelo menos 10 fases se não lança uma exceção
+	-colocar obstáculos que se movem e matam o jogador, tipo fazer uma bola de 
+	 fogo que pula como no super mario world
+	-ajustar o pos_dir dos flyer aliens
+	-pedir ao Gustavo para fazer um tile de espinhos no lugar dos macarrões
+	 e pedir também pra fazer um tile de gramado
+	-[ABANDONADOfazer widgets de erase profile e highscore no início do jogo. Mostrar em 
+	 qual level ficou o jogador, tipo "level 04", colocar um botão erase do lado.
+	-[ABANDONADO]colocar uma versão nos arquivos DT_highscore e DT_save, para ter 
+	 compatibilidade entre versões mais novas do jogo
+	-refazer pontos de colisão dos aliens que caminham quando o Gustavo desenhá-los
+	-[ABANDONADO]adicionar uma função para desenhar retas em util.hpp
+	-fazer CLevel/CGameScreen carregar uma fase por vez, ou melhor não
+	-fazer mais fases, essas serão para a versão final do jogo, tomar cuidado para não 
+	 deixar tiles para o tux subir em cima na linha 0 do mapa pois dá erro
+	-colocar um easteregg do tipo "instalando virus..." para windows, adicionar vários.
+	 Usar um rand() para dizer se usa ou não o easteregg
+	-[ABANDONADO]criar screen para criar profile de salve game
+	-dar opção de limpar todos highscores antigos e opção de limpar o arquivo de save
+	-fazer o módulo de músicas e sons de efeito da light engine sound/CSoundPlayer
+	-incluir arquivos da light engine no pacote do dangerous tux
+	-[ABANDONADO]otimizar o blit de draw_hor de CBackground está muito pesado
+	-[ABANDONADO]pedir ao Gustavo para refazer sprite de pulando que está combrindo o 
+	 rosto do tux
+	-[ABANDONADO]limitar a sete caracteres o tamanho dos widgets de highscore ou 
+	 somente o tamanho máximo	do textinput em cgamescreen
+	 pode ser assim: linha 1 fica o nome da imagem usada como background, por exemplo 
+	 background.png A imagem fica obrigatoriamente dentro da pasta images
+	 As linhas abaixo da primeira são os tiles do level.
+	-colocar logo da SDL numa tela de apresentação, e talvez da light engine
+	-testar melhor a instalação do cmake no linux e no windows que não está bem feita
+	-checar versões das bibliotecas no código de main
+	-[IMPOSSÍVEL]fazer transição suave das telas, sumindo aos poucos
+	-fazer uma tela de apresentação da estória e colocar animação nela e no final
+	-colocar mais tiles no mapa
+	-[ABANDONADO]arrumar uma fonte para a frase "good work! only X more levels to go"
+	-[ABANDONADO]colocar algum código secreto e um sinalizador que diz que funcionou
+	-implementar o uso do joystick
+	-[ABANDONADO]fazer o *.cpp da lightengine
+	-[ABANDONADO]fazer os *.cpp do dangerous tux
+	-falta fazer o player ser visto pela camera por cima dos tiles superiores
+	-[ABANDONADO]colocar uma imagem para a bala da arma
+	-[ABANDONADO]falta criar um gerenciador de entidades para que as entidades possam 
+	 ter um ponteiro universal para todas as outras entidades.
+	-falta implementar ganhar vida ao recolher certa quantia de pontos
+	-[RESOLVIDO]preciso terminar o gamemenu.hpp
+	-atualizar o Desert Huntress com o novo código da engine
+	-[ABANDONADO]que tal fazer uma animação para transição de fase, tipo em função do 
+	 background a ser usado nas fases. Ou talvez apenas em função do número de fases, 
+	 tipo nas últimas no planeta dos aliens, o tux iria pra lá de foguete.
+	 Mas teria de adicionar algo ao level.txt para poder escolher a animação de 
+	 transição.
+	-fazer o LEIAME.txt do jogo
+	-fazer uma dica para o VOL sobre o jogo e compilação/instalação dele
+	-adiconar mais alguns tiles de colisão completa e grama ou neve (deixa pro final)
+	-ao invés de uma versão HTML5 lança longo uma versão Java/Android, 
+	 lembrar de não usar tantos getters e setters
+	-fazer uma fase para usar o jetpack por pelo menos 74 tiles de largura
+	-compilar uma versão para i386 e retirar flag -march=i386 do makefile
+	-retirar o wine do make file do windows
+	-fazer uma tela depois do final pedindo ao usuário para deixar um comentário no link
+	 onde baixou o jogo com a frase: I like monkeys! ou I'm Chuck Norris!, vish só vai 
+	 dar pra uma segunda versão depois que tiver postado no VOL :(, a não ser que eu 
+	 adivinhe o formato do link do VOL. Colocar isso SOMENTE nas versões pré-compiladas
+	-retestar compilar com makefiles e cmake
+	-apagar os *~ do pacote tar.gz quando finalizar
+	-compilar o executável com uma versão velha da lib C
+	-fazer um CWriter melhor, então ele armazenaria as fontes e tamanhos usados
+	-fazer CAnimation do SDL1.2 usar várias surfaces, adicionar noutra versão da light
+	-poderia criar um tile genérico onde seria possível mexer nas propriedades dos tiles
+	 através de uma única classe. Então seria possível fazer alterar a posição de destino 
+	 do tile (o que afetaria todos seus iguais), ou talvez rotacioná-los, ou escalá-los, 
+	 etc
+	-fazer o CBackground e CAnimatedBackground terem posições de destino dentro da fase
+	-adicionar um source rect de corte para a função draw de CAnimation. O rect seria 
+	 para cortar os rects de fonte de CAnimation
+	-fazer com que CAnimationFrame contenha as surfaces e texturas e não CAnimation
+	-fazer um pequeno editor de animações/sprites
+
+	comandos do jogo
+	-setas esquerda e direita movimentam o tux
+	-seta para cima faz pular
+	-tecla f jogo em fullscreen (apenas windows)
+	-tecla p pausa o jogo
+	-tecla Esc sai do jogo
+
+	-perguntar se o pessoal aceita expor e-mail para contato, como no opensonic
+	Créditos do jogo:
+	introduction animation, tux sprites, tileset: Gustavo Medeiros http://mintymousyxfce.deviantart.com/
+	backgrounds: Jonah Pickrell http://kalumne.deviantart.com/
+	Enemies design and sprites: Corey Slatton http://themetalmaniac.deviantart.com/
+	
+
+	-agora o jogo compila por padrão em SDL1.2, use make DangerousTux.SDL2 para compilar 
+	 com SDL2
+	-SDL2.0.1 e 2.0.2 tem um bug estranho. Primeiro ao criar uma janela 
+	 sem especificar que ela será sem bordas, ele acaba criando um
+	 janela sem bordas. E depois se tentar usar fullscreen dá erro:
+	 X Error of failed request:  BadValue (integer parameter out of range for operation)
+	 Major opcode of failed request:  150 (XFree86-VidModeExtension)
+	 Minor opcode of failed request:  10 (XF86VidModeSwitchToMode)
+	 Value in failed request:  0x3c0000d
+	 Serial number of failed request:  624
+	 Current serial number in output stream:  627
+	 
+	 (A falta de bordas era porque estava usando as flag SDL_WINDOW_MINIMIZED e 
+		_MAXIMIZED juntas, e só pode usar uma ou outra.)
+	 
+	 O mesmo erro ocorre se colocar SDL_WINDOW_FULLSCREEN para 
+	 criar a janela. Parece que tentaram corrigir no SDL2.0.2 mas ficou pior
+	 Parece que o erro aparece se usar SDL_WINDOW_MINIMIZED e/ou _MAXIMIZED
+	 ai ou aparece a borda das janelas ou não.
+	 Se não usá-los no SDL2.0.2 o fullscreen ainda fica errado, e mesmo que saia do 
+	 fullscreen a tela fica como se estivesse numa posição negativa no eixo Y.
+	 No fullscreen o SDL2.0.2 a imagem fica como se estivesse numa posição negativa no 
+	 eixo X e Y
+
+	NOTA:
+	-adicionar velocidade ao background
+	-fazer uma espécie de coletor de lixo, assim posso ficar tranquilo de não liberar ponteiros
+	 alocados
+	-sempre fazer um arquivo com tarefas para fazer nos jogos que programar
+	 ensinar isso ao Gustavo para ficar melhor organizado
+	-comando útil: wine mingw32-objdump.exe -p "arquivo".exe | grep "DLL Name"
+	 file DangerousTux para mostrar infos como se é 32 ou 64 bits
+	-talvez adicionar gameevent_manager.hpp e gameentity.hpp à light engine
+	-talvez colocar novos membros em CMovable, DIReção.
+	-talvez adaptar a engine para SDL2
+	-NÃO USAR referencia em C++, pois é altamente bugado
+	-NÃO USAR ponteiros estáticos em C++, pois também é altamente bugado
+	-USAR classes baseadas em std::exception para indicar exceções, é mais seguro.
+	-USAR iteradores ao invés de acessar com int i...
+	-parece que fopen() tem algo contra arquivos com extensão .bin no linux porque não 
+	 abre ele.
+	-CONSERTAR o gamemenu.hpp, foi retirado temporariamente da engine
+	-adicionar créditos pelos sons de efeitos ao site freesfx.co.uk, colocar nos créditos 
+	 finais
+
+	Sobre máquinas de estados:
+	-Se parecem com sistemas dinâmicos onde as partes (estados) estão interrelacionados 
+	 direta ou indiretamente.
+
+	Dicas de como criar máquinas de estado determinísticas
+	-tente rigorosamente mudar de estado somente dentro dos estados
+	-não coloque código fora dos blocos de estados
+	-se puder troque uma variável ou membro por um novo estado
+	-não use os estados como índice de arrays, pois assim mantém portabilidade
+	-use obrigatoriamente switch para os estados, pois break ajuda na troca de estado
+
+	Diferença entre classe e estado
+	-Estado é referente ao objeto, classe para criar objetos.
+	 Por exemplo, considere a classe Agua.
+	 Gelo não é uma classe derivada de Agua mas sim um estado interno da classe Agua.
+	 Ou seja, Agua em ESTADO sólido.
+	 Gasoso não é uma classe derivada de Agua mas sim outro estado interno da classe
+	 Agua, podendo ser representado por uma única variável que indica o estado geral 
+	 do objeto do tipo Agua.
+	-Numa máquina de estados o que define a complexidade não é o o código dos estados,
+	 mas sim o número de estados e as transições feitas entre eles.
+	-É recomendado testar a máquina efetuando cada transição de estado.
+
+	Problemas com máquinas de estado:
+	-podem gerar código espaguete, pois se parecem com usar goto
+	-precisa de diagrama de transição de estados para ser compreendido
+

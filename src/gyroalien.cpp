@@ -623,13 +623,13 @@ int CGyroAlien::update (  )
 						{
 							pos.y = y + (map->get_tilesize() - (dim.y + dim.h));
 							dir_y = UP_ALIEN;
-							curr_anim = &anim[1];
+							curr_anim = &anim[7];
 						}
 						else if (dir_y == UP_ALIEN)
 						{
 							pos.y = y - dim.y;
 							dir_y = DOWN_ALIEN;
-							curr_anim = &anim[0];
+							curr_anim = &anim[2];
 						}
 						
 						dir_x = LEFT_ALIEN;
@@ -652,7 +652,8 @@ int CGyroAlien::update (  )
 							dir = dir_y;
 							pos.x = x + (map->get_tilesize() - (dim.x + dim.w));
 							pos.y = y + (map->get_tilesize() - (dim.y + dim.h));
-							curr_anim = &anim[5];
+							curr_anim = &anim[2];
+							break;
 						}
 					}
 					else if (dir_y == UP_ALIEN)
@@ -670,7 +671,8 @@ int CGyroAlien::update (  )
 							dir = dir_y;
 							pos.x = x + (map->get_tilesize() - (dim.x + dim.w));
 							pos.y = y - dim.y;
-							curr_anim = &anim[4];
+							curr_anim = &anim[6];
+							break;
 						}
 					}
 					

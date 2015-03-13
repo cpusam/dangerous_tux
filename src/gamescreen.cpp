@@ -244,12 +244,14 @@ void CGameScreen::draw (  )
 		case CHORA_SCREEN:
 			#ifndef USE_SDL2
 				SDL_FillRect(screen, NULL, SDL_MapRGBA(screen->format, 0,0,0,255));
+				chora.draw(chora_pos.x, chora_pos.y, screen);
 			#else
 				SDL_SetRenderDrawColor(renderer, 0,0,0,0xff);
 				SDL_RenderClear(renderer);
+				chora.draw(chora_pos.x, chora_pos.y, renderer);
 			#endif
-			chora.draw(chora_pos.x, chora_pos.y, screen);
 			break;
+
 		case CREDITS_SCREEN:
 			#ifndef USE_SDL2
 				credits.draw(screen);

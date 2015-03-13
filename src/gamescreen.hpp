@@ -73,7 +73,7 @@ class CGameScreen: public CStateMachine
 		#ifndef USE_SDL2
 			CGameScreen ( SDL_Surface * s, CCamera * c, int ts );
 		#else
-			CGameScreen ( SDL_Window * w, SDL_Renderer * r, CCamera * c, int ts ): gameover(r), highscore(r), title(r), credits(r), transition(r), introduction(r)
+			CGameScreen ( SDL_Window * w, SDL_Renderer * r, CCamera * c, int ts );
 		#endif
 		
 		virtual ~CGameScreen (  );

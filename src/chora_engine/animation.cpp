@@ -1,6 +1,6 @@
 #include "animation.hpp"
 
-void CAnimationFrame::set_anim ( int d, SDL_Rect src )
+void CAnimationFrame::set_frame ( int d, SDL_Rect src )
 {
 	set_source(src);
 	set_delay(d);
@@ -43,77 +43,68 @@ void CAnimationFrame::rotate ( float a )
 {
 	angle += a;
 	orientation.rotate(a);
-	if (surface)
-	{
-		if (surface != master_surface)
-			SDL_FreeSurface(surface);
-		
-		if (master_surface == 0)
-			throw "CAnimationFrame: master_surface nula";
-			
-		surface = rotozoomSurface(master_surface, angle, 1.0, 1);
-		if (surface == 0)
-			throw "CAnimationFrame: não foi possível rotacionar master_surface";
-		
-		source.w = surface->w;
-		source.h = surface->h;
-		
-		/*
-		printf("CAF: tentando rotacionar a surface\n");
-		SDL_Surface * tmp;
-		tmp = rotozoomSurface(surface, angle, 1.0, 1);
-		if (tmp != surface)
+	#ifndef USE_SDL2
+		if (surface)
 		{
-			printf("CAF: Surfaces diferentes\n");
-			SDL_FreeSurface(surface);
-			surface = tmp;
-		}
+			if (surface != master_surface)
+				SDL_FreeSurface(surface);
 		
-		source.w = surface->w;
-		source.h = surface->h;
-		*/
-	}
+			if (master_surface == 0)
+				throw "CAnimationFrame: master_surface nula";
+			
+			surface = rotozoomSurface(master_surface, angle, 1.0, 1);
+			if (surface == 0)
+				throw "CAnimationFrame: não foi possível rotacionar master_surface";
+		
+			source.w = surface->w;
+			source.h = surface->h;
+		
+			/*
+			printf("CAF: tentando rotacionar a surface\n");
+			SDL_Surface * tmp;
+			tmp = rotozoomSurface(surface, angle, 1.0, 1);
+			if (tmp != surface)
+			{
+				printf("CAF: Surfaces diferentes\n");
+				SDL_FreeSurface(surface);
+				surface = tmp;
+			}
+		
+			source.w = surface->w;
+			source.h = surface->h;
+			*/
+		}
+	#endif
 }
 
 #ifndef USE_SDL2
+	void CAnimationFrame::set_flip ( int f )
+	{
+		SDL_Surface * tmp;
+		if (master_surface)
+		{
+			tmp = mirror_surface(master_surface, f);
+			SDL_FreeSurface(master_surface);
+			master_surface = tmp;
+		}
+
+		if (surface)
+		{
+			tmp = mirror_surface(surface, f);
+			SDL_FreeSurface(surface);
+			surface = tmp;
+		}
+	}
+
 	void CAnimationFrame::set_master_surface ( SDL_Rect src, SDL_Surface * s )
 	{
-		if (src.w <= 0 || src.h <= 0)
-			throw "CAnimationFrame: tamanhos de src inválido";
-		
 		source = src;
 		
 		destroy();
-		Uint32 rmask, gmask, bmask, amask;
-
-       #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-           rmask = 0xff000000;
-           gmask = 0x00ff0000;
-           bmask = 0x0000ff00;
-           amask = 0x000000ff;
-       #else
-           rmask = 0x000000ff;
-           gmask = 0x0000ff00;
-           bmask = 0x00ff0000;
-           amask = 0xff000000;
-       #endif
-		
-		if (s == 0)
-			throw "CAnimationFrame: sem surface para a fonte";
-		
-		if (master_surface)
-			SDL_FreeSurface(master_surface);
-		
-		master_surface = SDL_CreateRGBSurface(SDL_SWSURFACE, src.w, src.h, 32,
-		                               rmask, gmask, bmask, amask);
+		master_surface = clone_surface(s, src);
 
 		if (!master_surface)
 			throw "CAnimationFrame: não pôde criar master_surface";
-		
-		SDL_BlitSurface(s, &src, master_surface, NULL);
-		
-		if (surface != master_surface)
-			SDL_FreeSurface(surface);
 		
 		if (angle != 0.0f)
 		{
@@ -134,7 +125,7 @@ void CAnimationFrame::rotate ( float a )
 		return surface;
 	}
 #else
-	void set_flip ( int f )
+	void CAnimationFrame::set_flip ( SDL_RendererFlip f )
 	{
 		if (f < SDL_FLIP_NONE || f > SDL_FLIP_VERTICAL)
 			f = SDL_FLIP_NONE;
@@ -142,7 +133,7 @@ void CAnimationFrame::rotate ( float a )
 		flip = f;
 	}
 
-	int get_flip (  )
+	SDL_RendererFlip CAnimationFrame::get_flip (  )
 	{
 		return flip;
 	}
@@ -296,27 +287,110 @@ bool CAnimation::get_use_center (  )
 	return use_center;
 }
 
+
+
 #ifndef USE_SDL2
+	void CAnimation::flip ( int f )
+	{
+		if (surface.size())
+		{
+			for (int i = 0; i < surface.size(); i++)
+			{
+				SDL_Surface * tmp = mirror_surface(surface[i], f);
+				SDL_FreeSurface(surface[i]);
+				surface[i] = tmp;
+			}
+		}
+		else
+		{
+			for (int i = 0; i < frames.size(); i++)
+			{
+				frames[i].set_flip(f);
+			}
+		}
+	}
 	void CAnimation::add_frame ( SDL_Surface * s, SDL_Rect src, int d )
 	{
-		index = 0;
-		surface.push_back(s);
 		CAnimationFrame f;
-				
+		
+		index = 0;		
 		f.set_source(src);
 		f.set_delay(d);
+		
 		if (use_rot && s)
 			f.set_master_surface(src, s);
-		
+		else
+		{
+			SDL_Surface * tmp = clone_surface(s, f.get_source());
+			
+			if (!s)
+			{
+				// gambiarra para não dar erro
+				printf("CAnimation: surface fonte é nula.\n");
+				surface.push_back(NULL);
+			}
+			else if (!tmp)
+			{
+				printf("CAnimation: erro ao alocar surface\n");
+				surface.push_back(NULL);
+			}
+			else
+				surface.push_back(tmp);
+
+			/*
+			if (tmp)
+				surface.push_back(tmp);
+			else
+			{
+				throw "CAnimation: não foi possivel alocar surface\n";
+			}
+			*/
+		}
+
 		frames.push_back(f);
 	}
 	
 	void CAnimation::add_frame ( SDL_Surface * s, CAnimationFrame f )
 	{
 		index = 0;
+		SDL_Rect source = f.get_source();
+
+
 		if (s != 0 && use_rot && f.get_surface() == 0)
 			f.set_master_surface(f.get_source(), s);
-		surface.push_back(s);
+		else
+		{
+			SDL_Surface * tmp = clone_surface(s, f.get_source());
+
+			if (!s)
+			{
+				// gambiarra para não dar erro
+				printf("CAnimation: surface fonte é nula.\n");
+				surface.push_back(NULL);
+			}
+			else if (!tmp)
+			{
+				printf("CAnimation: erro ao alocar surface\n");
+				surface.push_back(NULL);
+			}
+			else
+				surface.push_back(tmp);
+
+			/*
+			if (tmp)
+				surface.push_back(tmp);
+			else
+				throw "CAnimation: não foi possivel alocar surface\n";
+			*/
+			
+		}
+		/*
+			é preciso resetar as posições pois vamos usar uma surface inteira como frame
+		*/
+		source.x = source.y = 0;
+		f.set_source(source);
+		// não pode mais usar um source para a surface
+
 		frames.push_back(f);
 	}
 	
@@ -506,10 +580,7 @@ CAnimationFrame CAnimation::get_curr_frame (  )
 	dest.x = x + frames.at(index).x;
 	dest.y = y + frames.at(index).y;
 	source = frames.at(index).get_source();
-	
-	if (source.w == 0 || source.h == 0)
-		return;
-	
+
 	if (use_center)
 	{
 		dest.x = dest.x - source.w / 2;
@@ -522,26 +593,26 @@ CAnimationFrame CAnimation::get_curr_frame (  )
 	#ifndef USE_SDL2
 		if (use_rot == false && surface.size() && surface.at(index))
 		{
-			if (source.x < 0 || source.y < 0)
-				printf("source.x.y < 0\n");
-			if (source.x > surface[index]->w || source.h > surface[index]->h)
-				printf("source.x.y são maior que os tamanhos da surface\n");
-			SDL_BlitSurface(surface.at(index), &source, screen, &dest); 
+			if (SDL_BlitSurface(surface[index], &source, screen, &dest) < 0)
+				throw "CAnimation: blit falhou\n";
 		}
 		else if (frames[index].get_surface())
 		{
-			source.x = source.y = 0;
-			SDL_BlitSurface(frames[index].get_surface(), &source, screen, &dest);
+			if (SDL_BlitSurface(frames[index].get_surface(), &source, screen, &dest) < 0)
+				throw "CAnimation: blit falhou\n";
 		}
 	#else
 		if (texture.size() && texture.at(index))
 		{
 			if (use_rot == false)
-				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, 0, NULL, flip);
+			{
+				printf("CAnimation: tem que recortar a textura para o frame\n");
+				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, 0, NULL, frames[index].get_flip());
+			}
 			else
 			{
 				SDL_Point center = {frames[index].get_source().w/2, frames[index].get_source().h/2};
-				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, TO_DEGREES(frames[index].get_angle()), &center, flip);
+				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, TO_DEGREES(frames[index].get_angle()), &center, frames[index].get_flip());
 			}
 		}
 	#endif
@@ -556,15 +627,21 @@ CAnimationFrame CAnimation::get_curr_frame (  )
 	SDL_Rect dest, source;
 	source = frames.at(index).get_source();
 	
-	if (source.w == 0 || source.h == 0)
-		return;
-	
 	SVect pos = cam->get_position();
 	SDL_Rect dim = cam->get_dimension();
 
 	dest.x = x + dim.x + frames.at(index).x;
 	dest.y = y + dim.y + frames.at(index).y;
-	
+	/*
+	#ifndef USE_SDL2
+		if (source.w == 0 && source.h == 0 && surface.size())
+		{
+			source.w = surface[index]->w;
+			source.h = surface[index]->h;
+		}
+	#endif
+	*/
+
 	if (use_center)
 	{
 		dest.x = dest.x - source.w / 2;
@@ -632,22 +709,23 @@ CAnimationFrame CAnimation::get_curr_frame (  )
 	#ifndef USE_SDL2
 		if (use_rot == false && surface.size() && surface.at(index))
 		{
-			SDL_BlitSurface(surface.at(index), &source, screen, &dest); 
+			if (SDL_BlitSurface(surface.at(index), &source, screen, &dest) < 0)
+				throw "CAnimation: blit deu erro\n";
 		}
 		else if (frames[index].get_surface())
 		{
-			source.x = source.y = 0;
-			SDL_BlitSurface(frames[index].get_surface(), &source, screen, &dest);
+			if (SDL_BlitSurface(frames[index].get_surface(), &source, screen, &dest) < 0)
+				throw "CAnimation: blit deu erro\n";
 		}
 	#else
 		if (texture.size() && texture.at(index))
 		{
 			if (use_rot == false)
-				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, 0, NULL, flip);
+				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, 0, NULL, frames[index].get_flip());
 			else
 			{
 				SDL_Point center = {frames[index].get_source().w/2, frames[index].get_source().h/2};
-				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, TO_DEGREES(frames[index].get_angle()), &center, flip);
+				SDL_RenderCopyEx(renderer, texture.at(index), &source, &dest, TO_DEGREES(frames[index].get_angle()), &center, frames[index].get_flip());
 			}
 		}
 	#endif

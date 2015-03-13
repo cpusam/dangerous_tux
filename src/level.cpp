@@ -25,7 +25,7 @@ CCamera * CLevel::cam = 0;
 		bg = 0;
 	}
 #else
-	CLevel::CLevel ( SDL_Renderer * r, int tilesize, int i )
+	CLevel::CLevel ( SDL_Renderer * r, int tilesize, int i ): kernel_signal(r), exit_signal(r)
 	{
 		renderer = r;
 		widget_color = (SDL_Color){0,0,0,255};
