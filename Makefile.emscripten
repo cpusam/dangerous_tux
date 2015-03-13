@@ -1,13 +1,16 @@
-EMS_DIR = /home/samuel/Desktop/emsdk-portable/emscripten/master
-CXX = $(EMS_DIR)/em++
-CXXFLAGS = -g 
+EMS_DIR =
+CXX = em++
+CXXFLAGS = -Os
 LDLIBS = -I./src/chora_engine/ src/chora_engine/libchoraEmscripten.a
 DEPS = src/dangerous_tux.o src/video.o src/save.o src/gameevent_manager.o src/gameentity.o src/score.o src/highscore.o src/gamesignal.o src/jetpack.o src/gun.o src/player.o src/flyeralien.o src/gyroalien.o src/walkeralien.o src/level.o src/gamemenu.o src/gamecredits.o src/gameintroduction.o src/gametransition.o src/gameover.o src/gametitle.o src/gamescreen.o
 
 all: DangerousTux.html
 
-DangerousTux.html: $(DEPS)
-	$(CXX) -o $@ $(DEPS) $(LDLIBS) -s TOTAL_MEMORY=128000000 --preload-files ./images --preload-files ./levels --preload-files ./sounds --preload-files ./fonts
+DangerousTux.html: $(DEPS) src/chora_engine/libchoraEmscripten.a
+	$(CXX) -o $@ $(DEPS) $(LDLIBS) -s TOTAL_MEMORY=100000000 -O3 --preload-files ./images --preload-files ./levels --preload-files ./sounds --preload-files ./fonts
+
+test.html: teste.cpp
+	$(CXX) -o $@ teste.cpp -lSDL2
 
 # $(CXX) -c src/.cpp -o $@ $(CXXFLAGS)
 src/dangerous_tux.o: src/dangerous_tux.cpp
@@ -78,5 +81,7 @@ src/gamescreen.o: src/gamescreen.hpp src/gamescreen.cpp
 
 clean:
 	rm -f DangerousTux.html DangerousTux.js DangerousTux.data DangerousTux.html.map src/*.o
+clean_objs:
+	rm -f src/*.o
 clean_exe:
 	rm -f DangerousTux.html DangerousTux.js DangerousTux.data DangerousTux.html.map

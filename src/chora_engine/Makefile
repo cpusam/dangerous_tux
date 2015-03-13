@@ -2,10 +2,10 @@
 CXX = g++
 AR = ar
 RANLIB = ranlib
-CXXFLAGS = -g -w -march=i386 #-fno-stack-protector
+CXXFLAGS = -DUSE_SDL2 -g -w -march=i386 #-fno-stack-protector
 BASE = statemachine.o vect.o collision.o movable.o util.o camera.o animation.o sprite.o background.o platform/tilemap.o sound/soundplayer.o
 GUI = gui/widget.o gui/writer.o gui/label.o gui/button.o gui/bar.o
-GFX = SDL_gfx/SDL_framerate.o SDL_gfx/SDL_rotozoom.o #SDL_gfx/SDL_gfxPrimitives.o
+GFX = SDL_gfx/SDL_framerate.o #SDL_gfx/SDL_rotozoom.o #SDL_gfx/SDL_gfxPrimitives.o
 DEPS = $(BASE) $(GUI) $(GFX)
 
 all: libchora.a
@@ -15,6 +15,10 @@ all: libchora.a
 libchora.a: $(DEPS) chora.hpp
 	$(AR) rc $@ $(DEPS)
 	$(RANLIB) $@
+
+test: test.cpp libchora.a
+	$(CXX) -o test test.cpp libchora.a -lSDL -lSDL_image
+
 	
 # $(CXX) -c .cpp -o $@ $(CXXFLAGS)
 statemachine.o: statemachine.hpp statemachine.cpp
@@ -53,8 +57,9 @@ sound/soundplayer.o: sound/soundplayer.hpp sound/soundplayer.cpp
 SDL_gfx/SDL_framerate.o: SDL_gfx/SDL_framerate.hpp SDL_gfx/SDL_framerate.cpp
 	$(CXX) -c SDL_gfx/SDL_framerate.cpp -o $@ $(CXXFLAGS)
 
-SDL_gfx/SDL_rotozoom.o: SDL_gfx/SDL_rotozoom.hpp SDL_gfx/SDL_rotozoom.cpp
-	$(CXX) -c SDL_gfx/SDL_rotozoom.cpp -o $@ $(CXXFLAGS)
+#removido, agora usamos SDL2
+#SDL_gfx/SDL_rotozoom.o: SDL_gfx/SDL_rotozoom.hpp SDL_gfx/SDL_rotozoom.cpp
+#	$(CXX) -c SDL_gfx/SDL_rotozoom.cpp -o $@ $(CXXFLAGS)
 
 #SDL_gfx/SDL_gfxPrimitives.o: SDL_gfx/SDL_gfxPrimitives.hpp SDL_gfx/SDL_gfxPrimitives.cpp
 #	$(CXX) -c SDL_gfx/SDL_gfxPrimitives.cpp -o $@ $(CXXFLAGS)

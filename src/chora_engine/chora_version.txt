@@ -1,0 +1,1 @@
+Chora engine, version: 0.0.5 (SDL1.2 e 2.0)

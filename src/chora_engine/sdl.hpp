@@ -37,14 +37,15 @@
 			#include <SDL2\\SDL_mixer.h>			
 			#include <SDL2\\SDL_image.h>
 		#endif
+
+    	#undef main
+    
 	#else
 		#include "SDL.h"
 		#include "SDL_ttf.h"		
 		#include "SDL_mixer.h"
 		#include "SDL_image.h"
 	#endif
-	
-	#undef main
 	
 #else
 	#ifndef USE_SDL2

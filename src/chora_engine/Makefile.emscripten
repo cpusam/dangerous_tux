@@ -1,18 +1,21 @@
 EMS_DIR = /home/samuel/Desktop/emsdk-portable/emscripten/master
-CXX = $(EMS_DIR)/em++
+CXX = em++
 AR = $(EMS_DIR)/emar
 RANLIB = $(EMS_DIR)/emranlib
-CXXFLAGS = -g
+CXXFLAGS = -Os
 BASE = statemachine.o vect.o collision.o movable.o util.o camera.o animation.o background.o platform/tilemap.o sound/soundplayer.o
 GUI = gui/widget.o gui/writer.o gui/label.o gui/button.o gui/bar.o
 DEPS = $(BASE) $(GUI) SDL_gfx/SDL_framerate.o SDL_gfx/SDL_rotozoom.o 
 
-all: libchoraEmscripten.a
-	@echo "lembrar de remover flag '-g' da compilação"
+all: libchoraEmscripten.a teste.html
 	
 libchoraEmscripten.a: $(DEPS) chora.hpp
 	$(AR) ruc $@ $(DEPS)
 	$(RANLIB) $@
+
+
+teste.html: libchoraEmscripten.a teste.cpp
+	$(CXX) -o $@ teste.cpp -lSDL libchoraEmscripten.a
 	
 # $(CXX) -c .cpp -o $@ $(CXXFLAGS)
 statemachine.o: statemachine.hpp statemachine.cpp

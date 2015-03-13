@@ -31,6 +31,7 @@
 #include "statemachine.hpp"
 #include "vect.hpp"
 #include "camera.hpp"
+#include "util.hpp"
 
 struct STimer
 {
@@ -99,7 +100,7 @@ class CAnimationFrame
 			SDL_Surface * master_surface;
 		#else
 			SDL_Texture * texture;
-			int flip;
+			SDL_RendererFlip flip;
 		#endif
 	public:
 		int x, y; // posições relativas ao destino
@@ -134,7 +135,7 @@ class CAnimationFrame
 			orientation.set(1,0);
 		}
 		
-		void set_anim ( int d, SDL_Rect src );
+		void set_frame ( int d, SDL_Rect src );
 		
 		bool set_delay ( int d );
 		int get_delay (  );
@@ -150,11 +151,12 @@ class CAnimationFrame
 		// rotaciona a imagem em 'a' radianos
 		void rotate ( float a );
 		#ifndef USE_SDL2
+			void set_flip ( int f );
 			void set_master_surface ( SDL_Rect src, SDL_Surface * s );
 			SDL_Surface * get_surface (  );
 		#else
-			void set_flip ( int f );
-			int get_flip (  );
+			void set_flip ( SDL_RendererFlip f );
+			SDL_RendererFlip get_flip (  );
 			void set_texture ( SDL_Texture * t );
 			SDL_Texture * get_texture (  );
 		#endif
@@ -166,7 +168,7 @@ class CAnimationFrame
 	Setar use_center faz com que a posição no blit da animação use o centro do frame
 	como a posição do blit.
 */
-class CAnimation: protected CStateMachine
+class CAnimation: public CStateMachine
 {
 	protected:
 		STimer timer;
@@ -186,7 +188,6 @@ class CAnimation: protected CStateMachine
 			protected:
 				std::vector <SDL_Texture *> texture;
 		#endif
-
 	public:
 		CAnimation (  )
 		{
@@ -233,7 +234,9 @@ class CAnimation: protected CStateMachine
 		
 		bool get_use_center (  );
 		
-		
+		void flip ( int f );
+
+
 		#ifndef USE_SDL2
 			virtual void add_frame ( SDL_Surface * s, SDL_Rect src, int d );
 			

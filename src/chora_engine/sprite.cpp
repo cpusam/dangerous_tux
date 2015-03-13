@@ -116,9 +116,9 @@ std::vector <SCollisionRect> CCollisionFrame::get_rects_type ( int t )
 {
 	coll_frames.push_back(c);
 	#ifndef USE_SDL2
-		CAnimation::add_frame(s, static_cast<CAnimationFrame>(c));
+		CAnimation::add_frame(s, c);
 	#else
-		CAnimation::add_frame(t, static_cast<CAnimationFrame>(c));
+		CAnimation::add_frame(t, c);
 	#endif
 }
 

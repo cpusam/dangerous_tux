@@ -66,7 +66,7 @@
 			gd->gamescreen->input(event);
 
 		#ifndef USE_SDL2
-				SDL_FillRect(gd->screen, NULL, SDL_MapRGBA(gd->screen->format, 0,0,0,255));
+			SDL_FillRect(gd->screen, NULL, SDL_MapRGBA(gd->screen->format, 0,0,0,255));
 		#else
 			SDL_SetRenderDrawColor(gd->renderer, 0,0,0,0xff);
 			SDL_RenderClear(gd->renderer);
@@ -92,6 +92,8 @@ int main ( int argc, char **argv )
 {
 	try
 	{
+		srand(time(0));
+		
 		#ifndef USE_SDL2 
 			#ifndef __clang__
 				SDL_putenv("SDL_VIDEO_CENTERED=center");
@@ -144,8 +146,6 @@ int main ( int argc, char **argv )
 			CGameScreen gamescreen(window, renderer, &cam, TILESIZE);
 		#endif
 		
-		srand(time(0));
-
 		#ifdef __clang__
 			SGameData gdata;
 			gdata.gamescreen = &gamescreen;
@@ -221,12 +221,12 @@ int main ( int argc, char **argv )
 					#endif
 				}
 			}
+		#endif
 		
-			#ifdef USE_SDL2
-				SDL_DestroyTexture(target_texture);
-				SDL_DestroyWindow(window);
-				SDL_DestroyRenderer(renderer);
-			#endif
+		#ifdef USE_SDL2
+			SDL_DestroyTexture(target_texture);
+			SDL_DestroyWindow(window);
+			SDL_DestroyRenderer(renderer);
 		#endif
 	}
 	catch (const char * e)

@@ -52,10 +52,13 @@ bool CWriter::resize_font ( int s )
 	}
 
 
-	SDL_Texture * CWriter::render_text ( std::string text, SDL_Color c, int type=SOLID_TEXT )
+	SDL_Texture * CWriter::render_text ( std::string text, SDL_Color c, int type )
 	{
 		if (text == "")
-			throw "CWriter: não é possível renderizar uma std::string vazia\n";
+		{
+			text = " "; // para evitar textura sem tamanho
+			printf("CWriter: sem texto visível.\n");
+		}
 
 		if (renderer == 0)
 			throw "CWriter: nenhum renderer usado\n";
@@ -64,12 +67,12 @@ bool CWriter::resize_font ( int s )
 		SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer, surface);
 		SDL_FreeSurface(surface);
 		
-			if (!texture)
-			{
-				char * e = new char[256];
-				sprintf(e, "CWriter: erro %s\n", SDL_GetError());
-				throw (char *)e; // c++ é esquisito
-			}
+		if (!texture)
+		{
+			char * e = new char[256];
+			sprintf(e, "CWriter: erro %s\n", SDL_GetError());
+			throw (char *)e; // c++ é esquisito
+		}
 
 		return texture;
 	}

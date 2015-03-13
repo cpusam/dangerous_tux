@@ -51,7 +51,7 @@ class CLevel: public CStateMachine
 		#ifndef USE_SDL2
 			CLevel ( int tilesize, int i );
 		#else
-			CLevel ( SDL_Renderer * r, int tilesize, int i ): kernel_signal(r), exit_signal(r
+			CLevel ( SDL_Renderer * r, int tilesize, int i );
 		#endif
 		
 		virtual ~CLevel (  );

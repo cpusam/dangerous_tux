@@ -1,0 +1,33 @@
+[iniciado em 22/09/2014 mas a engine é de setembro de 2013]
+	tarefas:
+	-consertar o bug das funções de desenho de util.hpp
+	-retirar o membro surface e texture de CAnimation, substituir por frames
+	 que tem o mesmo efeito
+	-tem que rever o source da animação ao blitar, pois se está usando só surfaces não precisa
+	 dos frames, a não ser para contar os frames que a animação tem. Preciso decidir se vou
+	 usar os frames ou as surfaces e texturas mas não os 3 ao mesmo tempo.
+	-[RESOLVIDO]tem bug no colorkey das funções mirror_surface e clone_surface de util.hpp. 
+	 As duas deixam uma surface transparente, se não usá-las em CAnimation::add_frame 
+	 a animação mostra os frames normalmente. Consegui consertar o bug só que em CAnimation 
+	 continua sendo transparente as surfaces. A surface de frame da animação está ok, deve
+	 ser erro na blitagem.[Consegui resolver!!! Era que falta só setar as posições x e y do 
+	 source do frame para 0,0, pois estamos usando uma surface inteira como frame]
+	-novo bug nas funções clone_surface e mirror_surface. Eles deixam a surface toda transparente,
+	 talvez eu desista de usar SDL1.2 e use o 2.0 mesmo. As funções funcionam normal quando
+	 não se usa optimize_surface_alpha.
+	-tem outro bug na compilação para emscripten. Ele não identifica o surf->format->colorkey
+	 mas parece que tem (ou não) uma função de pegar a cor chave da surface. Preciso alterar as
+	 funções mirror_surface e clone_surface para não usarem o colorkey, porque talvez funcione
+	 sem ele.
+	-usar -Os nos módulos da lib com emscripten causa muitos erros no Dangerous Tux, mas o 
+	 tamanho do arquivo de javascript fica "minusculo". isso porque também usei o -O3 na 
+	 compilação do executavel. [Ah, mas lembrei que a lib ainda tá bugada, talvez seja por isso
+	 que não funcionou]
+	-acho que é bem melhor eu me atualizar e passar a usar o SDL2, o 1.2 tá muito bugado
+	 e causa muita raiva
+	-usar milisegundos para as animações ao invés de ticks. Isso deixaria 
+	 mais fácil de controlá-las.
+
+NOTAS:
+	-nos CControls dos jogos trocar o input por leitura de teclado diretamente a cada atualização
+	-as animações para terem rotação precisão ser ativada antes de adicionar frames
