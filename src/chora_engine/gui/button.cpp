@@ -25,14 +25,15 @@ void CSimpleButton::set_dim ( SDL_Rect d )
 
 void CSimpleButton::set_label ( CLabel * l )
 {
+	if (!l)
+		return;
+
 	if (label)
 	{
 		rem_child(label);
 		delete label;
 	}
-
-	if (!l)
-		return;
+	
 	
 	label = l;
 	add_child(label);

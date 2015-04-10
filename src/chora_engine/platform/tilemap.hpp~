@@ -89,7 +89,7 @@ class CTileMap
 		
 		void remove_tile ( int t );
 		
-		int find_first_pos ( int t );
+		int find_first_pos_of_tile ( int t );
 		
 		/*
 			Lẽ todo o vetor e se encontra um -1 soma uma linha
