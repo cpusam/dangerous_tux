@@ -76,20 +76,20 @@ class CSimpleButton: public CWidget
 				delete label;
 		}
 		
-		void set_callback ( void (* c) ( CWidget * b ) );
+		virtual void set_callback ( void (* c) ( CWidget * b ) );
 	
-		void set_dim ( SDL_Rect d );
+		virtual void set_dim ( SDL_Rect d );
 	
-		void set_label ( CLabel * l );
+		virtual void set_label ( CLabel * l );
 			
-		void input ( SDL_Event & event );
+		virtual void input ( SDL_Event & event );
 		
 		virtual int update (  );
 		
 		#ifndef USE_SDL2
-			void draw ( SDL_Surface * screen );
+			virtual void draw ( SDL_Surface * screen );
 		#else
-			void draw ( SDL_Renderer * renderer );
+			virtual void draw ( SDL_Renderer * renderer );
 		#endif
 };
 

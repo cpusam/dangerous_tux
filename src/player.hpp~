@@ -76,7 +76,7 @@ class CPlayer: public CGameEntity
 		SDL_Rect limit; // limites de movimento do jogador
 		SVect respawn; // ponto onde deve reaparecer quando morrer
 		CAnimation * curr_anim; // animação atual
-		vector <CAnimation> anim; // animações
+		vector <CAnimation> anim; // animaçÃµes
 		vector <int> item; // tiles que são itens de coletar
 		vector <int> coll_tiles; // tiles de colisão completa
 		vector <SVect> c_point; // pontos de colisão

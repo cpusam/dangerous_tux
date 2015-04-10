@@ -61,7 +61,7 @@ int CTileMap::get_tile ( int i )
 	return -1;
 }
 
-int CTileMap::find_first_pos ( int t )
+int CTileMap::find_pos_of_tile ( int t )
 {
 	for (int i = 0; i < tileset.size(); i++)
 		if (t == tileset[i])
