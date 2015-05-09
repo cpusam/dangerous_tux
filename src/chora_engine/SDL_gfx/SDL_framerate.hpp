@@ -82,6 +82,11 @@ class FPSManager
 			time_passed = 0;
 			init_framerate();
 		}
+
+		~FPSManager (  )
+		{
+			
+		}
 		
 		void init_framerate (  )
 		{
@@ -89,11 +94,7 @@ class FPSManager
 		}
 		
 	public:
-		~FPSManager (  )
-		{
-			if (singleton)
-				delete singleton;
-		}
+		
 		
 		static FPSManager * instance (  )
 		{
