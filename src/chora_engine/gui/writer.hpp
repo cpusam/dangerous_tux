@@ -71,6 +71,15 @@ class CWriter
 			#endif
 		}
 		
+		~CWriter (  )
+		{
+			if (singleton)
+			{
+				if (font)
+					TTF_CloseFont(font);
+			}
+		}
+		
 	public:
 		static CWriter * instance (  )
 		{
@@ -80,18 +89,12 @@ class CWriter
 			return singleton;
 		}
 		
-		~CWriter (  )
-		{
-			if (singleton)
-			{
-				if (font)
-					TTF_CloseFont(font);
-
-				delete singleton;
-			}
-		}
+		
 	
 		int set_font ( std::string p, int s );
+		
+		// libera fonte
+		void free (  );
 		
 		TTF_Font * get_font (  );
 

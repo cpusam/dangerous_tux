@@ -21,6 +21,12 @@ int CWriter::set_font ( std::string p, int s )
 	return 1;
 }
 
+void CWriter::free (  )
+{
+	if (font)
+		TTF_CloseFont(font);
+}
+
 TTF_Font * CWriter::get_font (  )
 {
 	return font;
