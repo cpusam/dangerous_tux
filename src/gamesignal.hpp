@@ -2,16 +2,16 @@
 #define GAMESIGNAL_HPP
 
 #include "gameentity.hpp"
-#include "chora_engine/collision.hpp"
-#include "chora_engine/animation.hpp"
-#include "chora_engine/util.hpp"
+#include "collision.hpp"
+#include "animation.hpp"
+#include "util.hpp"
 
 class CKernelSignal: public CGameEntity
 {
 	protected:
-		CAnimation anim;
-		CCamera * cam;
-		SVect kernel_pos;
+		Animation anim;
+		Camera * cam;
+		Vect kernel_pos;
 		bool visible;
 	
 	public:
@@ -23,9 +23,9 @@ class CKernelSignal: public CGameEntity
 		
 		virtual ~CKernelSignal (  );
 			
-		void set_cam ( CCamera * c );
+		void set_cam ( Camera * c );
 		
-		void set_kernel_pos ( SVect kp );
+		void set_kernel_pos ( Vect kp );
 		
 		void show ( bool s=true );
 		
@@ -41,9 +41,9 @@ class CKernelSignal: public CGameEntity
 class CExitSignal: public CGameEntity
 {
 	protected:
-		CAnimation anim;
-		CCamera * cam;
-		SVect exit_pos;
+		Animation anim;
+		Camera * cam;
+		Vect exit_pos;
 		bool visible;
 	
 	public:
@@ -55,9 +55,9 @@ class CExitSignal: public CGameEntity
 		
 		virtual ~CExitSignal (  );
 		
-		void set_cam ( CCamera * c );
+		void set_cam ( Camera * c );
 		
-		void set_exit_pos ( SVect ep );
+		void set_exit_pos ( Vect ep );
 		
 		void show ( bool s=true );
 		

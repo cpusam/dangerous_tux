@@ -1,14 +1,14 @@
 #ifndef GAMEOVER_HPP
 #define GAMEOVER_HPP
 
-#include "chora_engine/chora.hpp"
-#include "chora_engine/vect.hpp"
-#include "chora_engine/util.hpp"
-#include "chora_engine/camera.hpp"
-#include "chora_engine/animation.hpp"
+#include "Chora.hpp"
+#include "vect.hpp"
+#include "util.hpp"
+#include "camera.hpp"
+#include "animation.hpp"
 
 
-class CGameOver: public CStateMachine
+class CGameOver: public StateMachine
 {
 	protected:
 		#ifndef USE_SDL2
@@ -18,10 +18,10 @@ class CGameOver: public CStateMachine
 			SDL_Texture * background;
 			SDL_Texture * title;
 		#endif
-		CAnimation stars;
+		Animation stars;
 		
-		SVect t_pos;
-		SVect s_pos;
+		Vect t_pos;
+		Vect s_pos;
 	
 	public:
 		#ifndef USE_SDL2
@@ -37,9 +37,9 @@ class CGameOver: public CStateMachine
 		int update (  );
 		
 		#ifndef USE_SDL2
-			void draw ( CCamera * cam, SDL_Surface * screen );
+			void draw ( Camera * cam, SDL_Surface * screen );
 		#else
-			void draw ( CCamera * cam, SDL_Renderer * renderer );
+			void draw ( Camera * cam, SDL_Renderer * renderer );
 		#endif
 };
 

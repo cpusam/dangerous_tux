@@ -1,16 +1,13 @@
 
 CXX = g++
-CXXFLAGS = -DUSE_SDL2 -g -w -march=i386 -Wall#-fno-stack-protector
-LDLIBS = src/chora_engine/libchora.a `sdl2-config --cflags  --libs` -lm -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+CXXFLAGS = -std=c++11 -DUSE_SDL2 -g -w -Wall -Og -I./../Chora_Engine
+LDLIBS = ../Chora_Engine/libchora.a `sdl2-config --cflags  --libs` -lm -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 DEPS = src/save.o src/gameevent_manager.o src/gameentity.o src/score.o src/highscore.o src/gamesignal.o src/jetpack.o src/gun.o src/player.o src/flyeralien.o src/gyroalien.o src/walkeralien.o src/level.o src/gamemenu.o src/gamecredits.o src/gameintroduction.o src/gametransition.o src/gameover.o src/gametitle.o src/gamescreen.o #src/video.o
 
 all: DangerousTux 
 
-DangerousTux: $(DEPS) src/chora_engine/libchora.a
-	$(CXX) -o $@ src/dangerous_tux.cpp $(DEPS) $(CXXFLAGS) $(LDLIBS)
-
-DangerousTux.SDL2: $(DEPS)
-	$(CXX) -o DangerousTux src/dangerous_tux.cpp -DUSE_SDL2 $(DEPS) $(CXXFLAGS) $(LDLIBS_SDL2)
+DangerousTux: $(DEPS) ../Chora_Engine/libchora.a
+	$(CXX) -o $@ src/dangerous_tux.cpp -DUSE_SDL2 $(DEPS) $(CXXFLAGS) $(LDLIBS)
 
 # $(CXX) -c src/.cpp -o $@ $(CXXFLAGS)
 src/video.o: src/video.hpp src/video.cpp

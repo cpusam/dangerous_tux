@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 2.6)
 project(DangerousTux)
 
 add_definitions(-DPREFIX="${CMAKE_INSTALL_PREFIX}")
+add_definitions(-I../Chora_Engine)
+add_definitions(-L../Chora_Engine)
 
-option(USE_SDL2 "Usar SDL2 ao invés de SDL1.2" OFF)
-
-add_subdirectory(src/chora_engine)
+option(USE_SDL2 "Usar SDL2 ao invés de SDL1.2" ON)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Escolha o tipo de build" FORCE)

@@ -10,9 +10,9 @@ using namespace std;
 
 struct SPlayerConfig
 {
-	SVect vel_max; // velocidades máximas em pé em pixels
-	SVect acc; // aceleração ao se movimentar
-	SVect acc_jetpack; // aceleração ao se movimentar com o jetpack
+	Vect vel_max; // velocidades máximas em pé em pixels
+	Vect acc; // aceleração ao se movimentar
+	Vect acc_jetpack; // aceleração ao se movimentar com o jetpack
 	float gravity; // aceleração da gravidade quando pulando ou caindo
 	float vel_max_jump; // velocidade maxima ao começar a pular
 	float vel_max_tree; // velocidade máxima na árvore
@@ -74,13 +74,13 @@ class CPlayer: public CGameEntity
 		float final_pos; // posição final em X na tela de transição
 		SDL_Joystick * joystick; // o joystick propriamente dito
 		SDL_Rect limit; // limites de movimento do jogador
-		SVect respawn; // ponto onde deve reaparecer quando morrer
-		CAnimation * curr_anim; // animação atual
-		vector <CAnimation> anim; // animações
+		Vect respawn; // ponto onde deve reaparecer quando morrer
+		Animation * curr_anim; // animação atual
+		vector <Animation> anim; // animações
 		vector <int> item; // tiles que são itens de coletar
 		vector <int> coll_tiles; // tiles de colisão completa
-		vector <SVect> c_point; // pontos de colisão
-		CTileMap * map; // mapa para colisão
+		vector <Vect> c_point; // pontos de colisão
+		TileMap * map; // mapa para colisão
 		
 	public:
 		CGun gun;
@@ -97,19 +97,19 @@ class CPlayer: public CGameEntity
 		
 		virtual ~CPlayer (  );
 		
-		SVect get_center (  );
+		Vect get_center (  );
 		
 		void set_kernel ( bool h );
 		
-		CTileMap * get_map (  );
+		TileMap * get_map (  );
 		
-		void set_map ( CTileMap * m );
+		void set_map ( TileMap * m );
 		
 		void set_lives ( int l );
 		
 		int get_lives (  );
 		
-		void set_respawn ( SVect p );
+		void set_respawn ( Vect p );
 		
 		void kill (  );
 		
@@ -117,7 +117,7 @@ class CPlayer: public CGameEntity
 		
 		void reset (  );
 		
-		void set_transition ( CTileMap * m, SVect p, float f_pos );
+		void set_transition ( TileMap * m, Vect p, float f_pos );
 		
 		bool has_coll_tile ( int tile );
 		
@@ -151,9 +151,9 @@ class CPlayer: public CGameEntity
 		void input ( SDL_Event & event );
 		
 		#ifndef USE_SDL2
-		void draw ( CCamera * cam, SDL_Surface * screen );
+		void draw ( Camera * cam, SDL_Surface * screen );
 		#else
-		void draw ( CCamera * cam, SDL_Renderer * renderer );
+		void draw ( Camera * cam, SDL_Renderer * renderer );
 		#endif
 		
 		int update (  );

@@ -4,15 +4,15 @@
 #include <string>
 #include <vector>
 
-#include "chora_engine/chora.hpp"
-#include "chora_engine/statemachine.hpp"
-#include "chora_engine/movable.hpp"
-#include "chora_engine/camera.hpp"
+#include "Chora.hpp"
+#include "statemachine.hpp"
+#include "movable.hpp"
+#include "camera.hpp"
 #include "gameevent_manager.hpp"
 
 struct SGameEvent;
 
-class CGameEntity: public CStateMachine, public CMovable
+class CGameEntity: public StateMachine, public Movable
 {
 	protected:
 		std::string id;
@@ -36,9 +36,9 @@ class CGameEntity: public CStateMachine, public CMovable
 			virtual int update (  );
 		
 			#ifndef USE_SDL2
-				virtual void draw ( CCamera * cam, SDL_Surface * screen );
+				virtual void draw ( Camera * cam, SDL_Surface * screen );
 			#else
-				virtual void draw ( CCamera * cam, SDL_Renderer * renderer );
+				virtual void draw ( Camera * cam, SDL_Renderer * renderer );
 			#endif
 };
 

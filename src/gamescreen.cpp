@@ -1,9 +1,9 @@
 #include "gamescreen.hpp"
 
 #ifndef USE_SDL2
-	CGameScreen::CGameScreen ( SDL_Surface * s, CCamera * c, int ts )
+	CGameScreen::CGameScreen ( SDL_Surface * s, Camera * c, int ts )
 #else
-	CGameScreen::CGameScreen ( SDL_Window * w, SDL_Renderer * r, CCamera * c, int ts ): gameover(r), highscore(r), title(r), credits(r), transition(r), introduction(r)
+	CGameScreen::CGameScreen ( SDL_Window * w, SDL_Renderer * r, Camera * c, int ts ): gameover(r), highscore(r), title(r), credits(r), transition(r), introduction(r)
 #endif
 {
 	curr_level = -1;
@@ -62,34 +62,34 @@
 		#endif
 	#endif
 
-	if (CWriter::instance()->set_font(path, 80) == 0)
+	if (Writer::instance()->load_font(path, path, 80) == 0)
 		throw "CGameScreen: não foi possí­vel carregar fonte\n";
 	
 	#if USE_SDL2
-		CWriter::instance()->set_renderer(r);
+		Writer::instance()->set_renderer(r);
 	#endif
 	
 	#ifndef USE_SDL2
-		pause = new CLabel("PAUSE!", (SDL_Color){0,0,0,0});
-		pause->set_pos(SVect((screen->w - pause->get_surface()->w)/2, (screen->h - pause->get_surface()->h)/2));
-		name_msg = new CLabel("YOU GOT A HIGH SCORE!\n Enter your name:", (SDL_Color){255,255,0, 0});
-		name_msg->set_pos(SVect(230, 110));
-		textinput = new CTextInput(80, (SDL_Color){255,0,0,0});
-		textinput->set_pos(SVect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_surface()->h));
-		final_msg = new CLabel("   final_msg\nPRESS ANY KEY", (SDL_Color){255,0,0,0});
-		final_msg->set_pos(SVect((screen->w - final_msg->get_surface()->w)/2, (screen->h - final_msg->get_surface()->h)/2));
+		pause = new GuiLabel("PAUSE!", (SDL_Color){0,0,0,0});
+		pause->set_pos(Vect((screen->w - pause->get_surface()->w)/2, (screen->h - pause->get_surface()->h)/2));
+		name_msg = new GuiLabel("YOU GOT A HIGH SCORE!\n Enter your name:", (SDL_Color){255,255,0, 0});
+		name_msg->set_pos(Vect(230, 110));
+		textinput = new GuiTextInput(80, (SDL_Color){255,0,0,0});
+		textinput->set_pos(Vect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_surface()->h));
+		final_msg = new GuiLabel("   final_msg\nPRESS ANY KEY", (SDL_Color){255,0,0,0});
+		final_msg->set_pos(Vect((screen->w - final_msg->get_surface()->w)/2, (screen->h - final_msg->get_surface()->h)/2));
 	#else
 		int width, height;
 		SDL_RenderGetLogicalSize(renderer, &width, &height);
 		
-		pause = new CLabel("PAUSE!", (SDL_Color){0,0,0,0});
-		pause->set_pos(SVect((width - pause->get_texture_width())/2, (height - pause->get_texture_height())/2));
-		name_msg = new CLabel("YOU GOT A HIGH SCORE!\n Enter your name:", (SDL_Color){255,255,0, 0});
-		name_msg->set_pos(SVect(230, 110));
-		textinput = new CTextInput(80, (SDL_Color){255,0,0,0});
-		textinput->set_pos(SVect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_texture_height()));
-		final_msg = new CLabel("   FINAL\npress any key", (SDL_Color){255,0,0,0});
-		final_msg->set_pos(SVect((width - final_msg->get_texture_width())/2, (height - final_msg->get_texture_height())/2));
+		pause = new GuiLabel("PAUSE!", (SDL_Color){0,0,0,0});
+		pause->set_pos(Vect((width - pause->get_texture_width())/2, (height - pause->get_texture_height())/2));
+		name_msg = new GuiLabel("YOU GOT A HIGH SCORE!\n Enter your name:", (SDL_Color){255,255,0, 0});
+		name_msg->set_pos(Vect(230, 110));
+		textinput = new GuiTextInput(80, (SDL_Color){255,0,0,0});
+		textinput->set_pos(Vect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_texture_height()));
+		final_msg = new GuiLabel("   FINAL\npress any key", (SDL_Color){255,0,0,0});
+		final_msg->set_pos(Vect((width - final_msg->get_texture_width())/2, (height - final_msg->get_texture_height())/2));
 	#endif
 	
 	widget.add_child(pause);
@@ -193,9 +193,9 @@ void CGameScreen::input ( SDL_Event & event )
 	if (event.type == SDL_KEYDOWN)
 	{
 		#ifndef USE_SDL2
-			textinput->set_pos(SVect(name_msg->get_pos().x + (name_msg->get_surface()->w - textinput->get_surface()->w)/2, textinput->get_pos().y));
+			textinput->set_pos(Vect(name_msg->get_pos().x + (name_msg->get_surface()->w - textinput->get_surface()->w)/2, textinput->get_pos().y));
 		#else
-			textinput->set_pos(SVect(name_msg->get_pos().x + (name_msg->get_texture_width() - textinput->get_texture_width())/2, textinput->get_pos().y));
+			textinput->set_pos(Vect(name_msg->get_pos().x + (name_msg->get_texture_width() - textinput->get_texture_width())/2, textinput->get_pos().y));
 		#endif
 		if (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER)
 			enter_key = 1;
@@ -248,7 +248,7 @@ void CGameScreen::draw (  )
 			#else
 				SDL_SetRenderDrawColor(renderer, 0,0,0,0xff);
 				SDL_RenderClear(renderer);
-				chora.draw(chora_pos.x, chora_pos.y, renderer);
+				chora.draw(renderer, chora_pos.x, chora_pos.y);
 			#endif
 			break;
 
@@ -348,7 +348,7 @@ int CGameScreen::update (  )
 	switch (get_state())
 	{
 		case CHORA_SCREEN:
-			if (any_key || chora.update() == STOPED_ANIM)
+			if (any_key || chora.update() == Animation::STOPPED)
 			{
 				any_key = 0;
 				enter_key = 0;
@@ -629,11 +629,11 @@ int CGameScreen::update (  )
 						#endif
 					#endif
 					// É preciso redefinir a fonte
-					if (CWriter::instance()->set_font(path, 80) == 0)
+					if (Writer::instance()->load_font(path, path, 80) == 0)
 						throw "CGameScreen: não conseguiu abrir fonte\n";
 					
 					#if USE_SDL2
-						CWriter::instance()->set_renderer(renderer);
+						Writer::instance()->set_renderer(renderer);
 					#endif
 					break;
 				}
@@ -671,11 +671,11 @@ int CGameScreen::update (  )
 						#endif
 					#endif
 					// É preciso redefinir a fonte
-					if (CWriter::instance()->set_font(path, 80) == 0)
+					if (Writer::instance()->load_font(path, path, 80) == 0)
 						throw "CGameScreen: não conseguiu abrir fonte\n";
 					
 					#if USE_SDL2
-						CWriter::instance()->set_renderer(renderer);
+						Writer::instance()->set_renderer(renderer);
 					#endif
 					break;
 				}

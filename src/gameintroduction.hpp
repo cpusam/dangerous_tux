@@ -1,10 +1,10 @@
 #ifndef GAMEINTRODUCTION_HPP
 #define GAMEINTRODUCTION_HPP
 
-#include "chora_engine/chora.hpp"
-#include "chora_engine/animation.hpp"
-#include "chora_engine/gui/label.hpp"
-#include "chora_engine/sound/soundplayer.hpp"
+#include "Chora.hpp"
+#include "animation.hpp"
+#include "gui/label.hpp"
+#include "sound/soundplayer.hpp"
 
 enum EGameIntroductionState
 {
@@ -21,10 +21,10 @@ enum EGameIntroductionState
 	INACTIVE_INTRODUCTION
 };
 
-class CGameIntroduction: public CStateMachine
+class CGameIntroduction: public StateMachine
 {
 	protected:
-		std::vector <CAnimation> anim;
+		std::vector <Animation> anim;
 		#ifndef USE_SDL2
 			SDL_Surface * browser_bg;
 			SDL_Surface * keyboard_bg;
@@ -36,8 +36,8 @@ class CGameIntroduction: public CStateMachine
 			SDL_Texture * kernel_site;
 			SDL_Texture * igloo_bg;
 		#endif
-		CLabel * parallel; // frase: "In a parallel universe..."
-		CLabel * later; // frase "Some time later..."
+		GuiLabel * parallel; // frase: "In a parallel universe..."
+		GuiLabel * later; // frase "Some time later..."
 		int pos_hand; // posição da mão
 		int init_hand; // posição inicial da mão
 		int final_hand; // posição final da mão

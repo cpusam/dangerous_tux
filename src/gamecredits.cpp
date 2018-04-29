@@ -30,11 +30,11 @@
 		#endif
 	#endif
 	
-	if (!CWriter::instance()->set_font(path, 100))
+	if (!Writer::instance()->load_font(path, path, 100))
 		throw "CGameCredits: não foi possível carregar font\n";
 
 	#if USE_SDL2
-		CWriter::instance()->set_renderer(r);
+		Writer::instance()->set_renderer(r);
 	#endif
 	
 	/*
@@ -47,28 +47,28 @@
 	};
 	
 	
-	CLabel * g = new CLabel(s[0], (SDL_Color){255,0,0,0});
+	GuiLabel * g = new GuiLabel(s[0], (SDL_Color){255,0,0,0});
 	widget.add_child(g);
-	CLabel * gg = new CLabel(s[1], (SDL_Color){255,255,0,0});
+	GuiLabel * gg = new GuiLabel(s[1], (SDL_Color){255,255,0,0});
 	widget.add_child(gg);
-	CLabel * p = new CLabel(s[2], (SDL_Color){255,0,0,0});
+	GuiLabel * p = new GuiLabel(s[2], (SDL_Color){255,0,0,0});
 	widget.add_child(p);
-	CLabel * ps = new CLabel(s[3], (SDL_Color){255,255,0,0});
+	GuiLabel * ps = new GuiLabel(s[3], (SDL_Color){255,255,0,0});
 	widget.add_child(ps);
 	
-	widget.set_pos(SVect(960/2,624/2));
+	widget.set_pos(Vect(960/2,624/2));
 	#ifndef USE_SDL2
 		int h = g->get_surface()->h + gg->get_surface()->h + p->get_surface()->h + ps->get_surface()->h;
-		g->set_rel_pos(SVect(-(g->get_surface()->w/2), -h/2));
-		gg->set_rel_pos(SVect(-(gg->get_surface()->w/2), g->get_surface()->h + g->get_rel_pos().y));
-		p->set_rel_pos(SVect(-(p->get_surface()->w/2), gg->get_surface()->h + gg->get_rel_pos().y));
-		ps->set_rel_pos(SVect(-(ps->get_surface()->w/2), p->get_surface()->h + p->get_rel_pos().y));
+		g->set_rel_pos(Vect(-(g->get_surface()->w/2), -h/2));
+		gg->set_rel_pos(Vect(-(gg->get_surface()->w/2), g->get_surface()->h + g->get_rel_pos().y));
+		p->set_rel_pos(Vect(-(p->get_surface()->w/2), gg->get_surface()->h + gg->get_rel_pos().y));
+		ps->set_rel_pos(Vect(-(ps->get_surface()->w/2), p->get_surface()->h + p->get_rel_pos().y));
 	#else
 		int h = g->get_texture_height() + gg->get_texture_height() + p->get_texture_height() + ps->get_texture_height();
-		g->set_rel_pos(SVect(-(g->get_texture_width()/2), -h/2));
-		gg->set_rel_pos(SVect(-(gg->get_texture_width()/2), g->get_texture_height() + g->get_rel_pos().y));
-		p->set_rel_pos(SVect(-(p->get_texture_width()/2), gg->get_texture_height() + gg->get_rel_pos().y));
-		ps->set_rel_pos(SVect(-(ps->get_texture_width()/2), p->get_texture_height() + p->get_rel_pos().y));
+		g->set_rel_pos(Vect(-(g->get_texture_width()/2), -h/2));
+		gg->set_rel_pos(Vect(-(gg->get_texture_width()/2), g->get_texture_height() + g->get_rel_pos().y));
+		p->set_rel_pos(Vect(-(p->get_texture_width()/2), gg->get_texture_height() + gg->get_rel_pos().y));
+		ps->set_rel_pos(Vect(-(ps->get_texture_width()/2), p->get_texture_height() + p->get_rel_pos().y));
 	#endif
 	*/
 	
@@ -133,13 +133,13 @@
 		if (!bg.set_texture(IMG_LoadTexture(r, bg_path)))
 			throw "CGameCredits: não foi possível carregar credits_BG.png\n";
 	#endif
-	//widget.set_pos(SVect(960/2, 358/2));
+	//widget.set_pos(Vect(960/2, 358/2));
 	tux_pos.y = 358;
 	
 	#ifndef USE_SDL2
-		cam = new CCamera((SDL_Rect){0,0,bg.get_surface()->w,bg.get_surface()->h}, (SDL_Rect){0,0,2000*bg.get_surface()->w,bg.get_surface()->h});
+		cam = new Camera((SDL_Rect){0,0,bg.get_surface()->w,bg.get_surface()->h}, (SDL_Rect){0,0,2000*bg.get_surface()->w,bg.get_surface()->h});
 	#else
-		cam = new CCamera((SDL_Rect){0,0,texture_width(bg.get_texture()),texture_height(bg.get_texture())}, (SDL_Rect){0,0,2000*texture_width(bg.get_texture()),texture_height(bg.get_texture())});
+		cam = new Camera((SDL_Rect){0,0,texture_width(bg.get_texture()),texture_height(bg.get_texture())}, (SDL_Rect){0,0,2000*texture_width(bg.get_texture()),texture_height(bg.get_texture())});
 	#endif
 	set_state(ACTIVE_CREDITS);
 }
@@ -147,7 +147,7 @@
 CGameCredits::~CGameCredits (  )
 {
 /*
-	CWidget * w = widget.get_child(0);
+	Widget * w = widget.get_child(0);
 	for (int i = 0; w; i++, w = widget.get_child(i))
 		delete w;
 */
@@ -177,7 +177,7 @@ CGameCredits::~CGameCredits (  )
 		SDL_RenderFillRect(renderer, NULL);
 		
 		bg.draw_hor(cam, renderer);
-		tux_anim.draw(tux_pos.x, tux_pos.y, renderer);
+		tux_anim.draw(renderer, tux_pos.x, tux_pos.y);
 
 		//widget.draw(renderer);
 	}
@@ -186,7 +186,7 @@ CGameCredits::~CGameCredits (  )
 void CGameCredits::reset (  )
 {
 	bg_pos.zero();
-	cam->set_position(SVect());
+	cam->set_position(Vect());
 
 	anim.reset();
 	tux_anim.reset();

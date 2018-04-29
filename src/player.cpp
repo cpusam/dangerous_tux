@@ -21,7 +21,7 @@
 	kernel = false;
 	shot_at = touched_alien = false;
 	limit = (SDL_Rect){0,0,0,0};
-	SVect pos_d[2] = {SVect(5,19),SVect(42,19)};
+	Vect pos_d[2] = {Vect(5,19),Vect(42,19)};
 	gun.set_pos_dir(pos_d);
 	gun.shot.set_id("player_shot");
 	set_id("player");
@@ -58,19 +58,19 @@
 	
 	// pontos de colisão
 	// colisão a direita
-	c_point.push_back(SVect(31,6));
-	c_point.push_back(SVect(31,43));
+	c_point.push_back(Vect(31,6));
+	c_point.push_back(Vect(31,43));
 	// colisão a esquerda
-	c_point.push_back(SVect(15,6));
-	c_point.push_back(SVect(15,43));
+	c_point.push_back(Vect(15,6));
+	c_point.push_back(Vect(15,43));
 	// colisão abaixo
-	c_point.push_back(SVect(15,43));
-	c_point.push_back(SVect(31,43));
+	c_point.push_back(Vect(15,43));
+	c_point.push_back(Vect(31,43));
 	// colisão acima
-	c_point.push_back(SVect(15,6));
-	c_point.push_back(SVect(31,6));
+	c_point.push_back(Vect(15,6));
+	c_point.push_back(Vect(31,6));
 	// centro da colisão
-	c_point.push_back(SVect(24,22));
+	c_point.push_back(Vect(24,22));
 	
 	// seta rect de colisão
 	dim.x = 15;
@@ -285,7 +285,7 @@ CPlayer::	~CPlayer ( )
 		SDL_JoystickClose(joystick);
 } 
 
-SVect CPlayer::get_center (  )
+Vect CPlayer::get_center (  )
 {
 	return c_point[8];
 }
@@ -295,12 +295,12 @@ void CPlayer::set_kernel ( bool h )
 	kernel = h;
 }
 
-CTileMap * CPlayer::get_map (  )
+TileMap * CPlayer::get_map (  )
 {
 	return map;
 }
 
-void CPlayer::set_map ( CTileMap * m )
+void CPlayer::set_map ( TileMap * m )
 {
 	map = m;
 	gun.shot.set_map(m);
@@ -317,7 +317,7 @@ int CPlayer::get_lives (  )
 	return lives;
 }
 
-void CPlayer::set_respawn ( SVect p )
+void CPlayer::set_respawn ( Vect p )
 {
 	respawn = p;
 }
@@ -357,7 +357,7 @@ void CPlayer::reset (  )
 	set_state(WAITING);
 }
 
-void CPlayer::set_transition ( CTileMap * m, SVect p, float f_pos )
+void CPlayer::set_transition ( TileMap * m, Vect p, float f_pos )
 {
 	set_map(m);
 	vel.zero();
@@ -387,7 +387,7 @@ bool CPlayer::has_coll_tile ( int tile )
 
 bool CPlayer::ground (  )
 {
-	SVect cp;
+	Vect cp;
 	int tile;
 	
 	for (int i = 4; i < 6; i++)
@@ -417,7 +417,7 @@ int CPlayer::collision_hor (  )
 {
 	int ret = 0;
 	float p;
-	SVect cp;
+	Vect cp;
 	SDL_Rect d = map->get_dimension();
 
 	if (vel.x == 0)
@@ -462,7 +462,7 @@ int CPlayer::collision_ver (  )
 {
 	int ret = 0;
 	float p;
-	SVect cp;
+	Vect cp;
 	SDL_Rect d = map->get_dimension();
 	
 	if (vel.y == 0)
@@ -742,16 +742,16 @@ void CPlayer::input ( SDL_Event & event )
 }
 
 #ifndef USE_SDL2
-void CPlayer::draw ( CCamera * cam, SDL_Surface * screen )
+void CPlayer::draw ( Camera * cam, SDL_Surface * screen )
 {
 	if (curr_anim)
 		curr_anim->draw(pos.x, pos.y, cam, screen);
 }
 #else
-void CPlayer::draw ( CCamera * cam, SDL_Renderer * renderer )
+void CPlayer::draw ( Camera * cam, SDL_Renderer * renderer )
 {
 	if (curr_anim)
-		curr_anim->draw(pos.x, pos.y, cam, renderer);
+		curr_anim->draw(renderer, cam, pos.x, pos.y);
 }
 #endif
 
@@ -848,7 +848,7 @@ int CPlayer::update (  )
 				if (gun_key)
 					if (gun.has_gun())
 					{
-						gun.fire(pos, dir, SVect(((dir == LEFT_PLAYER)? -config.shot_vel: config.shot_vel), 0));
+						gun.fire(pos, dir, Vect(((dir == LEFT_PLAYER)? -config.shot_vel: config.shot_vel), 0));
 						if (gun.was_used() && gun.shot.get_state() == 0)
 						{
 							if (dir == RIGHT_PLAYER)
@@ -989,7 +989,7 @@ int CPlayer::update (  )
 			if (gun_key)
 				if (gun.has_gun())
 				{
-					gun.fire(pos, dir, SVect(((dir == LEFT_PLAYER)? -config.shot_vel: config.shot_vel), 0));
+					gun.fire(pos, dir, Vect(((dir == LEFT_PLAYER)? -config.shot_vel: config.shot_vel), 0));
 					if (gun.was_used() && gun.shot.get_state() == 0)
 					{
 						if (dir == RIGHT_PLAYER)
@@ -1110,7 +1110,7 @@ int CPlayer::update (  )
 			if (gun_key)
 				if (gun.has_gun())
 				{
-					gun.fire(pos, dir, SVect(((dir == LEFT_PLAYER)? -config.shot_vel: config.shot_vel), 0));
+					gun.fire(pos, dir, Vect(((dir == LEFT_PLAYER)? -config.shot_vel: config.shot_vel), 0));
 					if (gun.was_used() && gun.shot.get_state() == 0)
 					{
 						if (dir == RIGHT_PLAYER)
@@ -1245,7 +1245,7 @@ int CPlayer::update (  )
 			if (gun_key)
 				if (gun.has_gun())
 				{
-					gun.fire(pos, dir, SVect(((dir == LEFT_PLAYER)? -config.shot_vel: config.shot_vel), 0));
+					gun.fire(pos, dir, Vect(((dir == LEFT_PLAYER)? -config.shot_vel: config.shot_vel), 0));
 				}
 			
 			vel.x += acc.x;

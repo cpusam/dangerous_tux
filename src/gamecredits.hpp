@@ -1,12 +1,12 @@
 #ifndef GAMECREDITS_HPP
 #define GAMECREDITS_HPP
 
-#include "chora_engine/chora.hpp"
-#include "chora_engine/vect.hpp"
-#include "chora_engine/util.hpp"
-#include "chora_engine/animation.hpp"
-#include "chora_engine/background.hpp"
-#include "chora_engine/gui/writer.hpp"
+#include "Chora.hpp"
+#include "vect.hpp"
+#include "util.hpp"
+#include "animation.hpp"
+#include "background.hpp"
+#include "gui/writer.hpp"
 
 enum EGameCreditsState
 {
@@ -15,16 +15,16 @@ enum EGameCreditsState
 };
 
 
-class CGameCredits: public CStateMachine
+class CGameCredits: public StateMachine
 {
 	protected:
-		//CWidget widget;
-		CAnimation anim; // apenas para contar o tempo
-		CAnimation tux_anim;
-		SVect tux_pos;
-		SVect bg_pos;
-		CBackground bg;
-		CCamera * cam;
+		//Widget widget;
+		Animation anim; // apenas para contar o tempo
+		Animation tux_anim;
+		Vect tux_pos;
+		Vect bg_pos;
+		Background bg;
+		Camera * cam;
 		int chosed;
 		
 	public:

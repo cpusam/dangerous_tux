@@ -1,9 +1,9 @@
 #include "flyeralien.hpp"
 
 #ifndef USE_SDL2
-	CFlyerAlien::CFlyerAlien ( CPlayer * p, int m_d, SVect i_p )
+	CFlyerAlien::CFlyerAlien ( CPlayer * p, int m_d, Vect i_p )
 #else
-	CFlyerAlien::CFlyerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, SVect i_p )
+	CFlyerAlien::CFlyerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p )
 #endif
 {
 	#if USE_SDL2
@@ -86,7 +86,7 @@ CFlyerAlien::~CFlyerAlien (  )
 }
 
 
-void CFlyerAlien::set_map ( CTileMap * m )
+void CFlyerAlien::set_map ( TileMap * m )
 {
 	map = m;
 	gun.shot.set_map(m);
@@ -112,9 +112,9 @@ void CFlyerAlien::kill (  )
 }
 
 #ifndef USE_SDL2
-	void CFlyerAlien::draw ( CCamera * cam, SDL_Surface * screen )
+	void CFlyerAlien::draw ( Camera * cam, SDL_Surface * screen )
 #else
-	void CFlyerAlien::draw ( CCamera * cam, SDL_Renderer * renderer )
+	void CFlyerAlien::draw ( Camera * cam, SDL_Renderer * renderer )
 #endif
 {
 	#ifndef USE_SDL2
@@ -124,7 +124,7 @@ void CFlyerAlien::kill (  )
 		gun.draw(cam, screen);
 	#else
 		if (curr_anim)
-			curr_anim->draw(pos.x, pos.y, cam, renderer);
+			curr_anim->draw(renderer, cam, pos.x, pos.y);
 		
 		gun.draw(cam, renderer);
 	#endif
@@ -217,7 +217,7 @@ int CFlyerAlien::update (  )
 			{
 				int r = (75.0 * rand()) / (RAND_MAX + 1.0);
 				if (r == 0)
-					gun.fire(pos, shot_dir, SVect((shot_dir == LEFT_ALIEN)? -config.shot_vel: config.shot_vel, 0));
+					gun.fire(pos, shot_dir, Vect((shot_dir == LEFT_ALIEN)? -config.shot_vel: config.shot_vel, 0));
 				
 				if (gun.was_used())
 				{

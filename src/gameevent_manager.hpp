@@ -18,7 +18,7 @@ struct SGameEvent
 };
 
 // Essa classe deve ser a última a ser atualizada
-class CGameEventManager: public CStateMachine
+class CGameEventManager: public StateMachine
 {
 	private:
 		static CGameEventManager * singleton;

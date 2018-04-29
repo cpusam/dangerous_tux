@@ -1,9 +1,9 @@
 #include "walkeralien.hpp"
 
 #ifndef USE_SDL2
-	CWalkerAlien::CWalkerAlien ( CPlayer * p, int m_d, SVect i_p )
+	CWalkerAlien::CWalkerAlien ( CPlayer * p, int m_d, Vect i_p )
 #else
-	CWalkerAlien::CWalkerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, SVect i_p )
+	CWalkerAlien::CWalkerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p )
 #endif
 {
 	#if USE_SDL2
@@ -21,7 +21,7 @@
 	gun.set_gun(true);
 	gun.shot.set_id("alien_shot");
 	gun.shot.add_target(p);
-	SVect pd[2] = {SVect(0,20),SVect(38,20)};
+	Vect pd[2] = {Vect(0,20),Vect(38,20)};
 	gun.set_pos_dir(pd);
 	
 	// tiles onde se pode caminhar
@@ -37,24 +37,24 @@
 	
 	// pontos de colisão
 	// colisão a direita
-	c_point.push_back(SVect(31,6));
-	c_point.push_back(SVect(31,43));
+	c_point.push_back(Vect(31,6));
+	c_point.push_back(Vect(31,43));
 	// colisão a esquerda
-	c_point.push_back(SVect(15,6));
-	c_point.push_back(SVect(15,43));
+	c_point.push_back(Vect(15,6));
+	c_point.push_back(Vect(15,43));
 	// colisão abaixo
-	c_point.push_back(SVect(15,43));
-	c_point.push_back(SVect(23,43));
-	c_point.push_back(SVect(31,43));
+	c_point.push_back(Vect(15,43));
+	c_point.push_back(Vect(23,43));
+	c_point.push_back(Vect(31,43));
 	// colisão acima
-	c_point.push_back(SVect(15,6));
-	c_point.push_back(SVect(31,6));
+	c_point.push_back(Vect(15,6));
+	c_point.push_back(Vect(31,6));
 	// centro de colisão
-	c_point.push_back(SVect(23,25));
+	c_point.push_back(Vect(23,25));
 	// meio da lateral esquerda
-	c_point.push_back(SVect(14,25));
+	c_point.push_back(Vect(14,25));
 	// meio da lateral direita
-	c_point.push_back(SVect(32,25));
+	c_point.push_back(Vect(32,25));
 
 	anim.resize(6);
 
@@ -183,7 +183,7 @@ CWalkerAlien::~CWalkerAlien (  )
 	#endif
 }
 
-void CWalkerAlien::set_map ( CTileMap * m )
+void CWalkerAlien::set_map ( TileMap * m )
 {
 	map = m;
 	gun.shot.set_map(m);
@@ -319,9 +319,9 @@ void CWalkerAlien::kill (  )
 }
 
 #ifndef USE_SDL2
-	void CWalkerAlien::draw ( CCamera * cam, SDL_Surface * screen )
+	void CWalkerAlien::draw ( Camera * cam, SDL_Surface * screen )
 #else
-	void CWalkerAlien::draw ( CCamera * cam, SDL_Renderer * renderer )
+	void CWalkerAlien::draw ( Camera * cam, SDL_Renderer * renderer )
 #endif
 {
 	#ifndef USE_SDL2
@@ -331,7 +331,7 @@ void CWalkerAlien::kill (  )
 		gun.draw(cam, screen);
 	#else
 		if (curr_anim)
-			curr_anim->draw(pos.x, pos.y, cam, renderer);
+			curr_anim->draw(renderer, cam, pos.x, pos.y);
 	
 		gun.draw(cam, renderer);
 		#endif
@@ -444,7 +444,7 @@ int CWalkerAlien::update (  )
 			{
 				int r = (75.0 * rand()) / (RAND_MAX + 1.0);
 				if (r == 0)
-					gun.fire(pos, dir, SVect((dir == LEFT_ALIEN)? -config.shot_vel: config.shot_vel, 0));
+					gun.fire(pos, dir, Vect((dir == LEFT_ALIEN)? -config.shot_vel: config.shot_vel, 0));
 				
 				if (gun.was_used())
 				{

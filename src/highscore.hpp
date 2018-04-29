@@ -1,9 +1,9 @@
 #ifndef HIGHSCORE_HPP
 #define HIGHSCORE_HPP
 
-#include "chora_engine/chora.hpp"
-#include "chora_engine/gui/label.hpp"
-#include "chora_engine/gui/writer.hpp"
+#include "Chora.hpp"
+#include "gui/label.hpp"
+#include "gui/writer.hpp"
 
 struct SPlayerScore
 {
@@ -26,7 +26,7 @@ struct SPlayerScore
 	}
 };
 
-class CHighScore: public CWidget
+class CHighScore: public Widget
 {
 	private:
 		#if _WIN32 || _WIN64
@@ -36,9 +36,9 @@ class CHighScore: public CWidget
 		#endif
 	protected:
 		SPlayerScore ps[10];
-		CLabel * name;
-		CLabel * score;
-		CLabel * level;
+		GuiLabel * name;
+		GuiLabel * score;
+		GuiLabel * level;
 		#if USE_SDL2
 			SDL_Renderer * renderer;
 		#endif

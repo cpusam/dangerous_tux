@@ -58,7 +58,7 @@ CKernelSignal::~CKernelSignal (  )
 	#endif
 }
 	
-void CKernelSignal::set_cam ( CCamera * c )
+void CKernelSignal::set_cam ( Camera * c )
 {
 	cam = c;
 	
@@ -66,9 +66,9 @@ void CKernelSignal::set_cam ( CCamera * c )
 		throw "CKernelSignal: camera nula\n";
 }
 
-void CKernelSignal::set_kernel_pos ( SVect kp )
+void CKernelSignal::set_kernel_pos ( Vect kp )
 {
-	kernel_pos = SVect(kp.x + 48/2, kp.y + 48/2);
+	kernel_pos = Vect(kp.x + 48/2, kp.y + 48/2);
 }
 
 void CKernelSignal::show ( bool s )
@@ -90,7 +90,7 @@ void CKernelSignal::show ( bool s )
 		#ifndef USE_SDL2
 			anim.draw(pos.x, pos.y, cam, screen);
 		#else
-			anim.draw(pos.x, pos.y, cam, renderer);
+			anim.draw(renderer, cam, pos.x, pos.y);
 		#endif
 }
 
@@ -107,7 +107,7 @@ int CKernelSignal::update (  )
 					throw "CKernelSignal: camera nula\n";
 
 				SDL_Rect d = cam->get_dimension();
-				SVect pcam = cam->get_position();
+				Vect pcam = cam->get_position();
 				
 				if (pos.x < kernel_pos.x)
 					pos.x = pcam.x + d.w - 48/2;
@@ -216,16 +216,16 @@ CExitSignal::~CExitSignal (  )
 	#endif
 }
 
-void CExitSignal::set_cam ( CCamera * c )
+void CExitSignal::set_cam ( Camera * c )
 {
 	cam = c;
 	if (!cam)
 		throw "CExitSignal: camera nula\n";
 }
 
-void CExitSignal::set_exit_pos ( SVect ep )
+void CExitSignal::set_exit_pos ( Vect ep )
 {
-	exit_pos = SVect(ep.x + 48/2, ep.y + 48/2);
+	exit_pos = Vect(ep.x + 48/2, ep.y + 48/2);
 }
 
 void CExitSignal::show ( bool s )
@@ -247,7 +247,7 @@ void CExitSignal::show ( bool s )
 		#ifndef USE_SDL2
 			anim.draw(pos.x, pos.y, cam, screen);
 		#else
-			anim.draw(pos.x, pos.y, cam, renderer);
+			anim.draw(renderer, cam, pos.x, pos.y);
 		#endif
 }
 
@@ -264,8 +264,8 @@ int CExitSignal::update (  )
 					throw "CExitSignal: camera nula\n";
 
 				SDL_Rect d = cam->get_dimension();
-				SVect pcam = cam->get_position();
-				SVect ccam = SVect(pcam.x + d.w/2, pcam.y + d.h/2);
+				Vect pcam = cam->get_position();
+				Vect ccam = Vect(pcam.x + d.w/2, pcam.y + d.h/2);
 				
 				if (pos.x < exit_pos.x)
 					pos.x = pcam.x + d.w - 48/2;

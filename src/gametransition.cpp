@@ -8,7 +8,7 @@
 {
 	cam = 0;
 	phrase = 0;
-	map = new CTileMapView(48);
+	map = new TileMapView(48);
 	
 	#if _WIN32 || _WIN64
 		char path[FILENAME_MAX];
@@ -49,9 +49,9 @@ CGameTransition::~CGameTransition (  )
 }
 
 #ifndef USE_SDL2
-	void CGameTransition::set_cam ( CCamera * c, SDL_Surface * screen )
+	void CGameTransition::set_cam ( Camera * c, SDL_Surface * screen )
 #else
-	void CGameTransition::set_cam ( CCamera * c, SDL_Renderer * renderer )
+	void CGameTransition::set_cam ( Camera * c, SDL_Renderer * renderer )
 #endif
 {
 	if (cam)
@@ -59,11 +59,11 @@ CGameTransition::~CGameTransition (  )
 
 	SDL_Rect d = c->get_dimension();
 	#ifndef USE_SDL2
-		cam = new CCamera((SDL_Rect){0, (screen->h - d.h)/2, d.w,d.h}, (SDL_Rect){0,0,d.w,d.h});
+		cam = new Camera((SDL_Rect){0, (screen->h - d.h)/2, d.w,d.h}, (SDL_Rect){0,0,d.w,d.h});
 	#else
 		int h;
 		SDL_RenderGetLogicalSize(renderer, NULL, &h);
-		cam = new CCamera((SDL_Rect){0, (h - d.h)/2, d.w,d.h}, (SDL_Rect){0,0,d.w,d.h});
+		cam = new Camera((SDL_Rect){0, (h - d.h)/2, d.w,d.h}, (SDL_Rect){0,0,d.w,d.h});
 	#endif
 }
 
@@ -151,7 +151,7 @@ void CGameTransition::reset ( int curr_level, int num_levels )
 	cam->set_limit(map->get_dimension());
 	
 	float final_pos = cam->get_dimension().w - 48 * 2;
-	SVect p;
+	Vect p;
 	
 	int i, tile;
 	for (i = 0, tile = -1; (tile = map->get_tile(i)) != -1; i++)
@@ -181,11 +181,11 @@ void CGameTransition::reset ( int curr_level, int num_levels )
 			sprintf(path, "%s/share/games/dangeroustux/fonts/inhouseedition.ttf", PREFIX);
 		#endif
 	#endif
-	if (!CWriter::instance()->set_font(path, 80))
+	if (!Writer::instance()->load_font(path, path, 80))
 		throw "CGameTransition: não conseguiu carregar font\n";
 	
 	#if USE_SDL2
-		CWriter::instance()->set_renderer(renderer);
+		Writer::instance()->set_renderer(renderer);
 	#endif
 	
 	if (num_levels - curr_level - 1 > 1)
@@ -196,11 +196,11 @@ void CGameTransition::reset ( int curr_level, int num_levels )
 	if (phrase)
 		delete phrase;
 
-	phrase = new CLabel(path, (SDL_Color){255,255,0,0});
+	phrase = new GuiLabel(path, (SDL_Color){255,255,0,0});
 	#ifndef USE_SDL2
-		phrase->set_pos(SVect((960 - phrase->get_surface()->w)/2, 0));
+		phrase->set_pos(Vect((960 - phrase->get_surface()->w)/2, 0));
 	#else
-		phrase->set_pos(SVect((960 - phrase->get_texture_width())/2, 0));
+		phrase->set_pos(Vect((960 - phrase->get_texture_width())/2, 0));
 	#endif
 }
 
@@ -218,7 +218,7 @@ void CGameTransition::reset ( int curr_level, int num_levels )
 		SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
 		SDL_RenderClear(renderer);
 		bg.draw(cam, renderer);
-		map->draw(cam, renderer);
+		map->draw(renderer, cam);
 		player->draw(cam, renderer);
 		phrase->draw(renderer);
 	}

@@ -5,15 +5,15 @@
 
 #include "save.hpp"
 
-#include "chora_engine/util.hpp"
-#include "chora_engine/chora.hpp"
-#include "chora_engine/gui/label.hpp"
-#include "chora_engine/gui/writer.hpp"
+#include "util.hpp"
+#include "Chora.hpp"
+#include "gui/label.hpp"
+#include "gui/writer.hpp"
 
-class COption: public CWidget
+class COption: public Widget
 {
 	protected:
-		CLabel * label[3]; // 
+		GuiLabel * label[3]; // 
 	
 	public:
 		COption ( std::string s, SDL_Color c[3] );
@@ -35,7 +35,7 @@ enum EGameOptionsState
 	INACTIVE_GAMEOPTIONS
 };
 
-class CGameOptions: public CWidget
+class CGameOptions: public Widget
 {
 	protected:
 		std::vector <COption *> option; // opções
@@ -85,10 +85,10 @@ enum CGameMenuState
 	END_GAMEMENU
 };
 
-class CGameMenu: public CStateMachine
+class CGameMenu: public StateMachine
 {
 	private:
-		CLabel * header;
+		GuiLabel * header;
 		COption * chose_option;
 	public:
 		CGameOptions options;

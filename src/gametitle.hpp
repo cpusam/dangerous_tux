@@ -1,9 +1,9 @@
 #ifndef GAMETITLE_HPP
 #define GAMETITLE_HPP
 
-#include "chora_engine/chora.hpp"
-#include "chora_engine/animation.hpp"
-#include "chora_engine/gui/label.hpp"
+#include "Chora.hpp"
+#include "animation.hpp"
+#include "gui/label.hpp"
 
 enum EGameTitleState
 {
@@ -11,7 +11,7 @@ enum EGameTitleState
 	BACKGROUND_GAMETITLE
 };
 
-class CGameTitle: public CStateMachine
+class CGameTitle: public StateMachine
 {
 	protected:
 		#ifndef USE_SDL2
@@ -21,15 +21,15 @@ class CGameTitle: public CStateMachine
 			SDL_Texture * background;
 			SDL_Texture * title_name;
 		#endif
-		CAnimation tux_rocket;
-		CLabel * press_enter;
-		CLabel * version;
-		CAnimation p_enter;
+		Animation tux_rocket;
+		GuiLabel * press_enter;
+		GuiLabel * version;
+		Animation p_enter;
 		
-		SVect tr_pos;
-		SVect tn_pos;
-		SVect tn_init;
-		SVect tn_final;
+		Vect tr_pos;
+		Vect tn_pos;
+		Vect tn_init;
+		Vect tn_final;
 		float tn_vel;
 	
 	public:

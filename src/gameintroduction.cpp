@@ -123,21 +123,21 @@
 		#endif
 	#endif
 
-	if (!CWriter::instance()->set_font(path, 80))
+	if (!Writer::instance()->load_font(path, path, 80))
 		throw "CGameIntroduction: não foi possível carregar font\n";
 	
 	#if USE_SDL2
-		CWriter::instance()->set_renderer(r);
+		Writer::instance()->set_renderer(r);
 	#endif
 	
-	parallel = new CLabel("IN A PARALLEL UNIVERSE...", (SDL_Color){255,255,0,255});
-	later = new CLabel("SOME TIME LATER...", (SDL_Color){255,255,0,255});
+	parallel = new GuiLabel("IN A PARALLEL UNIVERSE...", (SDL_Color){255,255,0,255});
+	later = new GuiLabel("SOME TIME LATER...", (SDL_Color){255,255,0,255});
 	#ifndef USE_SDL2
-		parallel->set_pos(SVect((960 - parallel->get_surface()->w)/2, (624 - parallel->get_surface()->h)/2));
-		later->set_pos(SVect((960 - later->get_surface()->w)/2, (624 - later->get_surface()->h)/2));
+		parallel->set_pos(Vect((960 - parallel->get_surface()->w)/2, (624 - parallel->get_surface()->h)/2));
+		later->set_pos(Vect((960 - later->get_surface()->w)/2, (624 - later->get_surface()->h)/2));
 	#else
-		parallel->set_pos(SVect((960 - parallel->get_texture_width())/2, (624 - parallel->get_texture_height())/2));
-		later->set_pos(SVect((960 - later->get_texture_width())/2, (624 - later->get_texture_height())/2));
+		parallel->set_pos(Vect((960 - parallel->get_texture_width())/2, (624 - parallel->get_texture_height())/2));
+		later->set_pos(Vect((960 - later->get_texture_width())/2, (624 - later->get_texture_height())/2));
 	#endif
 	/*
 	#if _WIN32 || _WIN64
@@ -159,7 +159,7 @@
 		throw "CGameIntroduction: não foi possível carregar \n";
 	*/
 	
-	CSound sound;
+	SoundFX sound;
 	#if _WIN32 || _WIN64
 		#ifndef PREFIX
 			sprintf(path, "%s\\sounds\\key_press.wav", p2);
@@ -174,7 +174,7 @@
 		#endif
 	#endif
 	sound.set_chunk(path);
-	CSoundPlayer::instance()->add_sound(sound);
+	SoundPlayer::instance()->add_sound(sound);
 	
 	anim.resize(7 + 5);
 	
@@ -477,7 +477,7 @@ void CGameIntroduction::reset (  )
 				anim[4].draw(206,206, screen);
 			#else
 				SDL_RenderCopy(renderer, browser_bg, NULL, NULL);
-				anim[4].draw(206,206, renderer);
+				anim[4].draw(renderer, 206,206);
 			#endif
 			break;
 			
@@ -493,9 +493,9 @@ void CGameIntroduction::reset (  )
 				SDL_RenderCopy(renderer, keyboard_bg, NULL, NULL);
 				
 				// tecla enter pressionada
-				anim[0].draw(385, 80, renderer);
+				anim[0].draw(renderer, 385, 80);
 				// mão
-				anim[1].draw(pos_hand, 38, renderer);
+				anim[1].draw(renderer, pos_hand, 38);
 			#endif
 			break;
 			
@@ -511,7 +511,7 @@ void CGameIntroduction::reset (  )
 			#ifndef USE_SDL2
 				anim[3].draw(0,0,screen);
 			#else
-				anim[3].draw(0,0, renderer);
+				anim[3].draw(renderer, 0,0);
 			#endif
 			break;
 		
@@ -569,7 +569,7 @@ int CGameIntroduction::update (  )
 				
 				if (upd == 2)
 				{
-					CSoundPlayer::instance()->play_sound("key_press.wav");
+					SoundPlayer::instance()->play_sound("key_press.wav");
 				}
 				else if (upd == 4)
 				{
@@ -597,7 +597,7 @@ int CGameIntroduction::update (  )
 				
 				if (upd == 2 && anim[0].get_index() == 0)
 				{
-					CSoundPlayer::instance()->play_sound("key_press.wav");
+					SoundPlayer::instance()->play_sound("key_press.wav");
 				}
 				
 				if (upd == 4)

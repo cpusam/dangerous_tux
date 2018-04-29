@@ -3,19 +3,19 @@
 
 #include "player.hpp"
 
-#include "chora_engine/background.hpp"
-#include "chora_engine/camera.hpp"
-#include "chora_engine/platform/tilemap.hpp"
-#include "chora_engine/gui/label.hpp"
+#include "background.hpp"
+#include "camera.hpp"
+#include "platform/tilemap.hpp"
+#include "gui/label.hpp"
 
-class CGameTransition: public CStateMachine
+class CGameTransition: public StateMachine
 {
 	protected:
-		CBackground bg;
-		CCamera * cam;
-		CTileMapView * map;
+		Background bg;
+		Camera * cam;
+		TileMapView * map;
 		CPlayer * player;
-		CLabel * phrase;
+		GuiLabel * phrase;
 		#if USE_SDL2
 			SDL_Renderer * renderer;
 		#endif
@@ -30,9 +30,9 @@ class CGameTransition: public CStateMachine
 		virtual ~CGameTransition (  );
 		
 		#ifndef USE_SDL2
-			void set_cam ( CCamera * c, SDL_Surface * screen );
+			void set_cam ( Camera * c, SDL_Surface * screen );
 		#else
-			void set_cam ( CCamera * c, SDL_Renderer * renderer );
+			void set_cam ( Camera * c, SDL_Renderer * renderer );
 		#endif
 		
 		void set_bg ( string path );

@@ -4,8 +4,8 @@ CPlayer * CLevel::player = 0;
 #ifndef USE_SDL2
 	SDL_Surface * CLevel::screen = 0;
 #endif
-CWidget * CLevel::widget = 0;
-CCamera * CLevel::cam = 0;
+Widget * CLevel::widget = 0;
+Camera * CLevel::cam = 0;
 #if USE_SDL2
 	SDL_Renderer * CLevel::renderer = 0;
 #endif
@@ -18,10 +18,10 @@ CCamera * CLevel::cam = 0;
 		widget_color = (SDL_Color){0,0,0,255};
 		
 		if (!widget)
-			widget = new CWidget("level_window");
+			widget = new Widget("level_window");
 
 		id = i;
-		map = new CTileMapView(tilesize);
+		map = new TileMapView(tilesize);
 		bg = 0;
 	}
 #else
@@ -31,10 +31,10 @@ CCamera * CLevel::cam = 0;
 		widget_color = (SDL_Color){0,0,0,255};
 		
 		if (!widget)
-			widget = new CWidget("level_window");
+			widget = new Widget("level_window");
 
 		id = i;
-		map = new CTileMapView(tilesize);
+		map = new TileMapView(tilesize);
 		bg = 0;
 	}
 #endif
@@ -49,7 +49,7 @@ void CLevel::delete_widget (  )
 {
 	if (widget)
 	{
-		CWidget * w = widget->get_child(0);
+		Widget * w = widget->get_child(0);
 		for (int i(0); w; i++, w = widget->get_child(i))
 			delete w;
 	
@@ -92,7 +92,7 @@ std::string CLevel::get_level_path (  )
 	return level_path;
 }
 
-CTileMapView * CLevel::get_map (  )
+TileMapView * CLevel::get_map (  )
 {
 	return map;
 }
@@ -122,7 +122,7 @@ void CLevel::draw (  )
 		if (widget)
 			widget->draw(screen);
 	#else
-		map->draw(cam, renderer);
+		map->draw(renderer, cam);
 		player->gun.draw(cam, renderer);
 		player->draw(cam, renderer);
 		kernel_signal.draw(renderer);
@@ -186,14 +186,14 @@ int CLevel::update (  )
 			
 			bg_path = path;
 			#ifndef USE_SDL2
-				bg = new CBackground(optimize_surface_alpha(IMG_Load(path)));
+				bg = new Background(optimize_surface_alpha(IMG_Load(path)));
 				if (!bg->get_surface())
 				{
 					sprintf(path, "CLevel: não foi possível abrir background %s%s\n", pimage, nimage.c_str());
 					throw path;
 				}
 			#else
-				bg = new CBackground(IMG_LoadTexture(renderer, path));
+				bg = new Background(IMG_LoadTexture(renderer, path));
 				if (!bg->get_texture())
 				{
 					sprintf(path, "CLevel: não foi possível abrir background %s%s\n", pimage, nimage.c_str());
@@ -276,7 +276,7 @@ int CLevel::update (  )
 				if (tile == 'P')
 				{
 					// se é o tile de respawn do jogador, então defina o respawn
-					SVect p;
+					Vect p;
 					p.x = (i % map->get_width()) * map->get_tilesize();
 					p.y = (i / map->get_width()) * map->get_tilesize();
 					player->set_respawn(p);
@@ -287,7 +287,7 @@ int CLevel::update (  )
 					break;
 				}
 			
-			#ifndef __clang__
+			#ifndef EMSCRIPTEN
 			if (i >= map->get_width() * map->get_height())
 				throw "CLevel: player NÃO está no mapa, cadê o caractere P?\n";
 			#endif
@@ -296,7 +296,7 @@ int CLevel::update (  )
 			{
 				if (tile == 'G')
 				{
-					SVect ip;
+					Vect ip;
 					ip.x = (i % map->get_width()) * map->get_tilesize();
 					ip.y = (i / map->get_width()) * map->get_tilesize();
 					#ifndef USE_SDL2
@@ -309,7 +309,7 @@ int CLevel::update (  )
 				}
 				else if (tile == 'F')
 				{
-					SVect ip;
+					Vect ip;
 					ip.x = (i % map->get_width()) * map->get_tilesize();
 					ip.y = (i / map->get_width()) * map->get_tilesize();
 					#ifndef USE_SDL2
@@ -322,7 +322,7 @@ int CLevel::update (  )
 				}
 				else if (tile >= 'A' && tile <= 'D')
 				{
-					SVect p;
+					Vect p;
 					p.x = (i % map->get_width()) * map->get_tilesize();
 					p.y = (i / map->get_width()) * map->get_tilesize();
 					#ifndef USE_SDL2
@@ -334,7 +334,7 @@ int CLevel::update (  )
 				}
 				else if (tile == 'K')
 				{
-					SVect p;
+					Vect p;
 					p.x = (i % map->get_width()) * map->get_tilesize();
 					p.y = (i / map->get_width()) * map->get_tilesize();
 					kernel_signal.set_kernel_pos(p);
@@ -343,7 +343,7 @@ int CLevel::update (  )
 				}
 				else if (tile == 'E')
 				{
-					SVect p;
+					Vect p;
 					p.x = (i % map->get_width()) * map->get_tilesize();
 					p.y = (i / map->get_width()) * map->get_tilesize();
 					exit_signal.set_exit_pos(p);
@@ -352,7 +352,7 @@ int CLevel::update (  )
 				}
 				else if (tile == 'q') // se é o jetpack
 				{
-					SVect p;
+					Vect p;
 					p.x = (i % map->get_width()) * map->get_tilesize();
 					p.y = (i / map->get_width()) * map->get_tilesize();
 					jetpacks.push_back(p);
@@ -522,21 +522,21 @@ int CLevel::update (  )
 					sprintf(path, "%s/share/games/dangeroustux/fonts/inhouseedition.ttf", PREFIX);
 				#endif
 			#endif
-			// define a fonte para CWriter
-			if (CWriter::instance()->set_font(path, 55) == 0)
+			// define a fonte para Writer
+			if (Writer::instance()->load_font(path, path, 55) == 0)
 				throw "CLevel: Não conseguiu abrir fonte\n";
 
 			// verifica se já foi adicionado algum widget
 			if (widget && widget->child_size() > 0) // se sim, pula adicionar de novo
 			{
-				CLabelNumber * num_level = static_cast<CLabelNumber *>(widget->get_child("num_level"));
+				GuiLabelNumber * num_level = static_cast<GuiLabelNumber *>(widget->get_child("num_level"));
 				num_level->set_value(id);
 				widget->show();
-				static_cast<CLabel *>(widget->get_child("jetpack"))->show(false);
-				static_cast<CLabel *>(widget->get_child("jetpack_bar"))->show(false);
-				static_cast<CLabel *>(widget->get_child("gun"))->show(false);
-				static_cast<CLabel *>(widget->get_child("gun_img"))->show(false);
-				//static_cast<CLabel *>(widget->get_child("go_exit"))->show(false);
+				static_cast<GuiLabel *>(widget->get_child("jetpack"))->show(false);
+				static_cast<GuiLabel *>(widget->get_child("jetpack_bar"))->show(false);
+				static_cast<GuiLabel *>(widget->get_child("gun"))->show(false);
+				static_cast<GuiLabel *>(widget->get_child("gun_img"))->show(false);
+				//static_cast<GuiLabel *>(widget->get_child("go_exit"))->show(false);
 				set_state(1); // vai para executando a fase
 				break;
 			}
@@ -544,44 +544,44 @@ int CLevel::update (  )
 				throw "CLevel: Erro no widget\n";
 			
 			/*
-			CLabel * go_exit = new CLabel("GO THROUGH THE EXIT!", (SDL_Color){255,255,0,0});
+			GuiLabel * go_exit = new GuiLabel("GO THROUGH THE EXIT!", (SDL_Color){255,255,0,0});
 			widget->add_child(go_exit);
 			go_exit->set_id("go_exit");
-			go_exit->set_pos(SVect(318, 12 * map->get_tilesize()));
+			go_exit->set_pos(Vect(318, 12 * map->get_tilesize()));
 			//removido também linhas lá em baixo
 			*/
 			
-			CLabel * score = new CLabel("SCORE: ", widget_color);
+			GuiLabel * score = new GuiLabel("SCORE: ", widget_color);
 			widget->add_child(score);
 			score->set_id("score");
-			score->set_pos(SVect(125,0));
+			score->set_pos(Vect(125,0));
 
-			CLabel * lives = new CLabel("LIVES: ", widget_color);
+			GuiLabel * lives = new GuiLabel("LIVES: ", widget_color);
 			widget->add_child(lives);
 			lives->set_id("lives");
-			lives->set_pos(SVect(320 + score->get_pos().x,0));
+			lives->set_pos(Vect(320 + score->get_pos().x,0));
 
-			CLabel * level = new CLabel("LEVEL: ", widget_color);
+			GuiLabel * level = new GuiLabel("LEVEL: ", widget_color);
 			widget->add_child(level);
 			level->set_id("level");
-			level->set_pos(SVect(270 + lives->get_pos().x,0));
+			level->set_pos(Vect(270 + lives->get_pos().x,0));
 
-			CLabel * jetpack = new CLabel("JETPACK: ", widget_color);
+			GuiLabel * jetpack = new GuiLabel("JETPACK: ", widget_color);
 			widget->add_child(jetpack);
 			jetpack->set_id("jetpack");
-			jetpack->set_pos(SVect(105, map->get_tilesize())); 
+			jetpack->set_pos(Vect(105, map->get_tilesize())); 
 
-			CLabel * gun = new CLabel("GUN ", widget_color);
+			GuiLabel * gun = new GuiLabel("GUN ", widget_color);
 			widget->add_child(gun);
 			gun->set_id("gun");
-			gun->set_pos(SVect(720, map->get_tilesize()));
+			gun->set_pos(Vect(720, map->get_tilesize()));
 
-			CLabel * gun_img = new CLabel(" ", widget_color);
+			GuiLabel * gun_img = new GuiLabel(" ", widget_color);
 			widget->add_child(gun_img);
 			#ifndef USE_SDL2
-				gun_img->set_pos(SVect(gun->get_pos().x + gun->get_surface()->w, map->get_tilesize()));
+				gun_img->set_pos(Vect(gun->get_pos().x + gun->get_surface()->w, map->get_tilesize()));
 			#else
-				gun_img->set_pos(SVect(gun->get_pos().x + gun->get_texture_width(), map->get_tilesize()));
+				gun_img->set_pos(Vect(gun->get_pos().x + gun->get_texture_width(), map->get_tilesize()));
 			#endif
 			gun_img->set_id("gun_img");
 			#if _WIN32 || _WIN64
@@ -608,44 +608,44 @@ int CLevel::update (  )
 					throw SDL_GetError();
 			#endif
 
-			CBar * bar = new CBar(100.0, 384,25);
+			GuiBar * bar = new GuiBar(100.0, 384,25);
 			widget->add_child(bar);
 			#ifndef USE_SDL2
 				bar->color_bg = SDL_MapRGB(screen->format, 255, 255, 255);
 				bar->color_bar = SDL_MapRGB(screen->format, 255, 0, 0);
-				bar->set_pos(SVect(jetpack->get_pos().x + jetpack->get_surface()->w, map->get_tilesize() + 12));
+				bar->set_pos(Vect(jetpack->get_pos().x + jetpack->get_surface()->w, map->get_tilesize() + 12));
 			#else
 				bar->color_bg = 0xFFFFFFFF;
 				bar->color_bar = 0xFF000000;
-				bar->set_pos(SVect(jetpack->get_pos().x + jetpack->get_texture_width(),map->get_tilesize() + 12));
+				bar->set_pos(Vect(jetpack->get_pos().x + jetpack->get_texture_width(),map->get_tilesize() + 12));
 			#endif
 			bar->set_id("jetpack_bar");
 
-			CLabelNumber * num_score = new CLabelNumber(0, widget_color, 6);
+			GuiLabelNumber * num_score = new GuiLabelNumber(0, widget_color, 6);
 			widget->add_child(num_score);
 			num_score->set_id("num_score");
 			#ifndef USE_SDL2
-				num_score->set_pos(SVect(score->get_pos().x + score->get_surface()->w, 0));
+				num_score->set_pos(Vect(score->get_pos().x + score->get_surface()->w, 0));
 			#else
-				num_score->set_pos(SVect(score->get_pos().x + score->get_texture_width(), 0));
+				num_score->set_pos(Vect(score->get_pos().x + score->get_texture_width(), 0));
 			#endif
 			
-			CLabelNumber * num_lives = new CLabelNumber(player->get_lives(), widget_color, 2);
+			GuiLabelNumber * num_lives = new GuiLabelNumber(player->get_lives(), widget_color, 2);
 			widget->add_child(num_lives);
 			num_lives->set_id("num_lives");
 			#ifndef USE_SDL2
-				num_lives->set_pos(SVect(lives->get_pos().x + lives->get_surface()->w, 0));
+				num_lives->set_pos(Vect(lives->get_pos().x + lives->get_surface()->w, 0));
 			#else
-				num_lives->set_pos(SVect(lives->get_pos().x + lives->get_texture_width(), 0));
+				num_lives->set_pos(Vect(lives->get_pos().x + lives->get_texture_width(), 0));
 			#endif
 
-			CLabelNumber * num_level = new CLabelNumber(id, widget_color, 2);
+			GuiLabelNumber * num_level = new GuiLabelNumber(id, widget_color, 2);
 			widget->add_child(num_level);
 			num_level->set_id("num_level");
 			#ifndef USE_SDL2
-				num_level->set_pos(SVect(level->get_pos().x + level->get_surface()->w, 0));
+				num_level->set_pos(Vect(level->get_pos().x + level->get_surface()->w, 0));
 			#else
-				num_level->set_pos(SVect(level->get_pos().x + level->get_texture_width(), 0));
+				num_level->set_pos(Vect(level->get_pos().x + level->get_texture_width(), 0));
 			#endif
 
 			widget->show();
@@ -671,8 +671,8 @@ int CLevel::update (  )
 			
 			if (player->jetpack.has_jetpack())
 			{
-				CBar * jetpack_bar = static_cast<CBar *>(widget->get_child("jetpack_bar"));
-				CLabel * jetpack = static_cast<CLabel *>(widget->get_child("jetpack"));
+				GuiBar * jetpack_bar = static_cast<GuiBar *>(widget->get_child("jetpack_bar"));
+				GuiLabel * jetpack = static_cast<GuiLabel *>(widget->get_child("jetpack"));
 				jetpack_bar->set_size(player->jetpack.get_fuel());
 
 				jetpack_bar->show();
@@ -687,8 +687,8 @@ int CLevel::update (  )
 			
 			if (player->gun.has_gun())
 			{
-				CLabel * gun = static_cast<CLabel *>(widget->get_child("gun"));
-				CLabel * gun_img = static_cast<CLabel *>(widget->get_child("gun_img"));
+				GuiLabel * gun = static_cast<GuiLabel *>(widget->get_child("gun"));
+				GuiLabel * gun_img = static_cast<GuiLabel *>(widget->get_child("gun_img"));
 				
 				gun->show();
 				gun_img->show();
@@ -698,13 +698,13 @@ int CLevel::update (  )
 			if (player->has_kernel())
 				widget->get_child("go_exit")->show();
 			*/
-			static_cast<CLabelNumber *>(widget->get_child("num_score"))->set_value(player->score.get_score());
-			static_cast<CLabelNumber *>(widget->get_child("num_lives"))->set_value(player->get_lives());
+			static_cast<GuiLabelNumber *>(widget->get_child("num_score"))->set_value(player->score.get_score());
+			static_cast<GuiLabelNumber *>(widget->get_child("num_lives"))->set_value(player->get_lives());
 			
 			if (player->get_state() != WAITING)
 			{
 				SDL_Rect a, b;
-				SVect p1, p2;
+				Vect p1, p2;
 				
 				widget->update();
 				map->update_animation();
@@ -723,7 +723,7 @@ int CLevel::update (  )
 				if (player->has_kernel())
 					kernel_signal.show(false);
 				
-				CSoundPlayer::instance()->update();
+				SoundPlayer::instance()->update();
 				CGameEventManager::instance()->update();
 				
 				for (vector <CGameEntity *>::iterator i = aliens.begin(); i != aliens.end(); i++)
@@ -762,8 +762,8 @@ int CLevel::update (  )
 						map->set_tile(int(jetpacks[i].x), int(jetpacks[i].y), 'q');
 				
 				
-				CBar * jetpack_bar = static_cast<CBar *>(widget->get_child("jetpack_bar"));
-				CLabel * jetpack = static_cast<CLabel *>(widget->get_child("jetpack"));
+				GuiBar * jetpack_bar = static_cast<GuiBar *>(widget->get_child("jetpack_bar"));
+				GuiLabel * jetpack = static_cast<GuiLabel *>(widget->get_child("jetpack"));
 
 				jetpack_bar->show(false);
 				jetpack->show(false);

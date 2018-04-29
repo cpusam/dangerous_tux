@@ -12,12 +12,12 @@ class CFlyerAlien: public CGameEntity
 		bool touched_player;
 		float move_distance; // distância de movimento, ou raio de movimento
 		float count, step; // para mover o alien
-		SVect init_pos;
-		SVect c_point; // centro da animação
+		Vect init_pos;
+		Vect c_point; // centro da animação
 		CPlayer * player;
-		CTileMap * map;
-		CAnimation * curr_anim;
-		vector <CAnimation> anim;
+		TileMap * map;
+		Animation * curr_anim;
+		vector <Animation> anim;
 		
 
 	public:
@@ -26,23 +26,23 @@ class CFlyerAlien: public CGameEntity
 		
 	public:
 		#ifndef USE_SDL2
-			CFlyerAlien ( CPlayer * p, int m_d, SVect i_p );
+			CFlyerAlien ( CPlayer * p, int m_d, Vect i_p );
 		#else
-			CFlyerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, SVect i_p );
+			CFlyerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p );
 		#endif
 		
 		virtual ~CFlyerAlien (  );
 		
-		void set_map ( CTileMap * m );
+		void set_map ( TileMap * m );
 		
 		void reset (  );
 		
 		void kill (  );
 		
 		#ifndef USE_SDL2
-			void draw ( CCamera * cam, SDL_Surface * screen );
+			void draw ( Camera * cam, SDL_Surface * screen );
 		#else
-			void draw ( CCamera * cam, SDL_Renderer * renderer );
+			void draw ( Camera * cam, SDL_Renderer * renderer );
 		#endif
 		
 		void process (  );

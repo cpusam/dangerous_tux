@@ -23,12 +23,12 @@ CShot::~CShot (  )
 {
 }
 
-void CShot::set_map ( CTileMap * m )
+void CShot::set_map ( TileMap * m )
 {
 	map = m;
 }
 
-void CShot::set_shot ( SVect p, SVect v )// posição e direção
+void CShot::set_shot ( Vect p, Vect v )// posição e direção
 {
 	pos = p;
 	vel = v;
@@ -114,9 +114,9 @@ int CShot::update (  )
 }
 
 #ifndef USE_SDL2
-	void CShot::draw ( CCamera * cam, SDL_Surface * screen )
+	void CShot::draw ( Camera * cam, SDL_Surface * screen )
 #else
-	void CShot::draw ( CCamera * cam, SDL_Renderer * renderer )
+	void CShot::draw ( Camera * cam, SDL_Renderer * renderer )
 #endif
 {
 	if (get_state() != 1)
@@ -131,10 +131,10 @@ int CShot::update (  )
 	#ifndef USE_SDL2
 		fill_rect(cam, screen, SDL_MapRGB(screen->format, 255,0,0), d);
 	#else
-		fill_rect(cam, renderer, 0xFF000000, d);
+		fill_rect(renderer, cam, (SDL_Color){255, 0, 0, 0}, d);
 	#endif
 	
-	SVect p = pos + c_point, cam_p = cam->get_position();
+	Vect p = pos + c_point, cam_p = cam->get_position();
 	SDL_Rect cam_d = cam->get_dimension();
 	
 	cam_d.x = cam_p.x;
@@ -155,7 +155,7 @@ CGun::CGun ( bool h )
 	static int loaded = 0;
 	if (!loaded)
 	{
-		CSound sound;
+		SoundFX sound;
 		#if _WIN32 || _WIN64
 			char path[FILENAME_MAX];
 			char p2[FILENAME_MAX];
@@ -176,13 +176,13 @@ CGun::CGun ( bool h )
 		/*
 		sound.set_chunk(path);
 		Mix_VolumeChunk(sound.get_chunk(), 64);
-		CSoundPlayer::instance()->add_sound(sound);
+		SoundPlayer::instance()->add_sound(sound);
 		*/
 		loaded = 1;
 	}
 }
 
-CGun::CGun ( SVect p[2], bool h )
+CGun::CGun ( Vect p[2], bool h )
 {
 	has = h;
 	used = false;
@@ -194,7 +194,7 @@ CGun::~CGun (  )
 {
 }
 
-void CGun::set_pos_dir ( SVect p[2] )
+void CGun::set_pos_dir ( Vect p[2] )
 {
 	pos_dir[0] = p[0];
 	pos_dir[1] = p[1];
@@ -216,7 +216,7 @@ bool CGun::was_used (  )
 	return used;
 }
 
-void CGun::fire ( SVect entity_pos, int d, SVect vel_shot )
+void CGun::fire ( Vect entity_pos, int d, Vect vel_shot )
 {
 	if ((d != 0 || d != 1) && used == true)
 		return;
@@ -224,7 +224,7 @@ void CGun::fire ( SVect entity_pos, int d, SVect vel_shot )
 	used = true;
 
 	shot.set_shot(entity_pos + pos_dir[d], vel_shot);
-	CSoundPlayer::instance()->play_sound("beam_fire.wav");
+	SoundPlayer::instance()->play_sound("beam_fire.wav");
 }
 
 int CGun::update (  )
@@ -260,9 +260,9 @@ int CGun::update (  )
 }
 
 #ifndef USE_SDL2
-	void CGun::draw ( CCamera * cam, SDL_Surface * screen )
+	void CGun::draw ( Camera * cam, SDL_Surface * screen )
 #else
-	void CGun::draw ( CCamera * cam, SDL_Renderer * renderer )
+	void CGun::draw ( Camera * cam, SDL_Renderer * renderer )
 #endif
 {
 	if (!used)

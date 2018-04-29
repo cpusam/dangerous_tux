@@ -1,0 +1,8 @@
+
+DangerousTux
+*~
+*.*~
+obj/*.o
+src/*.o
+src/*.*~
+include/*.*~

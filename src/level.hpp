@@ -10,10 +10,10 @@
 #include "gyroalien.hpp"
 #include "gamesignal.hpp"
 
-#include "chora_engine/background.hpp"
-#include "chora_engine/gui/bar.hpp"
-#include "chora_engine/gui/label.hpp"
-#include "chora_engine/gui/writer.hpp"
+#include "background.hpp"
+#include "gui/bar.hpp"
+#include "gui/label.hpp"
+#include "gui/writer.hpp"
 
 enum ELevelState
 {
@@ -22,27 +22,27 @@ enum ELevelState
 	NEXT_LEVEL
 };
 
-class CLevel: public CStateMachine
+class CLevel: public StateMachine
 {
 	private:
 		int id;
-		CTileMapView * map;
-		CBackground * bg;
+		TileMapView * map;
+		Background * bg;
 		string bg_path;
 		string level_path;
-		vector <SVect> jetpacks; // posição de cada jetpack no mapa
+		vector <Vect> jetpacks; // posição de cada jetpack no mapa
 
 	public:
 		vector <CGameEntity *> aliens;
 		CKernelSignal kernel_signal;
 		CExitSignal exit_signal;
 		SDL_Color widget_color;
-		static CWidget * widget; // os widgets do level
+		static Widget * widget; // os widgets do level
 		static CPlayer * player;
 		#ifndef USE_SDL2
 			static SDL_Surface * screen;
 		#endif
-		static CCamera * cam;
+		static Camera * cam;
 		#if USE_SDL2
 			static SDL_Renderer * renderer;
 		#endif
@@ -64,7 +64,7 @@ class CLevel: public CStateMachine
 		
 		string get_level_path (  );
 		
-		CTileMapView * get_map (  );
+		TileMapView * get_map (  );
 		
 		int get_id (  );
 

@@ -23,22 +23,22 @@ class CGyroAlien: public CGameEntity
 		int dir, dir_x, dir_y;
 		bool touched_player;
 		int tile;
-		SVect init_pos;
-		std::vector <SVect> c_point;
+		Vect init_pos;
+		std::vector <Vect> c_point;
 		CPlayer * player;
 		std::vector <int> coll_tiles; // tiles de colisão inteira
-		CTileMap * map;
-		CAnimation * curr_anim;
-		std::vector <CAnimation> anim;
+		TileMap * map;
+		Animation * curr_anim;
+		std::vector <Animation> anim;
 	public:
 		SAlienConfig config;
 	
 	public:
 		// get é em que lado do tile o alien está inicialmente pregado, get é a direção
 		#ifndef USE_SDL2
-			CGyroAlien ( CPlayer * p, SVect i_p, int t );
+			CGyroAlien ( CPlayer * p, Vect i_p, int t );
 		#else
-			CGyroAlien ( SDL_Renderer * r, CPlayer * p, SVect i_p, int t );
+			CGyroAlien ( SDL_Renderer * r, CPlayer * p, Vect i_p, int t );
 		#endif
 		
 		virtual ~CGyroAlien (  );
@@ -66,9 +66,9 @@ class CGyroAlien: public CGameEntity
 		bool ground_up (  );
 		
 		#ifndef USE_SDL2
-			void draw ( CCamera * cam, SDL_Surface * screen );
+			void draw ( Camera * cam, SDL_Surface * screen );
 		#else
-			void draw ( CCamera * cam, SDL_Renderer * renderer );
+			void draw ( Camera * cam, SDL_Renderer * renderer );
 		#endif
 		
 		int update (  );

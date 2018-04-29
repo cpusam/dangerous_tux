@@ -114,10 +114,10 @@
 		texture = IMG_LoadTexture(r, path);
 		if (!texture)
 			throw "CGameTitle: não conseguiu carregar imagem do tux no foguete\n";
-		
-		tux_rocket.add_frame(texture, (SDL_Rect){0,0,319,599}, 3);
-		tux_rocket.add_frame(texture, (SDL_Rect){0,599,319,599}, 3);
-		tux_rocket.add_frame(texture, (SDL_Rect){0,599*2,319,599}, 3);
+		//um bug  aqui, dois bugs aqui, 3 antes de 300 era 3 quadros e eu mudei para 300 milissegundos
+		tux_rocket.add_frame(texture, (SDL_Rect){0,0,319,624}, 300);
+		tux_rocket.add_frame(texture, (SDL_Rect){0,599,319,624}, 300);
+		tux_rocket.add_frame(texture, (SDL_Rect){0,599*2,319,624}, 300);
 		
 		#if _WIN32 || _WIN64
 			#ifndef PREFIX
@@ -137,16 +137,16 @@
 		if (!texture)
 			throw "CGameTitle: não conseguiu carregar segunda imagem do tux no foguete\n";
 		
-		tux_rocket.add_frame(texture, (SDL_Rect){0,0,319,599}, 3);
-		tux_rocket.add_frame(texture, (SDL_Rect){0,599,319,599}, 3);
-		tux_rocket.add_frame(texture, (SDL_Rect){0,599*2,319,599}, 3);
+		tux_rocket.add_frame(texture, (SDL_Rect){0,0,319,624}, 300);
+		tux_rocket.add_frame(texture, (SDL_Rect){0,599,319,624}, 300);
+		tux_rocket.add_frame(texture, (SDL_Rect){0,599*2,319,624}, 300);
 	#endif
 
-	tn_final = SVect(34,60);
+	tn_final = Vect(34,60);
 	#ifndef USE_SDL2
-		tn_init = tn_pos = SVect(-title_name->w, tn_final.y);
+		tn_init = tn_pos = Vect(-title_name->w, tn_final.y);
 	#else
-		tn_init = tn_pos = SVect(-texture_width(title_name), tn_final.y);
+		tn_init = tn_pos = Vect(-texture_width(title_name), tn_final.y);
 	#endif
 	tn_vel = 10;
 	tr_pos.x = 600;
@@ -165,23 +165,23 @@
 			sprintf(path, "%s/share/games/dangeroustux/fonts/inhouseedition.ttf", PREFIX);
 		#endif
 	#endif
-	if (!CWriter::instance()->set_font(path, 70))
+	if (!Writer::instance()->load_font(path, path, 70))
 		throw "CGameTitle: não foi possível carregar fonte\n";
 
-	press_enter = new CLabel("PRESS ENTER!", (SDL_Color){0,0,0,0});
-	press_enter->set_pos(SVect(188,439));
-	version = new CLabel("BETA VERSION - 2014", (SDL_Color){0,255,0,255});
+	press_enter = new GuiLabel("PRESS ENTER!", (SDL_Color){0,0,0,0});
+	press_enter->set_pos(Vect(188,439));
+	version = new GuiLabel("ALPHA VERSION - 2018", (SDL_Color){0,255,0,255});
 	#ifndef USE_SDL2
-		version->set_pos(SVect((960 - version->get_surface()->w)/2, 624 - version->get_surface()->h));
+		version->set_pos(Vect((960 - version->get_surface()->w)/2, 624 - version->get_surface()->h));
 		aux = press_enter->get_surface();
 		p_enter.add_frame(aux, (SDL_Rect){0,0,aux->w,aux->h}, 25);
 		p_enter.add_frame(NULL, (SDL_Rect){0,0,0,0}, 25);
 
 	#else
-		version->set_pos(SVect((960 - version->get_texture_width())/2, 624 - version->get_texture_height()));
+		version->set_pos(Vect((960 - version->get_texture_width())/2, 624 - version->get_texture_height()));
 		texture = press_enter->get_texture();
-		p_enter.add_frame(texture, (SDL_Rect){0,0,texture_width(texture),texture_height(texture)}, 25);
-		p_enter.add_frame(0, (SDL_Rect){0,0,0,0}, 25);
+		p_enter.add_frame(texture, (SDL_Rect){0,0,texture_width(texture),texture_height(texture)}, 400);
+		p_enter.add_frame(0, (SDL_Rect){0,0,0,0}, 400);
 	#endif
 }
 
@@ -299,15 +299,15 @@ int CGameTitle::update (  )
 
 				SDL_RenderCopy(renderer, title_name, NULL, &d);
 
-				tux_rocket.draw(tr_pos.x, tr_pos.y, renderer);
-				p_enter.draw(press_enter->get_pos().x, press_enter->get_pos().y, renderer);
+				tux_rocket.draw(renderer, tr_pos.x, tr_pos.y);
+				p_enter.draw(renderer, press_enter->get_pos().x, press_enter->get_pos().y);
 				version->draw(renderer);
 				break;
 			
 			case BACKGROUND_GAMETITLE:
 				SDL_RenderCopy(renderer, background, NULL, NULL);
 
-				tux_rocket.draw(tr_pos.x, tr_pos.y, renderer);
+				tux_rocket.draw(renderer, tr_pos.x, tr_pos.y);
 				version->draw(renderer);
 				break;
 			

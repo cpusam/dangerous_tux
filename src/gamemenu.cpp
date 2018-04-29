@@ -4,9 +4,9 @@ COption::COption ( std::string s, SDL_Color c[3] )
 {
 	set_id(s);
 	
-	label[0] = new CLabel(s, c[0]);
-	label[1] = new CLabel(s, c[1]);
-	label[2] = new CLabel(s, c[2]);
+	label[0] = new GuiLabel(s, c[0]);
+	label[1] = new GuiLabel(s, c[1]);
+	label[2] = new GuiLabel(s, c[2]);
 	
 	add_child(label[0]);
 	add_child(label[1]);
@@ -193,7 +193,7 @@ void CGameOptions::reset (  )
 			#endif
 		#endif
 
-		if (CWriter::instance()->set_font(path, 80) == 0)
+		if (Writer::instance()->load_font(path, path, 80) == 0)
 			throw "CGameOptions: não foi possí­vel carregar fonte\n";
 	
 		chose_option = 0;
@@ -249,15 +249,15 @@ void CGameOptions::reset (  )
 			if (option[i]->get_dim().w > dim.w)
 				dim.w = option[i]->get_dim().w;
 		}
-		set_pos(SVect(960/2, 624/2));
+		set_pos(Vect(960/2, 624/2));
 	
 		for (int i(0); i < option.size(); i++)
 			if (i > 0)
-				option[i]->set_rel_pos(SVect(-option[i]->get_dim().w/2,option[i]->get_dim().h + option[i - 1]->get_rel_pos().y));
+				option[i]->set_rel_pos(Vect(-option[i]->get_dim().w/2,option[i]->get_dim().h + option[i - 1]->get_rel_pos().y));
 			else
-				option[i]->set_rel_pos(SVect(-option[i]->get_dim().w/2,-dim.h/2));
+				option[i]->set_rel_pos(Vect(-option[i]->get_dim().w/2,-dim.h/2));
 		
-		set_pos(SVect(370, pos.y));
+		set_pos(Vect(370, pos.y));
 	}
 
 	void CGameOptions::input ( SDL_Event & event )
@@ -314,7 +314,7 @@ void CGameOptions::reset (  )
 						#endif
 					#endif
 
-					if (CWriter::instance()->set_font(path, 80) == 0)
+					if (Writer::instance()->load_font(path, path, 80) == 0)
 						throw "CGameOptions: não foi possí­vel carregar fonte\n";
 			
 					for (i = 0; i < 3; i++)
@@ -325,7 +325,7 @@ void CGameOptions::reset (  )
 							delete option[i];
 							option[i] = new COption("NEW GAME", color);
 							add_child(option[i]);
-							option[i]->set_rel_pos(SVect(-option[i]->get_dim().w/2, -dim.h/2));
+							option[i]->set_rel_pos(Vect(-option[i]->get_dim().w/2, -dim.h/2));
 							curr_option = option[i];
 							curr_option->set_state(2);
 							break;
@@ -424,11 +424,11 @@ CGameMenu::CGameMenu ( CSaveGame *save[3] ): options(save)
 		#endif
 	#endif
 
-	if (CWriter::instance()->set_font(path, 80) == 0)
+	if (Writer::instance()->load_font(path, path, 80) == 0)
 		throw "CGameMenu: não foi possí­vel carregar fonte\n";
 	
-	header = new CLabel("CHOOSE AN OPTION:", (SDL_Color){0,0,0,255});
-	header->set_pos(SVect(options.get_pos().x - header->get_dim().w/2, options.get_child(0)->get_pos().y - header->get_dim().h));
+	header = new GuiLabel("CHOOSE AN OPTION:", (SDL_Color){0,0,0,255});
+	header->set_pos(Vect(options.get_pos().x - header->get_dim().w/2, options.get_child(0)->get_pos().y - header->get_dim().h));
 	
 	chose_option = 0;
 	set_state(INIT_GAMEMENU);

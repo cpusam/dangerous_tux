@@ -43,7 +43,7 @@ CHighScore::~CHighScore (  )
 
 void CHighScore::delete_child (  )
 {
-	CWidget * w;
+	Widget * w;
 	if (name)
 	{
 		w = name->get_child(0);
@@ -100,20 +100,20 @@ void CHighScore::set_widgets (  )
 			sprintf(path, "%s/share/games/dangeroustux/fonts/inhouseedition.ttf", PREFIX);
 		#endif
 	#endif
-	if (CWriter::instance()->set_font(path, 60) == 0)
+	if (Writer::instance()->load_font(path, path, 60) == 0)
 		throw "CHighScore: não conseguiu abrir fonte\n";
 	
 	#if USE_SDL2
-		CWriter::instance()->set_renderer(renderer);
+		Writer::instance()->set_renderer(renderer);
 	#endif
 	
-	name  = new CLabel("NAME",  (SDL_Color){255,255,255,255});
-	score = new CLabel("SCORE", (SDL_Color){255,255,255,255});
-	level = new CLabel("LEVEL", (SDL_Color){255,255,255,255});
+	name  = new GuiLabel("NAME",  (SDL_Color){255,255,255,255});
+	score = new GuiLabel("SCORE", (SDL_Color){255,255,255,255});
+	level = new GuiLabel("LEVEL", (SDL_Color){255,255,255,255});
 
-	CLabel * cname;
-	CLabel * cscore;
-	CLabel * clevel;
+	GuiLabel * cname;
+	GuiLabel * cscore;
+	GuiLabel * clevel;
 
 	for (int i(0); i < 10; i++)
 	{
@@ -123,15 +123,15 @@ void CHighScore::set_widgets (  )
 
 		if (nscore - 1 != i)
 		{
-			cname  = new CLabel(ps[i].name,  (SDL_Color){255,0,0,255});
-			cscore = new CLabel(ps[i].score, (SDL_Color){255,0,0,255});
-			clevel = new CLabel(ps[i].level, (SDL_Color){255,0,0,255});
+			cname  = new GuiLabel(ps[i].name,  (SDL_Color){255,0,0,255});
+			cscore = new GuiLabel(ps[i].score, (SDL_Color){255,0,0,255});
+			clevel = new GuiLabel(ps[i].level, (SDL_Color){255,0,0,255});
 		}
 		else
 		{
-			cname  = new CLabel(ps[i].name,  (SDL_Color){255,255,0,255});
-			cscore = new CLabel(ps[i].score, (SDL_Color){255,255,0,255});
-			clevel = new CLabel(ps[i].level, (SDL_Color){255,255,0,255});
+			cname  = new GuiLabel(ps[i].name,  (SDL_Color){255,255,0,255});
+			cscore = new GuiLabel(ps[i].score, (SDL_Color){255,255,0,255});
+			clevel = new GuiLabel(ps[i].level, (SDL_Color){255,255,0,255});
 		}
 		
 		name->add_child(cname);
@@ -139,22 +139,22 @@ void CHighScore::set_widgets (  )
 		level->add_child(clevel);
 		
 		#ifndef USE_SDL2
-			cname->set_rel_pos(SVect((name->get_surface()->w - cname->get_surface()->w)/2, i * cname->get_surface()->h + 60));
-			cscore->set_rel_pos(SVect((score->get_surface()->w - cscore->get_surface()->w)/2, i * cscore->get_surface()->h + 60));
-			clevel->set_rel_pos(SVect((level->get_surface()->w - clevel->get_surface()->w)/2, i * clevel->get_surface()->h + 60));
+			cname->set_rel_pos(Vect((name->get_surface()->w - cname->get_surface()->w)/2, i * cname->get_surface()->h + 60));
+			cscore->set_rel_pos(Vect((score->get_surface()->w - cscore->get_surface()->w)/2, i * cscore->get_surface()->h + 60));
+			clevel->set_rel_pos(Vect((level->get_surface()->w - clevel->get_surface()->w)/2, i * clevel->get_surface()->h + 60));
 		#else
-			cname->set_rel_pos(SVect((name->get_texture_width() - cname->get_texture_width())/2, i * cname->get_texture_height() + 60));
-			cscore->set_rel_pos(SVect((score->get_texture_width() - cscore->get_texture_height())/2, i * cscore->get_texture_height() + 60));
-			clevel->set_rel_pos(SVect((level->get_texture_width() - clevel->get_texture_width())/2, i * clevel->get_texture_height() + 60));
+			cname->set_rel_pos(Vect((name->get_texture_width() - cname->get_texture_width())/2, i * cname->get_texture_height() + 60));
+			cscore->set_rel_pos(Vect((score->get_texture_width() - cscore->get_texture_height())/2, i * cscore->get_texture_height() + 60));
+			clevel->set_rel_pos(Vect((level->get_texture_width() - clevel->get_texture_width())/2, i * clevel->get_texture_height() + 60));
 		#endif
 	}
 	
-	name->set_pos(SVect(250,0));
-	score->set_pos(SVect(name->get_pos().x + 180,0));
+	name->set_pos(Vect(250,0));
+	score->set_pos(Vect(name->get_pos().x + 180,0));
 	#ifndef USE_SDL2
-		level->set_pos(SVect(score->get_pos().x + score->get_surface()->w + 50,0));
+		level->set_pos(Vect(score->get_pos().x + score->get_surface()->w + 50,0));
 	#else
-		level->set_pos(SVect(score->get_pos().x + score->get_texture_width() + 50,0));
+		level->set_pos(Vect(score->get_pos().x + score->get_texture_width() + 50,0));
 	#endif
 	
 	add_child(name);

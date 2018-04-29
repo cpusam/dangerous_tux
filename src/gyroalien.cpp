@@ -1,9 +1,9 @@
 #include "gyroalien.hpp"
 
 #ifndef USE_SDL2
-	CGyroAlien::CGyroAlien ( CPlayer * p, SVect i_p, int t )
+	CGyroAlien::CGyroAlien ( CPlayer * p, Vect i_p, int t )
 #else
-	CGyroAlien::CGyroAlien ( SDL_Renderer * r, CPlayer * p, SVect i_p, int t )
+	CGyroAlien::CGyroAlien ( SDL_Renderer * r, CPlayer * p, Vect i_p, int t )
 #endif
 {
 	id = "gyroalien";
@@ -24,19 +24,19 @@
 	
 	// pontos de colisão
 	// à direita
-	c_point.push_back(SVect(dim.x + dim.w, dim.y));
-	c_point.push_back(SVect(dim.x + dim.w, dim.y + dim.h));
+	c_point.push_back(Vect(dim.x + dim.w, dim.y));
+	c_point.push_back(Vect(dim.x + dim.w, dim.y + dim.h));
 	// à esquerda
-	c_point.push_back(SVect(dim.x, dim.y));
-	c_point.push_back(SVect(dim.x, dim.y + dim.h));
+	c_point.push_back(Vect(dim.x, dim.y));
+	c_point.push_back(Vect(dim.x, dim.y + dim.h));
 	// abaixo
-	c_point.push_back(SVect(dim.x, dim.y + dim.h));
-	c_point.push_back(SVect(dim.x + dim.w, dim.y + dim.h));
+	c_point.push_back(Vect(dim.x, dim.y + dim.h));
+	c_point.push_back(Vect(dim.x + dim.w, dim.y + dim.h));
 	// acima
-	c_point.push_back(SVect(dim.x, dim.y));
-	c_point.push_back(SVect(dim.x + dim.w, dim.y));
+	c_point.push_back(Vect(dim.x, dim.y));
+	c_point.push_back(Vect(dim.x + dim.w, dim.y));
 	// centro de colisão
-	c_point.push_back(SVect(dim.x + dim.w/2, dim.y + dim.h/2));
+	c_point.push_back(Vect(dim.x + dim.w/2, dim.y + dim.h/2));
 	
 	anim.resize(8);
 	curr_anim = &anim[0];
@@ -333,7 +333,7 @@ int CGyroAlien::collision_hor (  )
 {
 	int ret = 0;
 	float p;
-	SVect cp;
+	Vect cp;
 	SDL_Rect d = map->get_dimension();
 
 	if (vel.x == 0)
@@ -378,7 +378,7 @@ int CGyroAlien::collision_ver (  )
 {
 	int ret = 0;
 	float p;
-	SVect cp;
+	Vect cp;
 	SDL_Rect d = map->get_dimension();
 	
 	if (vel.y == 0)
@@ -430,7 +430,7 @@ bool CGyroAlien::has_coll_tile ( int t )
 
 bool CGyroAlien::ground_right (  )
 {
-	SVect p;
+	Vect p;
 	
 	for (int i(0); i < 2; i++)
 	{
@@ -449,7 +449,7 @@ bool CGyroAlien::ground_right (  )
 
 bool CGyroAlien::ground_left (  )
 {
-	SVect p;
+	Vect p;
 	
 	for (int i(2); i < 4; i++)
 	{
@@ -468,7 +468,7 @@ bool CGyroAlien::ground_left (  )
 
 bool CGyroAlien::ground_down (  )
 {
-	SVect p;
+	Vect p;
 	
 	for (int i(4); i < 6; i++)
 	{
@@ -487,7 +487,7 @@ bool CGyroAlien::ground_down (  )
 
 bool CGyroAlien::ground_up (  )
 {
-	SVect p;
+	Vect p;
 	
 	for (int i(6); i < 8; i++)
 	{
@@ -505,9 +505,9 @@ bool CGyroAlien::ground_up (  )
 }
 
 #ifndef USE_SDL2
-	void CGyroAlien::draw ( CCamera * cam, SDL_Surface * screen )
+	void CGyroAlien::draw ( Camera * cam, SDL_Surface * screen )
 #else
-	void CGyroAlien::draw ( CCamera * cam, SDL_Renderer * renderer )
+	void CGyroAlien::draw ( Camera * cam, SDL_Renderer * renderer )
 #endif
 {
 	#ifndef USE_SDL2
@@ -515,7 +515,7 @@ bool CGyroAlien::ground_up (  )
 			curr_anim->draw(pos.x, pos.y, cam, screen);
 	#else
 		if (curr_anim)
-			curr_anim->draw(pos.x, pos.y, cam, renderer);
+			curr_anim->draw(renderer, cam, pos.x, pos.y);
 	#endif
 	
 	if (get_state() == INACTIVE_ALIEN)
@@ -588,7 +588,7 @@ bool CGyroAlien::ground_up (  )
 int CGyroAlien::update (  )
 {
 	int coll_ver, coll_hor;
-	SVect p;
+	Vect p;
 	
 	switch (get_state())
 	{

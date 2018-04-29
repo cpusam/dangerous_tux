@@ -2,9 +2,9 @@
 #ifndef JETPACK_HPP
 #define JETPACK_HPP
 
-#include "chora_engine/statemachine.hpp"
+#include "statemachine.hpp"
 
-class CJetpack: public CStateMachine
+class CJetpack: public StateMachine
 {
 	protected:
 		float fuel;

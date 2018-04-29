@@ -112,7 +112,7 @@
 		stars.add_frame(texture, (SDL_Rect){0,184*5,296,184}, 3);
 		stars.add_frame(texture, (SDL_Rect){0,184*6,296,184}, 3);
 	#endif
-	s_pos = SVect(254,220);
+	s_pos = Vect(254,220);
 }
 
 CGameOver::~CGameOver (  )
@@ -148,7 +148,7 @@ int CGameOver::update (  )
 }
 
 #ifndef USE_SDL2
-	void CGameOver::draw ( CCamera * cam, SDL_Surface * screen )
+	void CGameOver::draw ( Camera * cam, SDL_Surface * screen )
 	{
 		SDL_Rect d;
 	
@@ -163,7 +163,7 @@ int CGameOver::update (  )
 		stars.draw(s_pos.x, s_pos.y, screen);
 	}
 #else
-	void CGameOver::draw ( CCamera * cam, SDL_Renderer * renderer )
+	void CGameOver::draw ( Camera * cam, SDL_Renderer * renderer )
 	{
 		SDL_Rect d;
 	
@@ -175,7 +175,7 @@ int CGameOver::update (  )
 		d.h = texture_height(title);
 		SDL_RenderCopy(renderer, title, NULL, &d);
 	
-		stars.draw(s_pos.x, s_pos.y, renderer);
+		stars.draw(renderer, s_pos.x, s_pos.y);
 	}
 #endif
 

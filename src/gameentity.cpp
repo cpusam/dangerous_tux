@@ -32,9 +32,9 @@ int CGameEntity::update (  )
 }
 
 #ifndef USE_SDL2
-	 void CGameEntity::draw ( CCamera * cam, SDL_Surface * screen )
+	 void CGameEntity::draw ( Camera * cam, SDL_Surface * screen )
 #else
-	 void CGameEntity::draw ( CCamera * cam, SDL_Renderer * renderer )
+	 void CGameEntity::draw ( Camera * cam, SDL_Renderer * renderer )
 #endif
 {
 }

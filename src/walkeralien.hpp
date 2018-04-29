@@ -11,13 +11,13 @@ class CWalkerAlien: public CGameEntity
 		bool touched_player; // se tocou o jogador
 		int dir; // direção da animação
 		float move_distance; // distância de movimento, ou raio de movimento
-		SVect init_pos;
+		Vect init_pos;
 		vector <int> coll_tiles;
-		vector <SVect> c_point;
-		CTileMap * map;
+		vector <Vect> c_point;
+		TileMap * map;
 		public:
-		CAnimation * curr_anim;
-		vector <CAnimation> anim;
+		Animation * curr_anim;
+		vector <Animation> anim;
 
 	public:		
 		CGun gun;
@@ -25,14 +25,14 @@ class CWalkerAlien: public CGameEntity
 		
 	public:
 		#ifndef USE_SDL2
-			CWalkerAlien ( CPlayer * p, int m_d, SVect i_p );
+			CWalkerAlien ( CPlayer * p, int m_d, Vect i_p );
 		#else
-			CWalkerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, SVect i_p );
+			CWalkerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p );
 		#endif
 		
 		virtual ~CWalkerAlien (  );
 		
-		void set_map ( CTileMap * m );
+		void set_map ( TileMap * m );
 		
 		void reset (  );
 		
@@ -49,9 +49,9 @@ class CWalkerAlien: public CGameEntity
 		void kill (  );
 		
 		#ifndef USE_SDL2
-			void draw ( CCamera * cam, SDL_Surface * screen );
+			void draw ( Camera * cam, SDL_Surface * screen );
 		#else
-			void draw ( CCamera * cam, SDL_Renderer * renderer );
+			void draw ( Camera * cam, SDL_Renderer * renderer );
 		#endif
 		
 		void process (  );

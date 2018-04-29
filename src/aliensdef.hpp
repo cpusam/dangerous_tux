@@ -23,10 +23,10 @@ enum EAlienDirection
 
 struct SAlienConfig
 {
-	SVect vel_max;
-	SVect circle_vel_max;
-	SVect acc;
-	SVect circle_acc;
+	Vect vel_max;
+	Vect circle_vel_max;
+	Vect acc;
+	Vect circle_acc;
 	float shot_vel;
 	
 	SAlienConfig (  )

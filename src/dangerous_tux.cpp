@@ -32,10 +32,10 @@
 #include <exception>
 #include <ctime>
 
-#include "chora_engine/chora.hpp"
+#include "Chora.hpp"
 
 
-#include "gamescreen.hpp" // contém todos os headers do jogo
+#include "gamescreen.hpp" // contï¿½m todos os headers do jogo
 
 #ifndef USE_SDL2
 	#include "video.hpp"
@@ -43,7 +43,7 @@
 
 #define TILESIZE 48
 
-#ifdef __clang__
+#ifdef EMSCRIPTEN
 	#include <emscripten/emscripten.h>
 	
 	struct SGameData
@@ -95,7 +95,7 @@ int main ( int argc, char **argv )
 		srand(time(0));
 		
 		#ifndef USE_SDL2 
-			#ifndef __clang__
+			#ifndef EMSCRIPTEN
 				SDL_putenv("SDL_VIDEO_CENTERED=center");
 			#endif
 		#else
@@ -126,9 +126,9 @@ int main ( int argc, char **argv )
 			SDL_Surface * screen = set_screen(TILESIZE * 20, TILESIZE * 13);
 			if (!screen)
 				throw SDL_GetError();
-			SDL_WM_SetCaption("Dangerous Tux - beta version 2014", NULL);
+			SDL_WM_SetCaption("Dangerous Tux - alpha version 2018", NULL);
 		#else
-			SDL_Window * window = SDL_CreateWindow("Dangerous Tux! BETA version 2014", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
+			SDL_Window * window = SDL_CreateWindow("Dangerous Tux! Alpha version 2018", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
 			SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 			
 			SDL_Texture * target_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, TILESIZE * 20, TILESIZE * 13);
@@ -138,15 +138,15 @@ int main ( int argc, char **argv )
 			SDL_RenderSetLogicalSize(renderer, TILESIZE * 20, TILESIZE * 13);
 		#endif
 
-		CCamera cam((SDL_Rect){0,0, TILESIZE * 20,TILESIZE * 13}, (SDL_Rect){0,0,0,0});
+		Camera cam(renderer, 0,0,TILESIZE * 20,TILESIZE * 13,TILESIZE * 20,TILESIZE * 13, (SDL_Rect){0,0,TILESIZE * 20,TILESIZE * 13});
 		#ifndef USE_SDL2
 			CGameScreen gamescreen(screen, &cam, TILESIZE);
 		#else
-			CWriter::instance()->set_renderer(renderer);
+			Writer::instance()->set_renderer(renderer);
 			CGameScreen gamescreen(window, renderer, &cam, TILESIZE);
 		#endif
 		
-		#ifdef __clang__
+		#ifdef EMSCRIPTEN
 			SGameData gdata;
 			gdata.gamescreen = &gamescreen;
 			#ifndef USE_SDL2
@@ -157,7 +157,7 @@ int main ( int argc, char **argv )
 			emscripten_set_main_loop_arg(main_loop, (void *)&gdata, 40, 1);
 		#else
 			int done = 0;
-			FPSManager::instance()->set_framerate(40);
+			FPSManager::instance()->set_framerate(400);
 			
 			while (!done)
 			{
@@ -183,7 +183,7 @@ int main ( int argc, char **argv )
 							#else
 							*/
 							#if USE_SDL2
-								#if _WIN32 || _WIN64 || !__linux__
+								#if _WIN32 || _WIN64 || __linux__
 									fullscreen ^= SDL_WINDOW_FULLSCREEN_DESKTOP;
 									SDL_SetWindowFullscreen(window, fullscreen);
 								#else
@@ -216,6 +216,7 @@ int main ( int argc, char **argv )
 				
 						SDL_SetRenderDrawColor(renderer, 0,0,0,255);
 						SDL_RenderClear(renderer);
+						cam.updateViewport(renderer);
 						SDL_RenderCopyEx(renderer, target_texture, NULL, NULL, 0, NULL, SDL_FLIP_NONE);
 						SDL_RenderPresent(renderer);
 					#endif
@@ -255,11 +256,11 @@ int main ( int argc, char **argv )
 		return 1;
 	}
 	
-	#ifndef __clang__
+	#ifndef EMSCRIPTEN
 		IMG_Quit();
 		TTF_Quit();
 	#endif
-	CSoundPlayer::instance()->free_sounds();
+	SoundPlayer::instance()->free_sounds();
 	Mix_CloseAudio();
 	SDL_Quit();
 	

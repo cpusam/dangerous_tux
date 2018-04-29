@@ -37,7 +37,7 @@ enum EScreenState
 	EXIT_SCREEN
 };
 
-class CGameScreen: public CStateMachine
+class CGameScreen: public StateMachine
 {
 	protected:
 		int curr_level; // índice do level atual
@@ -48,13 +48,13 @@ class CGameScreen: public CStateMachine
 			SDL_Window * window;
 			SDL_Renderer * renderer;
 		#endif
-		CCamera * cam;
+		Camera * cam;
 		CPlayer * player;
 		int any_key, enter_key, pause_key;
 		int tilesize;
 		
-		SVect chora_pos;
-		CAnimation chora;
+		Vect chora_pos;
+		Animation chora;
 		CSaveGame * save[3];		
 		CGameOver gameover;
 		CGameTitle title;
@@ -63,17 +63,17 @@ class CGameScreen: public CStateMachine
 		CGameMenu * menu;
 		CGameTransition transition;
 		CHighScore highscore;
-		CWidget widget;
-		CLabel * pause;
-		CLabel * name_msg;
-		CLabel * final_msg;
-		CTextInput * textinput;
+		Widget widget;
+		GuiLabel * pause;
+		GuiLabel * name_msg;
+		GuiLabel * final_msg;
+		GuiTextInput * textinput;
 
 	public:
 		#ifndef USE_SDL2
-			CGameScreen ( SDL_Surface * s, CCamera * c, int ts );
+			CGameScreen ( SDL_Surface * s, Camera * c, int ts );
 		#else
-			CGameScreen ( SDL_Window * w, SDL_Renderer * r, CCamera * c, int ts );
+			CGameScreen ( SDL_Window * w, SDL_Renderer * r, Camera * c, int ts );
 		#endif
 		
 		virtual ~CGameScreen (  );
