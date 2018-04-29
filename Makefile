@@ -6,7 +6,7 @@ DEPS = src/save.o src/gameevent_manager.o src/gameentity.o src/score.o src/highs
 
 all: DangerousTux 
 
-DangerousTux: $(DEPS) ../Chora_Engine/libchora.a
+DangerousTux: $(DEPS) ../Chora_Engine/libchora.a src/dangerous_tux.cpp
 	$(CXX) -o $@ src/dangerous_tux.cpp -DUSE_SDL2 $(DEPS) $(CXXFLAGS) $(LDLIBS)
 
 # $(CXX) -c src/.cpp -o $@ $(CXXFLAGS)

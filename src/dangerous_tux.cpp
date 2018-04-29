@@ -208,15 +208,13 @@ int main ( int argc, char **argv )
 						SDL_UpdateRect(screen, 0,0,0,0);
 					#else
 						SDL_SetRenderTarget(renderer, target_texture);
-						gamescreen.draw();
-						SDL_RenderCopy(renderer, target_texture, NULL, NULL);
-						SDL_SetRenderTarget(renderer, NULL);
-				
-						//SDL_RenderPresent(renderer);
-				
 						SDL_SetRenderDrawColor(renderer, 0,0,0,255);
 						SDL_RenderClear(renderer);
+
+						gamescreen.draw();
 						cam.updateViewport(renderer);
+
+						SDL_SetRenderTarget(renderer, nullptr);
 						SDL_RenderCopyEx(renderer, target_texture, NULL, NULL, 0, NULL, SDL_FLIP_NONE);
 						SDL_RenderPresent(renderer);
 					#endif
