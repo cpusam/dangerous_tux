@@ -37,25 +37,28 @@
 		Writer::instance()->set_renderer(r);
 	#endif
 	
-	/*
-	char s[4][32] =
+	
+	char s[5][32] =
 	{
 		{71,82,65,80,72,73,67,83},
 		{71,85,83,84,65,86,79,32,77,69,68,69,73,82,79,83},
 		{80,82,79,71,82,65,77,77,73,78,71},
 		{83,65,77,85,69,76,32,76,69,79,78,65,82,68,79},
+		{84,72,73,65,71,79,32,72,85,80,78,69,82},
 	};
 	
 	
-	GuiLabel * g = new GuiLabel(s[0], (SDL_Color){255,0,0,0});
+	GuiLabel * g = new GuiLabel(s[0], (SDL_Color){255,255,255,0});
 	widget.add_child(g);
 	GuiLabel * gg = new GuiLabel(s[1], (SDL_Color){255,255,0,0});
 	widget.add_child(gg);
-	GuiLabel * p = new GuiLabel(s[2], (SDL_Color){255,0,0,0});
+	GuiLabel * p = new GuiLabel(s[2], (SDL_Color){255,255,255,0});
 	widget.add_child(p);
 	GuiLabel * ps = new GuiLabel(s[3], (SDL_Color){255,255,0,0});
 	widget.add_child(ps);
-	
+	GuiLabel * t = new GuiLabel(s[4], (SDL_Color){255,255,0,0});
+	widget.add_child(t);
+
 	widget.set_pos(Vect(960/2,624/2));
 	#ifndef USE_SDL2
 		int h = g->get_surface()->h + gg->get_surface()->h + p->get_surface()->h + ps->get_surface()->h;
@@ -65,12 +68,13 @@
 		ps->set_rel_pos(Vect(-(ps->get_surface()->w/2), p->get_surface()->h + p->get_rel_pos().y));
 	#else
 		int h = g->get_texture_height() + gg->get_texture_height() + p->get_texture_height() + ps->get_texture_height();
-		g->set_rel_pos(Vect(-(g->get_texture_width()/2), -h/2));
+		g->set_rel_pos(Vect(-(g->get_texture_width()/2), h));
 		gg->set_rel_pos(Vect(-(gg->get_texture_width()/2), g->get_texture_height() + g->get_rel_pos().y));
 		p->set_rel_pos(Vect(-(p->get_texture_width()/2), gg->get_texture_height() + gg->get_rel_pos().y));
 		ps->set_rel_pos(Vect(-(ps->get_texture_width()/2), p->get_texture_height() + p->get_rel_pos().y));
+		t->set_rel_pos(Vect(-(t->get_texture_width()/2), ps->get_texture_height() + ps->get_rel_pos().y));
 	#endif
-	*/
+	
 	
 	#if _WIN32 || _WIN64
 		#ifndef PREFIX
@@ -117,16 +121,16 @@
 		if (!bg.set_surface(optimize_surface_alpha(IMG_Load(bg_path))))
 			throw "CGameCredits: não foi possível carregar credits_BG.png\n";
 	#else
-		anim.add_frame(NULL, (SDL_Rect){0,0,0,0}, 250);
+		anim.add_frame(NULL, (SDL_Rect){0,0,0,0}, 15000);
 		
 		SDL_Texture * texture = IMG_LoadTexture(r, path);
 		if (!texture)
 			throw "CGameCredits: não foi possivel carregar tux_walk.png\n";
 		
-		tux_anim.add_frame(texture, (SDL_Rect){0,    0,214,234}, 3);
-		tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 5); // meio
-		tux_anim.add_frame(texture, (SDL_Rect){0,2*234,214,234}, 3);
-		tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 5); // meio
+		tux_anim.add_frame(texture, (SDL_Rect){0,    0,214,234}, 200);
+		tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 200); // meio
+		tux_anim.add_frame(texture, (SDL_Rect){0,2*234,214,234}, 200);
+		tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 200); // meio
 		//tux_pos.x = widget.get_pos().x - texture_width(texture)/2;
 		tux_pos.x = (960 - texture_width(texture))/2;
 		
@@ -146,11 +150,11 @@
 
 CGameCredits::~CGameCredits (  )
 {
-/*
+
 	Widget * w = widget.get_child(0);
 	for (int i = 0; w; i++, w = widget.get_child(i))
 		delete w;
-*/
+
 
 	delete cam;
 	#ifndef USE_SDL2
@@ -179,7 +183,7 @@ CGameCredits::~CGameCredits (  )
 		bg.draw_hor(cam, renderer);
 		tux_anim.draw(renderer, tux_pos.x, tux_pos.y);
 
-		//widget.draw(renderer);
+		widget.draw(renderer);
 	}
 #endif
 
@@ -187,7 +191,6 @@ void CGameCredits::reset (  )
 {
 	bg_pos.zero();
 	cam->set_position(Vect());
-
 	anim.reset();
 	tux_anim.reset();
 	set_state(ACTIVE_CREDITS);
@@ -195,9 +198,18 @@ void CGameCredits::reset (  )
 
 int CGameCredits::update (  )
 {
-	bg_pos.x += 15.0f;
+	bg_pos.x += 5.50f;
 	cam->set_position(bg_pos);
 	
+	auto children = widget.get_children();
+	for (auto child : children){
+		auto pos = child->get_pos();
+		if (pos.y < -1000) break;
+		pos.y -= 2.5f;
+		child->set_pos(pos);
+	}
+	widget.child_update();
+	widget.update();
 	tux_anim.update();
 	if (anim.update() == 3)
 		set_state(INACTIVE_CREDITS);

@@ -18,7 +18,7 @@ enum EGameCreditsState
 class CGameCredits: public StateMachine
 {
 	protected:
-		//Widget widget;
+		Widget widget;
 		Animation anim; // apenas para contar o tempo
 		Animation tux_anim;
 		Vect tux_pos;
