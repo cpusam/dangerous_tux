@@ -31,11 +31,7 @@ int CGameEntity::update (  )
 	return get_state();
 }
 
-#ifndef USE_SDL2
-	 void CGameEntity::draw ( Camera * cam, SDL_Surface * screen )
-#else
-	 void CGameEntity::draw ( Camera * cam, SDL_Renderer * renderer )
-#endif
+void CGameEntity::draw ( Camera * cam, SDL_Renderer * renderer )
 {
 }
 

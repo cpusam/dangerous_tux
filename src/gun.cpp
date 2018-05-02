@@ -113,11 +113,7 @@ int CShot::update (  )
 	return get_state();
 }
 
-#ifndef USE_SDL2
-	void CShot::draw ( Camera * cam, SDL_Surface * screen )
-#else
-	void CShot::draw ( Camera * cam, SDL_Renderer * renderer )
-#endif
+void CShot::draw ( Camera * cam, SDL_Renderer * renderer )
 {
 	if (get_state() != 1)
 		return;
@@ -128,11 +124,7 @@ int CShot::update (  )
 	d.w = dim.w;
 	d.h = dim.h;
 	
-	#ifndef USE_SDL2
-		fill_rect(cam, screen, SDL_MapRGB(screen->format, 255,0,0), d);
-	#else
-		fill_rect(renderer, cam, (SDL_Color){255, 0, 0, 0}, d);
-	#endif
+	fill_rect(renderer, cam, (SDL_Color){255, 0, 0, 0}, d);
 	
 	Vect p = pos + c_point, cam_p = cam->get_position();
 	SDL_Rect cam_d = cam->get_dimension();
@@ -259,20 +251,11 @@ int CGun::update (  )
 	return get_state();
 }
 
-#ifndef USE_SDL2
-	void CGun::draw ( Camera * cam, SDL_Surface * screen )
-#else
-	void CGun::draw ( Camera * cam, SDL_Renderer * renderer )
-#endif
+void CGun::draw ( Camera * cam, SDL_Renderer * renderer )
 {
 	if (!used)
 		return;
-	
-	#ifndef USE_SDL2
-		shot.draw(cam, screen);
-	#else
-		shot.draw(cam, renderer);
-	#endif
+	shot.draw(cam, renderer);
 }
 
 

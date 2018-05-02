@@ -41,12 +41,8 @@ class CShot: public CGameEntity
 		int collision (  );
 		
 		int update (  );
-		
-		#ifndef USE_SDL2
-			void draw ( Camera * cam, SDL_Surface * screen );
-		#else
-			void draw ( Camera * cam, SDL_Renderer * renderer );
-		#endif
+
+		void draw ( Camera * cam, SDL_Renderer * renderer );
 };
 
 class CGun: public StateMachine
@@ -77,11 +73,7 @@ class CGun: public StateMachine
 		
 		int update (  );
 		
-		#ifndef USE_SDL2
-			void draw ( Camera * cam, SDL_Surface * screen );
-		#else
-			void draw ( Camera * cam, SDL_Renderer * renderer );
-		#endif
+		void draw ( Camera * cam, SDL_Renderer * renderer );
 };
 
 #endif

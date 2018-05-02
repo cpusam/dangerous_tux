@@ -1,43 +1,24 @@
 #include "level.hpp"
 
 CPlayer * CLevel::player = 0;
-#ifndef USE_SDL2
-	SDL_Surface * CLevel::screen = 0;
-#endif
 Widget * CLevel::widget = 0;
 Camera * CLevel::cam = 0;
-#if USE_SDL2
-	SDL_Renderer * CLevel::renderer = 0;
-#endif
+SDL_Renderer * CLevel::renderer = 0;
 
 
 
-#ifndef USE_SDL2
-	CLevel::CLevel ( int tilesize, int i )
-	{
-		widget_color = (SDL_Color){0,0,0,255};
-		
-		if (!widget)
-			widget = new Widget("level_window");
+CLevel::CLevel ( SDL_Renderer * r, int tilesize, int i ): kernel_signal(r), exit_signal(r)
+{
+	renderer = r;
+	widget_color = (SDL_Color){0,0,0,255};
 
-		id = i;
-		map = new TileMapView(tilesize);
-		bg = 0;
-	}
-#else
-	CLevel::CLevel ( SDL_Renderer * r, int tilesize, int i ): kernel_signal(r), exit_signal(r)
-	{
-		renderer = r;
-		widget_color = (SDL_Color){0,0,0,255};
-		
-		if (!widget)
-			widget = new Widget("level_window");
+	if (!widget)
+		widget = new Widget("level_window");
 
-		id = i;
-		map = new TileMapView(tilesize);
-		bg = 0;
-	}
-#endif
+	id = i;
+	map = new TileMapView(tilesize);
+	bg = 0;
+}
 
 CLevel::~CLevel (  )
 {
@@ -104,36 +85,20 @@ int CLevel::get_id (  )
 
 void CLevel::draw (  )
 {
-	#ifndef USE_SDL2
-		bg->draw_hor(cam, screen);
-	#else
-		bg->draw_hor(cam, renderer);
-	#endif
-	
-	#ifndef USE_SDL2
-		map->draw(cam, screen);
-		player->gun.draw(cam, screen);
-		player->draw(cam, screen);
-		kernel_signal.draw(screen);
-		exit_signal.draw(screen);
-		for (vector <CGameEntity *>::iterator i = aliens.begin(); i != aliens.end(); i++)
-			(*i)->draw(cam, screen);
-	
-		if (widget)
-			widget->draw(screen);
-	#else
-		map->draw(renderer, cam);
-		player->gun.draw(cam, renderer);
-		player->draw(cam, renderer);
-		kernel_signal.draw(renderer);
-		exit_signal.draw(renderer);
-	
-		for (vector <CGameEntity *>::iterator i = aliens.begin(); i != aliens.end(); i++)
-			(*i)->draw(cam, renderer);
-	
-		if (widget)
-			widget->draw(renderer);
-	#endif
+	bg->draw_hor(cam, renderer);
+
+
+	map->draw(renderer, cam);
+	player->gun.draw(cam, renderer);
+	player->draw(cam, renderer);
+	kernel_signal.draw(renderer);
+	exit_signal.draw(renderer);
+
+	for (vector <CGameEntity *>::iterator i = aliens.begin(); i != aliens.end(); i++)
+		(*i)->draw(cam, renderer);
+
+	if (widget)
+		widget->draw(renderer);
 }
 
 void CLevel::input ( SDL_Event & event )
@@ -185,21 +150,13 @@ int CLevel::update (  )
 			sprintf(path, "%s%s", pimage, nimage.c_str());
 			
 			bg_path = path;
-			#ifndef USE_SDL2
-				bg = new Background(optimize_surface_alpha(IMG_Load(path)));
-				if (!bg->get_surface())
-				{
-					sprintf(path, "CLevel: não foi possível abrir background %s%s\n", pimage, nimage.c_str());
-					throw path;
-				}
-			#else
-				bg = new Background(IMG_LoadTexture(renderer, path));
-				if (!bg->get_texture())
-				{
-					sprintf(path, "CLevel: não foi possível abrir background %s%s\n", pimage, nimage.c_str());
-					throw path;
-				}
-			#endif
+
+			bg = new Background(IMG_LoadTexture(renderer, path));
+			if (!bg->get_texture())
+			{
+				sprintf(path, "CLevel: não foi possível abrir background %s%s\n", pimage, nimage.c_str());
+				throw path;
+			}
 
 			vector <int> tileset;
 			std::string line;
@@ -239,11 +196,7 @@ int CLevel::update (  )
 			player->set_map(map);
 			
 			// verifica se já não foi carregado a imagem dos tiles
-			#ifndef USE_SDL2
-				if (!map->surface)
-			#else
 				if (!map->texture)
-			#endif
 			{
 				#if _WIN32 || _WIN64
 					#ifndef PREFIX
@@ -258,16 +211,10 @@ int CLevel::update (  )
 						sprintf(path, "%s/share/games/dangeroustux/images/tiles.png", PREFIX);
 					#endif
 				#endif
-				
-				#ifndef USE_SDL2
-					map->surface = optimize_surface_alpha(IMG_Load(path));
-					if (!map->surface)
-						throw SDL_GetError();
-				#else
-					map->texture = IMG_LoadTexture(renderer, path);
-					if (!map->texture)
-						throw SDL_GetError();
-				#endif
+
+				map->texture = IMG_LoadTexture(renderer, path);
+				if (!map->texture)
+					throw SDL_GetError();
 			}
 
 			// procura o caractere P no mapa e reinicia o player
@@ -299,11 +246,7 @@ int CLevel::update (  )
 					Vect ip;
 					ip.x = (i % map->get_width()) * map->get_tilesize();
 					ip.y = (i / map->get_width()) * map->get_tilesize();
-					#ifndef USE_SDL2
-						CGameEntity * walker = new CWalkerAlien(player, 8 * map->get_tilesize(), ip);
-					#else
-						CGameEntity * walker = new CWalkerAlien(renderer, player, 8 * map->get_tilesize(), ip);
-					#endif
+					CGameEntity * walker = new CWalkerAlien(renderer, player, 8 * map->get_tilesize(), ip);
 					aliens.push_back(walker);
 					player->gun.shot.add_target(walker);
 				}
@@ -312,11 +255,7 @@ int CLevel::update (  )
 					Vect ip;
 					ip.x = (i % map->get_width()) * map->get_tilesize();
 					ip.y = (i / map->get_width()) * map->get_tilesize();
-					#ifndef USE_SDL2
-						CGameEntity * flyer = new CFlyerAlien(player, 2.5 * map->get_tilesize(), ip);
-					#else
-						CGameEntity * flyer = new CFlyerAlien(renderer, player, 2.5 * map->get_tilesize(), ip);
-					#endif
+					CGameEntity * flyer = new CFlyerAlien(renderer, player, 2.5 * map->get_tilesize(), ip);
 					aliens.push_back(flyer);
 					player->gun.shot.add_target(flyer);
 				}
@@ -325,11 +264,7 @@ int CLevel::update (  )
 					Vect p;
 					p.x = (i % map->get_width()) * map->get_tilesize();
 					p.y = (i / map->get_width()) * map->get_tilesize();
-					#ifndef USE_SDL2
-						CGameEntity * gyro = new CGyroAlien(player, p, tile);
-					#else
-						CGameEntity * gyro = new CGyroAlien(renderer, player, p, tile);
-					#endif
+					CGameEntity * gyro = new CGyroAlien(renderer, player, p, tile);
 					aliens.push_back(gyro);
 				}
 				else if (tile == 'K')
@@ -398,113 +333,58 @@ int CLevel::update (  )
 			map->set_source('4', (SDL_Rect){ts*7,ts*3,ts,ts}); // tile de gramado
 		
 			CAnimatedTile a;
-			#ifndef USE_SDL2
-				a.add_frame(map->surface, (SDL_Rect){0,ts * 2,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts,ts * 2,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts * 2,ts * 2,ts,ts}, 4);
-			#else
-				a.add_frame(map->texture, (SDL_Rect){0,ts * 2,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts,ts * 2,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts * 2,ts * 2,ts,ts}, 4);
-			#endif
+			a.add_frame(map->texture, (SDL_Rect){0,ts * 2,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts,ts * 2,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts * 2,ts * 2,ts,ts}, 4);
 			map->add_animation(a, 'o'); // tile de fogo
 			
 			a.clear_frames();
-			#ifndef USE_SDL2
-				a.add_frame(map->surface, (SDL_Rect){ts * 3,ts * 2,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts * 4,ts * 2,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts * 5,ts * 2,ts,ts}, 4);
-			#else
-				a.add_frame(map->texture, (SDL_Rect){ts * 3,ts * 2,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts * 4,ts * 2,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts * 5,ts * 2,ts,ts}, 4);
-			#endif
+			a.add_frame(map->texture, (SDL_Rect){ts * 3,ts * 2,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts * 4,ts * 2,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts * 5,ts * 2,ts,ts}, 4);
 			map->add_animation(a, 'p'); // macarrão roxo
 			
 			a.clear_frames();
-			#ifndef USE_SDL2
-				a.add_frame(map->surface, (SDL_Rect){ts*8,ts,ts,ts}, 4); // início
-				a.add_frame(map->surface, (SDL_Rect){ts*9,ts,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
-				a.add_frame(map->surface, (SDL_Rect){ts*10,ts,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts*11,ts,ts,ts}, 4); // final
-				a.add_frame(map->surface, (SDL_Rect){ts*10,ts,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
-				a.add_frame(map->surface, (SDL_Rect){ts*9,ts,ts,ts}, 4);
-			#else
-				a.add_frame(map->texture, (SDL_Rect){ts*8,ts,ts,ts}, 4); // início
-				a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
-				a.add_frame(map->texture, (SDL_Rect){ts*10,ts,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts*11,ts,ts,ts}, 4); // final
-				a.add_frame(map->texture, (SDL_Rect){ts*10,ts,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
-				a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 4);
-			#endif
+			a.add_frame(map->texture, (SDL_Rect){ts*8,ts,ts,ts}, 4); // início
+			a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
+			a.add_frame(map->texture, (SDL_Rect){ts*10,ts,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts*11,ts,ts,ts}, 4); // final
+			a.add_frame(map->texture, (SDL_Rect){ts*10,ts,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
+			a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 4);
 			map->add_animation(a, 'q'); // jetpack
 			
 			a.clear_frames();
-			#ifndef USE_SDL2
-				a.add_frame(map->surface, (SDL_Rect){ts*8,ts*2,ts,ts}, 4); // início
-				a.add_frame(map->surface, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
-				a.add_frame(map->surface, (SDL_Rect){ts*10,ts*2,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts*11,ts*2,ts,ts}, 4); // final
-				a.add_frame(map->surface, (SDL_Rect){ts*10,ts*2,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
-				a.add_frame(map->surface, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
-			#else
-				a.add_frame(map->texture, (SDL_Rect){ts*8,ts*2,ts,ts}, 4); // início
-				a.add_frame(map->texture, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
-				a.add_frame(map->texture, (SDL_Rect){ts*10,ts*2,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts*11,ts*2,ts,ts}, 4); // final
-				a.add_frame(map->texture, (SDL_Rect){ts*10,ts*2,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
-				a.add_frame(map->texture, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
-			#endif
+			a.add_frame(map->texture, (SDL_Rect){ts*8,ts*2,ts,ts}, 4); // início
+			a.add_frame(map->texture, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
+			a.add_frame(map->texture, (SDL_Rect){ts*10,ts*2,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts*11,ts*2,ts,ts}, 4); // final
+			a.add_frame(map->texture, (SDL_Rect){ts*10,ts*2,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
+			a.add_frame(map->texture, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
 			map->add_animation(a, 'r'); // arma laser
 			
 			a.clear_frames();
-			#ifndef USE_SDL2
-				a.add_frame(map->surface, (SDL_Rect){0,ts*3,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts,ts*3,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts*2,ts*3,ts,ts}, 4);
-				a.add_frame(map->surface, (SDL_Rect){ts*3,ts*3,ts,ts}, 4);
-			#else
-				a.add_frame(map->texture, (SDL_Rect){0,ts*3,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts,ts*3,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts*2,ts*3,ts,ts}, 4);
-				a.add_frame(map->texture, (SDL_Rect){ts*3,ts*3,ts,ts}, 4);
-			#endif
+			a.add_frame(map->texture, (SDL_Rect){0,ts*3,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts,ts*3,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts*2,ts*3,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts*3,ts*3,ts,ts}, 4);
 			map->add_animation(a, 'K'); // kernel
 			
 			a.clear_frames();
-			#ifndef USE_SDL2
-				a.add_frame(map->surface, (SDL_Rect){ts*6,ts*4,ts,ts}, 6);
-				a.add_frame(map->surface, (SDL_Rect){ts*5,ts*4,ts,ts}, 6);
-				a.add_frame(map->surface, (SDL_Rect){ts*4,ts*4,ts,ts}, 6);
-				a.add_frame(map->surface, (SDL_Rect){ts*3,ts*4,ts,ts}, 6);
-			#else
-				a.add_frame(map->texture, (SDL_Rect){ts*6,ts*4,ts,ts}, 6);
-				a.add_frame(map->texture, (SDL_Rect){ts*5,ts*4,ts,ts}, 6);
-				a.add_frame(map->texture, (SDL_Rect){ts*4,ts*4,ts,ts}, 6);
-				a.add_frame(map->texture, (SDL_Rect){ts*3,ts*4,ts,ts}, 6);
-			#endif
+			a.add_frame(map->texture, (SDL_Rect){ts*6,ts*4,ts,ts}, 6);
+			a.add_frame(map->texture, (SDL_Rect){ts*5,ts*4,ts,ts}, 6);
+			a.add_frame(map->texture, (SDL_Rect){ts*4,ts*4,ts,ts}, 6);
+			a.add_frame(map->texture, (SDL_Rect){ts*3,ts*4,ts,ts}, 6);
 			map->add_animation(a, 'x'); // água fervente
 			
 			a.clear_frames();
-			#ifndef USE_SDL2
-				a.add_frame(map->surface, (SDL_Rect){ts*10,ts*4,ts,ts}, 6);
-				a.add_frame(map->surface, (SDL_Rect){ts*9,ts*4,ts,ts}, 6);
-				a.add_frame(map->surface, (SDL_Rect){ts*8,ts*4,ts,ts}, 6);
-				a.add_frame(map->surface, (SDL_Rect){ts*7,ts*4,ts,ts},6);
-			#else
-				a.add_frame(map->texture, (SDL_Rect){ts*10,ts*4,ts,ts}, 6);
-				a.add_frame(map->texture, (SDL_Rect){ts*9,ts*4,ts,ts}, 6);
-				a.add_frame(map->texture, (SDL_Rect){ts*8,ts*4,ts,ts}, 6);
-				a.add_frame(map->texture, (SDL_Rect){ts*7,ts*4,ts,ts}, 6);
-			#endif
+			a.add_frame(map->texture, (SDL_Rect){ts*10,ts*4,ts,ts}, 6);
+			a.add_frame(map->texture, (SDL_Rect){ts*9,ts*4,ts,ts}, 6);
+			a.add_frame(map->texture, (SDL_Rect){ts*8,ts*4,ts,ts}, 6);
+			a.add_frame(map->texture, (SDL_Rect){ts*7,ts*4,ts,ts}, 6);
 			map->add_animation(a, 'y'); // piche
 			
 			
@@ -578,11 +458,7 @@ int CLevel::update (  )
 
 			GuiLabel * gun_img = new GuiLabel(" ", widget_color);
 			widget->add_child(gun_img);
-			#ifndef USE_SDL2
-				gun_img->set_pos(Vect(gun->get_pos().x + gun->get_surface()->w, map->get_tilesize()));
-			#else
-				gun_img->set_pos(Vect(gun->get_pos().x + gun->get_texture_width(), map->get_tilesize()));
-			#endif
+			gun_img->set_pos(Vect(gun->get_pos().x + gun->get_texture_width(), map->get_tilesize()));
 			gun_img->set_id("gun_img");
 			#if _WIN32 || _WIN64
 				#ifndef PREFIX
@@ -598,55 +474,31 @@ int CLevel::update (  )
 				#endif
 			#endif
 			
-			#ifndef USE_SDL2
-				gun_img->set_surface(optimize_surface_alpha(IMG_Load(path)));
-				if (!gun_img->get_surface())
-					throw SDL_GetError();
-			#else
-				gun_img->set_texture(IMG_LoadTexture(renderer, path));
-				if (!gun_img->get_texture())
-					throw SDL_GetError();
-			#endif
+			gun_img->set_texture(IMG_LoadTexture(renderer, path));
+			if (!gun_img->get_texture())
+				throw SDL_GetError();
 
 			GuiBar * bar = new GuiBar(100.0, 384,25);
 			widget->add_child(bar);
-			#ifndef USE_SDL2
-				bar->color_bg = SDL_MapRGB(screen->format, 255, 255, 255);
-				bar->color_bar = SDL_MapRGB(screen->format, 255, 0, 0);
-				bar->set_pos(Vect(jetpack->get_pos().x + jetpack->get_surface()->w, map->get_tilesize() + 12));
-			#else
-				bar->color_bg = 0xFFFFFFFF;
-				bar->color_bar = 0xFF000000;
-				bar->set_pos(Vect(jetpack->get_pos().x + jetpack->get_texture_width(),map->get_tilesize() + 12));
-			#endif
+			bar->color_bg = 0xFFFFFFFF;
+			bar->color_bar = 0xFF000000;
+			bar->set_pos(Vect(jetpack->get_pos().x + jetpack->get_texture_width(),map->get_tilesize() + 12));
 			bar->set_id("jetpack_bar");
 
 			GuiLabelNumber * num_score = new GuiLabelNumber(0, widget_color, 6);
 			widget->add_child(num_score);
 			num_score->set_id("num_score");
-			#ifndef USE_SDL2
-				num_score->set_pos(Vect(score->get_pos().x + score->get_surface()->w, 0));
-			#else
-				num_score->set_pos(Vect(score->get_pos().x + score->get_texture_width(), 0));
-			#endif
-			
+			num_score->set_pos(Vect(score->get_pos().x + score->get_texture_width(), 0));
+
 			GuiLabelNumber * num_lives = new GuiLabelNumber(player->get_lives(), widget_color, 2);
 			widget->add_child(num_lives);
 			num_lives->set_id("num_lives");
-			#ifndef USE_SDL2
-				num_lives->set_pos(Vect(lives->get_pos().x + lives->get_surface()->w, 0));
-			#else
-				num_lives->set_pos(Vect(lives->get_pos().x + lives->get_texture_width(), 0));
-			#endif
+			num_lives->set_pos(Vect(lives->get_pos().x + lives->get_texture_width(), 0));
 
 			GuiLabelNumber * num_level = new GuiLabelNumber(id, widget_color, 2);
 			widget->add_child(num_level);
 			num_level->set_id("num_level");
-			#ifndef USE_SDL2
-				num_level->set_pos(Vect(level->get_pos().x + level->get_surface()->w, 0));
-			#else
-				num_level->set_pos(Vect(level->get_pos().x + level->get_texture_width(), 0));
-			#endif
+			num_level->set_pos(Vect(level->get_pos().x + level->get_texture_width(), 0));
 
 			widget->show();
 			gun->show(false);

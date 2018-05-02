@@ -21,12 +21,8 @@ class COption: public Widget
 		~COption (  );
 		
 		int update (  );
-		
-		#ifndef USE_SDL2
-			void draw ( SDL_Surface * screen );
-		#else
-			void draw ( SDL_Renderer * renderer );
-		#endif
+
+		void draw ( SDL_Renderer * renderer );
 };
 
 enum EGameOptionsState
@@ -70,11 +66,7 @@ class CGameOptions: public Widget
 	
 			int update (  );
 	
-			#ifndef USE_SDL2
-				void draw ( SDL_Surface * screen );
-			#else
-				void draw ( SDL_Renderer * renderer );
-			#endif
+			void draw ( SDL_Renderer * renderer );
 };
 
 enum CGameMenuState
@@ -102,12 +94,8 @@ class CGameMenu: public StateMachine
 		
 		void reset (  );
 		
-		#ifndef USE_SDL2
-			void draw ( SDL_Surface * screen );
-		#else
-			void draw ( SDL_Renderer * renderer );
-		#endif
-		
+		void draw ( SDL_Renderer * renderer );
+
 		int update (  );
 };
 

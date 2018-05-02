@@ -34,12 +34,8 @@ class CGameEntity: public StateMachine, public Movable
 			virtual void input ( SDL_Event & event );
 		
 			virtual int update (  );
-		
-			#ifndef USE_SDL2
-				virtual void draw ( Camera * cam, SDL_Surface * screen );
-			#else
-				virtual void draw ( Camera * cam, SDL_Renderer * renderer );
-			#endif
+
+			virtual void draw ( Camera * cam, SDL_Renderer * renderer );
 };
 
 #endif

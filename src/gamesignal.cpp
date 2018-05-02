@@ -1,10 +1,6 @@
 #include "gamesignal.hpp"
 
-#ifndef USE_SDL2
-	CKernelSignal::CKernelSignal (  )
-#else
-	CKernelSignal::CKernelSignal ( SDL_Renderer * r )
-#endif
+CKernelSignal::CKernelSignal ( SDL_Renderer * r )
 {
 	SDL_Surface * aux = 0;
 	#if _WIN32 || _WIN64
@@ -25,37 +21,21 @@
 		#endif
 	#endif
 
-	#ifndef USE_SDL2
-		aux = optimize_surface_alpha(IMG_Load(path));
-		if (!aux)
-			throw "CKernelSignal: não foi possível abrir kernel_signal.png\n";
-	#else
-		SDL_Texture * texture = IMG_LoadTexture(r, path);
-		if (!texture)
-			throw "CKernelSignal: não foi possível abrir kernel_signal.png\n";
-	#endif
-	#ifndef USE_SDL2
-		anim.add_frame(aux, (SDL_Rect){0,0,48,48}, 6);
-		anim.add_frame(aux, (SDL_Rect){0,48,48,48}, 6);
-		anim.add_frame(aux, (SDL_Rect){0,48*2,48,48}, 6);
-		anim.add_frame(aux, (SDL_Rect){0,48*3,48,48}, 6);
-	#else
-		anim.add_frame(texture, (SDL_Rect){0,0,48,48}, 6);
-		anim.add_frame(texture, (SDL_Rect){0,48,48,48}, 6);
-		anim.add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
-		anim.add_frame(texture, (SDL_Rect){0,48*3,48,48}, 6);
-	#endif
+	SDL_Texture * texture = IMG_LoadTexture(r, path);
+	if (!texture)
+		throw "CKernelSignal: não foi possível abrir kernel_signal.png\n";
+
+	anim.add_frame(texture, (SDL_Rect){0,0,48,48}, 6);
+	anim.add_frame(texture, (SDL_Rect){0,48,48,48}, 6);
+	anim.add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
+	anim.add_frame(texture, (SDL_Rect){0,48*3,48,48}, 6);
 	show(false);
 	cam = 0;
 }
 
 CKernelSignal::~CKernelSignal (  )
 {
-	#ifndef USE_SDL2
-		anim.destroy_surfaces();
-	#else
-		anim.destroy_textures();
-	#endif
+	anim.destroy_textures();
 }
 	
 void CKernelSignal::set_cam ( Camera * c )
@@ -77,21 +57,13 @@ void CKernelSignal::show ( bool s )
 	set_state(2);
 }
 
-#ifndef USE_SDL2
-	void CKernelSignal::draw ( SDL_Surface * screen )
-#else
-	void CKernelSignal::draw ( SDL_Renderer * renderer )
-#endif
+void CKernelSignal::draw ( SDL_Renderer * renderer )
 {
 	if (!cam)
 		throw "CKernelSignal: camera nula\n";
 
 	if (visible)
-		#ifndef USE_SDL2
-			anim.draw(pos.x, pos.y, cam, screen);
-		#else
-			anim.draw(renderer, cam, pos.x, pos.y);
-		#endif
+		anim.draw(renderer, cam, pos.x, pos.y);
 }
 
 int CKernelSignal::update (  )
@@ -157,11 +129,7 @@ int CKernelSignal::update (  )
 
 //////////////////////////////////////////////////////////////////
 
-#ifndef USE_SDL2
-	CExitSignal::CExitSignal (  )
-#else
-	CExitSignal::CExitSignal ( SDL_Renderer * r )
-#endif
+CExitSignal::CExitSignal ( SDL_Renderer * r )
 {
 	SDL_Surface * aux = 0;
 	#if _WIN32 || _WIN64
@@ -181,39 +149,21 @@ int CKernelSignal::update (  )
 			sprintf(path, "%s/share/games/dangeroustux/images/exit_signal.png", PREFIX);
 		#endif
 	#endif
+	SDL_Texture * texture = IMG_LoadTexture(r, path);
+	if (!texture)
+		throw "CExitSignal: não foi possível abrir exit_signal.png\n";
 
-	#ifndef USE_SDL2
-		aux = optimize_surface_alpha(IMG_Load(path));
-		if (!aux)
-			throw "CExitSignal: não foi possível abrir exit_signal.png\n";
-	#else
-		SDL_Texture * texture = IMG_LoadTexture(r, path);
-		if (!texture)
-			throw "CExitSignal: não foi possível abrir exit_signal.png\n";
-	#endif
-	
-	#ifndef USE_SDL2
-		anim.add_frame(aux, (SDL_Rect){0,0,48,48}, 6);
-		anim.add_frame(aux, (SDL_Rect){0,48,48,48}, 6);
-		anim.add_frame(aux, (SDL_Rect){0,48*2,48,48}, 6);
-		anim.add_frame(aux, (SDL_Rect){0,48*3,48,48}, 6);
-	#else
-		anim.add_frame(texture, (SDL_Rect){0,0,48,48}, 6);
-		anim.add_frame(texture, (SDL_Rect){0,48,48,48}, 6);
-		anim.add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
-		anim.add_frame(texture, (SDL_Rect){0,48*3,48,48}, 6);
-	#endif
+	anim.add_frame(texture, (SDL_Rect){0,0,48,48}, 6);
+	anim.add_frame(texture, (SDL_Rect){0,48,48,48}, 6);
+	anim.add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
+	anim.add_frame(texture, (SDL_Rect){0,48*3,48,48}, 6);
 	show(false);
 	cam = 0;
 }
 
 CExitSignal::~CExitSignal (  )
 {
-	#ifndef USE_SDL2
-		anim.destroy_surfaces();
-	#else
-		anim.destroy_textures();
-	#endif
+	anim.destroy_textures();
 }
 
 void CExitSignal::set_cam ( Camera * c )
@@ -234,21 +184,13 @@ void CExitSignal::show ( bool s )
 	set_state(2);
 }
 
-#ifndef USE_SDL2
-	void CExitSignal::draw ( SDL_Surface * screen )
-#else
-	void CExitSignal::draw ( SDL_Renderer * renderer )
-#endif
+void CExitSignal::draw ( SDL_Renderer * renderer )
 {
 	if (!cam)
 		throw "CExitSignal: camera nula\n";
 
 	if (visible)
-		#ifndef USE_SDL2
-			anim.draw(pos.x, pos.y, cam, screen);
-		#else
-			anim.draw(renderer, cam, pos.x, pos.y);
-		#endif
+		anim.draw(renderer, cam, pos.x, pos.y);
 }
 
 int CExitSignal::update (  )

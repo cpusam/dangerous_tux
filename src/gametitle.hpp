@@ -14,13 +14,9 @@ enum EGameTitleState
 class CGameTitle: public StateMachine
 {
 	protected:
-		#ifndef USE_SDL2
-			SDL_Surface * background;
-			SDL_Surface * title_name;
-		#else
-			SDL_Texture * background;
-			SDL_Texture * title_name;
-		#endif
+		SDL_Texture * background;
+		SDL_Texture * title_name;
+
 		Animation tux_rocket;
 		GuiLabel * press_enter;
 		GuiLabel * version;
@@ -33,12 +29,8 @@ class CGameTitle: public StateMachine
 		float tn_vel;
 	
 	public:
-		#ifndef USE_SDL2
-			CGameTitle (  );
-		#else
-			CGameTitle ( SDL_Renderer * r );
-		#endif
-		
+		CGameTitle ( SDL_Renderer * r );
+
 		virtual ~CGameTitle (  );
 		
 		void reset (  );
@@ -46,12 +38,7 @@ class CGameTitle: public StateMachine
 		void input ( SDL_Event & event );
 		
 		int update (  );
-	
-		#ifndef USE_SDL2
-			void draw ( SDL_Surface * screen );
-		#else
-			void draw ( SDL_Renderer * renderer );
-		#endif
+		void draw ( SDL_Renderer * renderer );
 };
 
 #endif

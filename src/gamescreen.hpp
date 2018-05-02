@@ -14,7 +14,7 @@
 #include "gamemenu.hpp"
 
 
-// enumeração das telas
+// enumeraï¿½ï¿½o das telas
 enum EScreenState
 {
 	CHORA_SCREEN,
@@ -40,14 +40,11 @@ enum EScreenState
 class CGameScreen: public StateMachine
 {
 	protected:
-		int curr_level; // índice do level atual
+		int curr_level; // indice do level atual
 		vector <CLevel *> levels; // os levels
-		#ifndef USE_SDL2
-			SDL_Surface * screen;
-		#else
-			SDL_Window * window;
-			SDL_Renderer * renderer;
-		#endif
+        SDL_Window * window;
+		SDL_Renderer * renderer;
+
 		Camera * cam;
 		CPlayer * player;
 		int any_key, enter_key, pause_key;
@@ -70,12 +67,8 @@ class CGameScreen: public StateMachine
 		GuiTextInput * textinput;
 
 	public:
-		#ifndef USE_SDL2
-			CGameScreen ( SDL_Surface * s, Camera * c, int ts );
-		#else
-			CGameScreen ( SDL_Window * w, SDL_Renderer * r, Camera * c, int ts );
-		#endif
-		
+		CGameScreen ( SDL_Window * w, SDL_Renderer * r, Camera * c, int ts );
+
 		virtual ~CGameScreen (  );
 		
 		void clear_levels (  );

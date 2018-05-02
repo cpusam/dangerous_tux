@@ -1,10 +1,6 @@
 #include "gyroalien.hpp"
 
-#ifndef USE_SDL2
-	CGyroAlien::CGyroAlien ( CPlayer * p, Vect i_p, int t )
-#else
-	CGyroAlien::CGyroAlien ( SDL_Renderer * r, CPlayer * p, Vect i_p, int t )
-#endif
+CGyroAlien::CGyroAlien ( SDL_Renderer * r, CPlayer * p, Vect i_p, int t )
 {
 	id = "gyroalien";
 	player = p;
@@ -66,61 +62,29 @@
 		#endif
 	#endif
 	
-	#ifndef USE_SDL2
-		left = optimize_surface_alpha(IMG_Load(path_left));
-		if (!left)
-			throw "CGyroAlien: não foi possível carregar circlealien_left.png\n";
-		
-		// Sentido anti-horário
-		// animação de indo para esquerda pregado em cima do tile
-		anim[0].add_frame(left, (SDL_Rect){0,0,48,48}, 1);
-		// animação de indo para esquerda pregado em baixo do tile
-		anim[1].add_frame(left, (SDL_Rect){0,48*2,48,48}, 1);
-	
-		// animação de indo para baixo pregado a esquerda do tile
-		anim[2].add_frame(left, (SDL_Rect){0,48,48,48}, 1);
-		// animação de indo para baixo pregado a direita do tile
-		anim[3].add_frame(right, (SDL_Rect){0,0,48,48}, 1);
-	
-	  right = optimize_surface_alpha(IMG_Load(path_right));
-		if (!right)
-			throw "CGyroAlien: não foi possível carregar circlealien_right.png\n";
-	
-		// Sentido horário
-		// animação de indo para direita pregado em cima do tile
-		anim[4].add_frame(right, (SDL_Rect){0,0,48,48}, 1);
-		// animação de indo para direita pregado em baixo do tile
-		anim[5].add_frame(right, (SDL_Rect){0,48*2,48,48}, 1);
-	
-		// animação de indo para cima pregado a esquerda do tile
-		anim[6].add_frame(right, (SDL_Rect){0,48*3,48,48}, 1);
-		// animação de indo para cima pregado a direita do tile
-		anim[7].add_frame(left, (SDL_Rect){0,48*3,48,48}, 1);
-	#else
-		SDL_Texture * texture = IMG_LoadTexture(r, path_left);
-		if (!texture)
-			throw "CGyroAlien: não foi possível carregar circlealien.png\n";
+	SDL_Texture * texture = IMG_LoadTexture(r, path_left);
+	if (!texture)
+		throw "CGyroAlien: não foi possível carregar circlealien.png\n";
 
-		// animação de indo para esquerda pregado em cima do tile
-		anim[0].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
-		// animação de indo para esquerda pregado em baixo do tile
-		anim[1].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
-	
-		// animação de indo para baixo pregado a esquerda do tile
-		anim[2].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
-		// animação de indo para baixo pregado a direita do tile
-		anim[3].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
-	
-		// animação de indo para direita pregado em cima do tile
-		anim[4].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
-		// animação de indo para direita pregado em baixo do tile
-		anim[5].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
-	
-		// animação de indo para cima pregado a esquerda do tile
-		anim[6].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
-		// animação de indo para cim pregado a direita do tile
-		anim[7].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
-	#endif
+	// animação de indo para esquerda pregado em cima do tile
+	anim[0].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+	// animação de indo para esquerda pregado em baixo do tile
+	anim[1].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+
+	// animação de indo para baixo pregado a esquerda do tile
+	anim[2].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+	// animação de indo para baixo pregado a direita do tile
+	anim[3].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+
+	// animação de indo para direita pregado em cima do tile
+	anim[4].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+	// animação de indo para direita pregado em baixo do tile
+	anim[5].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+
+	// animação de indo para cima pregado a esquerda do tile
+	anim[6].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+	// animação de indo para cim pregado a direita do tile
+	anim[7].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
 	
 	tile = t;
 	switch (tile)
@@ -227,13 +191,8 @@
 
 CGyroAlien::~CGyroAlien (  )
 {
-	#ifndef USE_SDL2
-		anim[0].destroy_surfaces();
-		anim[4].destroy_surfaces();
-	#else
-		anim[0].destroy_textures();
-		anim[4].destroy_textures();
-	#endif
+	anim[0].destroy_textures();
+	anim[4].destroy_textures();
 }
 
 
@@ -504,19 +463,10 @@ bool CGyroAlien::ground_up (  )
 	return false;
 }
 
-#ifndef USE_SDL2
-	void CGyroAlien::draw ( Camera * cam, SDL_Surface * screen )
-#else
-	void CGyroAlien::draw ( Camera * cam, SDL_Renderer * renderer )
-#endif
+void CGyroAlien::draw ( Camera * cam, SDL_Renderer * renderer )
 {
-	#ifndef USE_SDL2
-		if (curr_anim)
-			curr_anim->draw(pos.x, pos.y, cam, screen);
-	#else
-		if (curr_anim)
-			curr_anim->draw(renderer, cam, pos.x, pos.y);
-	#endif
+	if (curr_anim)
+		curr_anim->draw(renderer, cam, pos.x, pos.y);
 	
 	if (get_state() == INACTIVE_ALIEN)
 		return;

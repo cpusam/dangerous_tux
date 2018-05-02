@@ -65,45 +65,25 @@ int COption::update (  )
 	return get_state();
 }
 
-#ifndef USE_SDL2
-	void COption::draw ( SDL_Surface * screen )
+
+void COption::draw ( SDL_Renderer * renderer )
+{
+	switch (get_state())
 	{
-		switch (get_state())
-		{
-			case 1:
-				label[0]->draw(screen);
-				break;
-			case 2:
-				label[1]->draw(screen);
-				break;
-			case 3:
-				label[2]->draw(screen);
-				break;
-			default:
-				label[0]->draw(screen);
-				break;
-		}
+		case 1:
+			label[0]->draw(renderer);
+			break;
+		case 2:
+			label[1]->draw(renderer);
+			break;
+		case 3:
+			label[2]->draw(renderer);
+			break;
+		default:
+			label[0]->draw(renderer);
+			break;
 	}
-#else
-	void COption::draw ( SDL_Renderer * renderer )
-	{
-		switch (get_state())
-		{
-			case 1:
-				label[0]->draw(renderer);
-				break;
-			case 2:
-				label[1]->draw(renderer);
-				break;
-			case 3:
-				label[2]->draw(renderer);
-				break;
-			default:
-				label[0]->draw(renderer);
-				break;
-		}
-	}
-#endif
+}
 
 ////////////////////////////////////////////////////////////////
 CGameOptions::CGameOptions ( CSaveGame * s[3] )
@@ -386,21 +366,12 @@ void CGameOptions::reset (  )
 		return get_state();
 	}
 
-	#ifndef USE_SDL2
-		void CGameOptions::draw ( SDL_Surface * screen )
-		{
-			if (is_visible())
-				for (int i(0); i < option.size(); i++)
-					option[i]->draw(screen);
-		}
-	#else
-		void CGameOptions::draw ( SDL_Renderer * renderer )
-		{
-			if (is_visible())
-				for (int i(0); i < option.size(); i++)
-					option[i]->draw(renderer);
-		}
-	#endif
+	void CGameOptions::draw ( SDL_Renderer * renderer )
+	{
+		if (is_visible())
+			for (int i(0); i < option.size(); i++)
+				option[i]->draw(renderer);
+	}
 
 /////////////////////////////////////////////////////////////////
 
@@ -450,25 +421,14 @@ void CGameMenu::reset (  )
 	set_state(INIT_GAMEMENU);
 }
 
-#ifndef USE_SDL2
-	void CGameMenu::draw ( SDL_Surface * screen )
-	{
-		if (get_state() == INIT_GAMEMENU)
-			return;
-		
-		header->draw(screen);
-		options.draw(screen);
-	}
-#else
-	void CGameMenu::draw ( SDL_Renderer * renderer )
-	{
-		if (get_state() == INIT_GAMEMENU)
-			return;
-		
-		header->draw(renderer);
-		options.draw(renderer);
-	}
-#endif
+void CGameMenu::draw ( SDL_Renderer * renderer )
+{
+	if (get_state() == INIT_GAMEMENU)
+		return;
+
+	header->draw(renderer);
+	options.draw(renderer);
+}
 
 int CGameMenu::update (  )
 {

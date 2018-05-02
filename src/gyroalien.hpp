@@ -35,11 +35,7 @@ class CGyroAlien: public CGameEntity
 	
 	public:
 		// get é em que lado do tile o alien está inicialmente pregado, get é a direção
-		#ifndef USE_SDL2
-			CGyroAlien ( CPlayer * p, Vect i_p, int t );
-		#else
-			CGyroAlien ( SDL_Renderer * r, CPlayer * p, Vect i_p, int t );
-		#endif
+		CGyroAlien ( SDL_Renderer * r, CPlayer * p, Vect i_p, int t );
 		
 		virtual ~CGyroAlien (  );
 		
@@ -65,11 +61,7 @@ class CGyroAlien: public CGameEntity
 		
 		bool ground_up (  );
 		
-		#ifndef USE_SDL2
-			void draw ( Camera * cam, SDL_Surface * screen );
-		#else
-			void draw ( Camera * cam, SDL_Renderer * renderer );
-		#endif
+		void draw ( Camera * cam, SDL_Renderer * renderer );
 		
 		int update (  );
 };

@@ -15,12 +15,8 @@ class CKernelSignal: public CGameEntity
 		bool visible;
 	
 	public:
-		#ifndef USE_SDL2
-			CKernelSignal (  );
-		#else
-			CKernelSignal ( SDL_Renderer * r );
-		#endif
-		
+		CKernelSignal ( SDL_Renderer * r );
+
 		virtual ~CKernelSignal (  );
 			
 		void set_cam ( Camera * c );
@@ -28,12 +24,8 @@ class CKernelSignal: public CGameEntity
 		void set_kernel_pos ( Vect kp );
 		
 		void show ( bool s=true );
-		
-		#ifndef USE_SDL2
-			void draw ( SDL_Surface * screen );
-		#else
-			void draw ( SDL_Renderer * renderer );
-		#endif
+
+		void draw ( SDL_Renderer * renderer );
 		
 		int update (  );
 };
@@ -47,11 +39,7 @@ class CExitSignal: public CGameEntity
 		bool visible;
 	
 	public:
-		#ifndef USE_SDL2
-			CExitSignal (  );
-		#else
-			CExitSignal ( SDL_Renderer * r );
-		#endif
+		CExitSignal ( SDL_Renderer * r );
 		
 		virtual ~CExitSignal (  );
 		
@@ -60,13 +48,9 @@ class CExitSignal: public CGameEntity
 		void set_exit_pos ( Vect ep );
 		
 		void show ( bool s=true );
-		
-		#ifndef USE_SDL2
-			void draw ( SDL_Surface * screen );
-		#else
-			void draw ( SDL_Renderer * renderer );
-		#endif
-		
+
+		void draw ( SDL_Renderer * renderer );
+
 		int update (  );
 };
 

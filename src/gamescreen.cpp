@@ -1,35 +1,19 @@
 #include "gamescreen.hpp"
 
-#ifndef USE_SDL2
-	CGameScreen::CGameScreen ( SDL_Surface * s, Camera * c, int ts )
-#else
-	CGameScreen::CGameScreen ( SDL_Window * w, SDL_Renderer * r, Camera * c, int ts ): gameover(r), highscore(r), title(r), credits(r), transition(r), introduction(r)
-#endif
+CGameScreen::CGameScreen ( SDL_Window * w, SDL_Renderer * r, Camera * c, int ts ): gameover(r), highscore(r), title(r), credits(r), transition(r), introduction(r)
 {
 	curr_level = -1;
 	tilesize = ts;
-	#ifndef USE_SDL2
-		screen = s;
-	#else
-		window = w;
-		renderer = r;
-	#endif
+    window = w;
+    renderer = r;
+
 	cam = c;
 
-	#ifndef USE_SDL2
-		player = new CPlayer();
-	#else
-		player = new CPlayer(renderer);
-	#endif
-	
-	#ifndef USE_SDL2
-		if (!screen)
-			throw "CGameScreen: screen é nulo\n";
-	#else
-		if (!w || !r)
-			throw "CGameScreen: window ou renderer nulo\n";
-	#endif
-	
+    player = new CPlayer(renderer);
+
+    if (!w || !r)
+        throw "CGameScreen: window ou renderer nulo\n";
+
 	if (!player)
 		throw "CGameScreen: player é nulo\n";
 		
@@ -37,11 +21,7 @@
 		throw "CGameScreen: cam é nulo\n";
 
 	// pre seta a transição
-	#ifndef USE_SDL2
-		transition.set_cam(cam, screen);
-	#else
-		transition.set_cam(cam, renderer);
-	#endif
+    transition.set_cam(cam, renderer);
 	transition.set_player(player);
 	
 	#if _WIN32 || _WIN64
@@ -64,34 +44,22 @@
 
 	if (Writer::instance()->load_font(path, path, 80) == 0)
 		throw "CGameScreen: não foi possí­vel carregar fonte\n";
+
+    Writer::instance()->set_renderer(r);
 	
-	#if USE_SDL2
-		Writer::instance()->set_renderer(r);
-	#endif
-	
-	#ifndef USE_SDL2
-		pause = new GuiLabel("PAUSE!", (SDL_Color){0,0,0,0});
-		pause->set_pos(Vect((screen->w - pause->get_surface()->w)/2, (screen->h - pause->get_surface()->h)/2));
-		name_msg = new GuiLabel("YOU GOT A HIGH SCORE!\n Enter your name:", (SDL_Color){255,255,0, 0});
-		name_msg->set_pos(Vect(230, 110));
-		textinput = new GuiTextInput(80, (SDL_Color){255,0,0,0});
-		textinput->set_pos(Vect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_surface()->h));
-		final_msg = new GuiLabel("   final_msg\nPRESS ANY KEY", (SDL_Color){255,0,0,0});
-		final_msg->set_pos(Vect((screen->w - final_msg->get_surface()->w)/2, (screen->h - final_msg->get_surface()->h)/2));
-	#else
-		int width, height;
-		SDL_RenderGetLogicalSize(renderer, &width, &height);
-		
-		pause = new GuiLabel("PAUSE!", (SDL_Color){0,0,0,0});
-		pause->set_pos(Vect((width - pause->get_texture_width())/2, (height - pause->get_texture_height())/2));
-		name_msg = new GuiLabel("YOU GOT A HIGH SCORE!\n Enter your name:", (SDL_Color){255,255,0, 0});
-		name_msg->set_pos(Vect(230, 110));
-		textinput = new GuiTextInput(80, (SDL_Color){255,0,0,0});
-		textinput->set_pos(Vect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_texture_height()));
-		final_msg = new GuiLabel("   FINAL\npress any key", (SDL_Color){255,0,0,0});
-		final_msg->set_pos(Vect((width - final_msg->get_texture_width())/2, (height - final_msg->get_texture_height())/2));
-	#endif
-	
+
+    int width, height;
+    SDL_RenderGetLogicalSize(renderer, &width, &height);
+
+    pause = new GuiLabel("PAUSE!", (SDL_Color){0,0,0,0});
+    pause->set_pos(Vect((width - pause->get_texture_width())/2, (height - pause->get_texture_height())/2));
+    name_msg = new GuiLabel("YOU GOT A HIGH SCORE!\n Enter your name:", (SDL_Color){255,255,0, 0});
+    name_msg->set_pos(Vect(230, 110));
+    textinput = new GuiTextInput(80, (SDL_Color){255,0,0,0});
+    textinput->set_pos(Vect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_texture_height()));
+    final_msg = new GuiLabel("   FINAL\npress any key", (SDL_Color){255,0,0,0});
+    final_msg->set_pos(Vect((width - final_msg->get_texture_width())/2, (height - final_msg->get_texture_height())/2));
+
 	widget.add_child(pause);
 	widget.add_child(name_msg);
 	widget.add_child(textinput);
@@ -103,12 +71,8 @@
 	save[1] = new CSaveGame("DT_save2");
 	save[2] = new CSaveGame("DT_save3");
 	
-	#ifndef USE_SDL2
-		menu = new CGameMenu(save);
-	#else
-		menu = new CGameMenu(save);
-	#endif
-	
+    menu = new CGameMenu(save);
+
 	any_key = enter_key = pause_key = 0;
 	
 	#if _WIN32 || _WIN64
@@ -124,14 +88,9 @@
 			sprintf(path, "%s/share/games/dangeroustux/images/chora_logo.png", PREFIX);
 		#endif
 	#endif
-	
-	#ifndef USE_SDL2
-		SDL_Surface * aux = IMG_Load(path);
-		chora.add_frame(aux, (SDL_Rect){0,0,aux->w,aux->h}, 60);
-	#else
-		SDL_Texture * aux = IMG_LoadTexture(r, path);
-		chora.add_frame(aux, (SDL_Rect){0,0,texture_width(aux),texture_height(aux)}, 60);
-	#endif
+
+    SDL_Texture * aux = IMG_LoadTexture(r, path);
+    chora.add_frame(aux, (SDL_Rect){0,0,texture_width(aux),texture_height(aux)}, 60);
 	chora.set_repeat(false);
 	set_state(CHORA_SCREEN);
 	//credits.reset();
@@ -146,18 +105,16 @@ CGameScreen::~CGameScreen (  )
 		levels[0]->delete_widget();
 		clear_levels();
 	}
-	
-	#ifndef USE_SDL2
-		chora.destroy_surfaces();
-	#else
-		chora.destroy_textures();
-	#endif
-	delete save[0];
-	delete save[1];
-	delete save[2];
+
+    chora.destroy_textures();
+
+	delete pause;
 	delete name_msg;
 	delete textinput;
 	delete final_msg;
+	delete save[0];
+	delete save[1];
+	delete save[2];
 	delete player;
 }
 
@@ -192,11 +149,7 @@ void CGameScreen::input ( SDL_Event & event )
 	
 	if (event.type == SDL_KEYDOWN)
 	{
-		#ifndef USE_SDL2
-			textinput->set_pos(Vect(name_msg->get_pos().x + (name_msg->get_surface()->w - textinput->get_surface()->w)/2, textinput->get_pos().y));
-		#else
-			textinput->set_pos(Vect(name_msg->get_pos().x + (name_msg->get_texture_width() - textinput->get_texture_width())/2, textinput->get_pos().y));
-		#endif
+        textinput->set_pos(Vect(name_msg->get_pos().x + (name_msg->get_texture_width() - textinput->get_texture_width())/2, textinput->get_pos().y));
 		if (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER)
 			enter_key = 1;
 			
@@ -242,103 +195,56 @@ void CGameScreen::draw (  )
 	switch (get_state())
 	{
 		case CHORA_SCREEN:
-			#ifndef USE_SDL2
-				SDL_FillRect(screen, NULL, SDL_MapRGBA(screen->format, 0,0,0,255));
-				chora.draw(chora_pos.x, chora_pos.y, screen);
-			#else
-				SDL_SetRenderDrawColor(renderer, 0,0,0,0xff);
-				SDL_RenderClear(renderer);
-				chora.draw(renderer, chora_pos.x, chora_pos.y);
-			#endif
+            SDL_SetRenderDrawColor(renderer, 0,0,0,0xff);
+            SDL_RenderClear(renderer);
+            chora.draw(renderer, chora_pos.x, chora_pos.y);
 			break;
 
 		case CREDITS_SCREEN:
-			#ifndef USE_SDL2
-				credits.draw(screen);
-			#else
-				credits.draw(renderer);
-			#endif
+            credits.draw(renderer);
 			break;
 
 		case INTRODUCTION:
-			#ifndef USE_SDL2
-				introduction.draw(screen);
-			#else
-				introduction.draw(renderer);
-			#endif
+            introduction.draw(renderer);
 			break;
 
 		case PAUSE_SCREEN:
 		case MAIN_LOOP:
 			if (curr_level < 0)
 				break;
-			
-			#ifndef USE_SDL2
-				SDL_FillRect(screen, NULL, 0x0);
-				levels[curr_level]->draw();
-				widget.draw(screen);
-			#else
-				SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
-				SDL_RenderClear(renderer);
-				levels[curr_level]->draw();
-				widget.draw(renderer);
-			#endif
+            SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
+            SDL_RenderClear(renderer);
+            levels[curr_level]->draw();
+            widget.draw(renderer);
 			break;
 
 		case HIGHSCORE_SCREEN:
-			#ifndef USE_SDL2
-				SDL_FillRect(screen, NULL, 0x0);
-				highscore.draw(screen);
-			#else
-				SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
-				SDL_RenderClear(renderer);
-				highscore.draw(renderer);
-			#endif
+            SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
+            SDL_RenderClear(renderer);
+            highscore.draw(renderer);
 			break;
 
 		case TITLE_SCREEN:
-			#ifndef USE_SDL2
-				title.draw(screen);
-			#else
-				title.draw(renderer);
-			#endif
+            title.draw(renderer);
 			break;
 		
 		case GAMEMENU_SCREEN:
-			#ifndef USE_SDL2
-				title.draw(screen);
-				menu->draw(screen);
-			#else
-				title.draw(renderer);
-				menu->draw(renderer);
-			#endif
+            title.draw(renderer);
+            menu->draw(renderer);
 			break;
 
 		case TRANSITION:
-			#ifndef USE_SDL2
-				transition.draw(screen);
-			#else
-				transition.draw();
-			#endif
+            transition.draw();
 			break;
 
 		case GAMEOVER_SCREEN:
-			#ifndef USE_SDL2
-				gameover.draw(cam, screen);
-			#else
-				gameover.draw(cam, renderer);
-			#endif
+            gameover.draw(cam, renderer);
 			break;
 
 		default:
-			#ifndef USE_SDL2
-				SDL_FillRect(screen, NULL, 0x0);
-				widget.draw(screen);
-			#else
-				SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
-				SDL_RenderClear(renderer);
-				widget.draw(renderer);
-			#endif
+            SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
+            SDL_RenderClear(renderer);
+            widget.draw(renderer);
 			break;
 	}
 }
@@ -519,15 +425,8 @@ int CGameScreen::update (  )
 				ifstream file(path, ifstream::in | ifstream::binary);
 				if (file)
 				{
-					#ifndef USE_SDL2
-						CLevel * l = new CLevel(tilesize, i + 1);
-					#else
-						CLevel * l = new CLevel(renderer, tilesize, i + 1);
-					#endif
-					
-					#ifndef USE_SDL2
-						l->screen = screen;
-					#endif
+                    CLevel * l = new CLevel(renderer, tilesize, i + 1);
+
 					l->player = player;
 					l->cam = cam;
 					
@@ -631,10 +530,8 @@ int CGameScreen::update (  )
 					// É preciso redefinir a fonte
 					if (Writer::instance()->load_font(path, path, 80) == 0)
 						throw "CGameScreen: não conseguiu abrir fonte\n";
-					
-					#if USE_SDL2
-						Writer::instance()->set_renderer(renderer);
-					#endif
+
+                    Writer::instance()->set_renderer(renderer);
 					break;
 				}
 				highscore.show();
@@ -674,9 +571,7 @@ int CGameScreen::update (  )
 					if (Writer::instance()->load_font(path, path, 80) == 0)
 						throw "CGameScreen: não conseguiu abrir fonte\n";
 					
-					#if USE_SDL2
-						Writer::instance()->set_renderer(renderer);
-					#endif
+					Writer::instance()->set_renderer(renderer);
 					break;
 				}
 

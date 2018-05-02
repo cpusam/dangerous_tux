@@ -28,20 +28,12 @@ class CGameCredits: public StateMachine
 		int chosed;
 		
 	public:
-		#ifndef USE_SDL2
-			CGameCredits (  );
-		#else
-			CGameCredits ( SDL_Renderer * r );
-		#endif
-		
+		CGameCredits ( SDL_Renderer * r );
+
 		virtual ~CGameCredits (  );
 		
-		#ifndef USE_SDL2
-			void draw ( SDL_Surface * screen );
-		#else
-			void draw ( SDL_Renderer * renderer );
-		#endif
-		
+		void draw ( SDL_Renderer * renderer );
+
 		void reset (  );
 		
 		int update (  );

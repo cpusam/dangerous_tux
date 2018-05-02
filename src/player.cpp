@@ -1,16 +1,8 @@
 #include "player.hpp"
 
-#ifndef USE_SDL2
-	CPlayer::CPlayer (  ): jetpack(100.0f, 0.1f, false)
-#else
-	CPlayer::CPlayer ( SDL_Renderer * r ): jetpack(100.0f, 0.1f, false)
-#endif
+CPlayer::CPlayer ( SDL_Renderer * r ): jetpack(100.0f, 0.1f, false)
 {
-	#ifndef USE_SDL2
-		SDL_Surface * sright, * sleft;
-	#else
-		SDL_Texture * tright = 0, * tleft = 0;
-	#endif
+	SDL_Texture * tright = 0, * tleft = 0;
 	dir = RIGHT_PLAYER;
 	up_key = down_key = left_key = right_key = 0;
 	jump_key = gun_key = jetpack_key = 0;
@@ -87,200 +79,102 @@
 		_getcwd(p2, sizeof(p2));
 		#ifndef PREFIX
 			sprintf(path, "%s\\images\\tux_right.png", p2);
-			#ifndef USE_SDL2
-				sright = optimize_surface_alpha(IMG_Load(path));
-			#else
-				tright = IMG_LoadTexture(r, path);
-			#endif
-			
+			tright = IMG_LoadTexture(r, path);
+
 			sprintf(path, "%s\\images\\tux_left.png", p2);
-			#ifndef USE_SDL2
-				sleft = optimize_surface_alpha(IMG_Load(path));
-			#else
-				tleft = IMG_LoadTexture(r, path);
-			#endif
+			tleft = IMG_LoadTexture(r, path);
 		#else
 			sprintf(path, "%s\\dangeroustux\\images\\tux_right.png", PREFIX);
-			#ifndef USE_SDL2
-				sright = optimize_surface_alpha(IMG_Load(path));
-			#else
-				tright = IMG_LoadTexture(r, path);
-			#endif
-			
+			tright = IMG_LoadTexture(r, path);
+
 			sprintf(path, "%s\\dangeroustux\\images\\tux_left.png", PREFIX);
-			#ifndef USE_SDL2
-				sleft = optimize_surface_alpha(IMG_Load(path));
-			#else
-				tleft = IMG_LoadTexture(r, path);
-			#endif
-		#endif	
+			tleft = IMG_LoadTexture(r, path);
+		#endif
 	#else
 		char path[1024];
 		#ifndef PREFIX
 			sprintf(path, "./images/tux_right.png");
-			#ifndef USE_SDL2
-				sright = optimize_surface_alpha(IMG_Load(path));
-			#else
-				tright = IMG_LoadTexture(r, path);
-			#endif
-			
+			tright = IMG_LoadTexture(r, path);
+
 			sprintf(path, "./images/tux_left.png");
-			#ifndef USE_SDL2
-				sleft = optimize_surface_alpha(IMG_Load(path));
-			#else
-				tleft = IMG_LoadTexture(r, path);
-			#endif
+			tleft = IMG_LoadTexture(r, path);
 		#else
 			sprintf(path, "%s/share/games/dangeroustux/images/tux_right.png", PREFIX);
-			#ifndef USE_SDL2
-				sright = optimize_surface_alpha(IMG_Load(path));
-			#else
-				tright = IMG_LoadTexture(r, path);
-			#endif
+			tright = IMG_LoadTexture(r, path);
 
 			sprintf(path, "%s/share/games/dangeroustux/images/tux_left.png", PREFIX);
-			#ifndef USE_SDL2
-				sleft = optimize_surface_alpha(IMG_Load(path));
-			#else
-				tleft = IMG_LoadTexture(r, path);
-			#endif
-		#endif			
+			tleft = IMG_LoadTexture(r, path);
+		#endif
 	#endif
 	
-	#ifndef USE_SDL2
-		if (!sright)
-				throw SDL_GetError();
-	
-		if (!sleft)
+	if (!tright)
 			throw SDL_GetError();
-		// virado para direita
-		// parado
-		anim[0].add_frame(sright, (SDL_Rect){48 * 3,0,48,48}, 1);
-		// caminhando
-		anim[1].add_frame(sright, (SDL_Rect){0,0,48,48}, 3);
-		anim[1].add_frame(sright, (SDL_Rect){48,0,48,48}, 5);
-		anim[1].add_frame(sright, (SDL_Rect){48*2,0,48,48}, 3);
-		// pulando ou caindo
-		anim[2].add_frame(sright, (SDL_Rect){0,48*2,48,48}, 1);
-		// parado nas árvores
-		anim[3].add_frame(sright, (SDL_Rect){48*2,48,48,48}, 1);
-		// caminhando nas árvores
-		anim[4].add_frame(sright, (SDL_Rect){0,48,48,48}, 4);
-		anim[4].add_frame(sright, (SDL_Rect){48,48,48,48}, 4);
-		// no jetpack
-		anim[5].add_frame(sright, (SDL_Rect){0,48*3,48,48}, 2);
-		anim[5].add_frame(sright, (SDL_Rect){48,48*3,48,48}, 2);
-		anim[5].add_frame(sright, (SDL_Rect){48*2,48*3,48,48}, 2);
-		// atirando
-		anim[14].add_frame(sright, (SDL_Rect){0,48*6,48,48}, 3);
-		anim[14].add_frame(sright, (SDL_Rect){48,48*6,48,48}, 3);
-		anim[14].add_frame(sright, (SDL_Rect){48*2,48*6,48,48}, 3);
 
-		// virado para esquerda
-		// parado
-		anim[6].add_frame(sleft, (SDL_Rect){48 * 3,0,48,48}, 1);
-		// caminhando
-		anim[7].add_frame(sleft, (SDL_Rect){0,0,48,48}, 3);
-		anim[7].add_frame(sleft, (SDL_Rect){48,0,48,48}, 5);
-		anim[7].add_frame(sleft, (SDL_Rect){48*2,0,48,48}, 3);
-		// pulando ou caindo
-		anim[8].add_frame(sleft, (SDL_Rect){0,48*2,48,48}, 1);
-		// parado nas árvores
-		anim[9].add_frame(sleft, (SDL_Rect){48*2,48,48,48}, 1);
-		// caminhando nas árvores
-		anim[10].add_frame(sleft, (SDL_Rect){0,48,48,48}, 4);
-		anim[10].add_frame(sleft, (SDL_Rect){48,48,48,48}, 4);
-		// no jetpack
-		anim[11].add_frame(sleft, (SDL_Rect){0,48*3,48,48}, 2);
-		anim[11].add_frame(sleft, (SDL_Rect){48,48*3,48,48}, 2);
-		anim[11].add_frame(sleft, (SDL_Rect){48*2,48*3,48,48}, 2);
-		// atirando
-		anim[15].add_frame(sleft, (SDL_Rect){0,48*6,48,48}, 3);
-		anim[15].add_frame(sleft, (SDL_Rect){48,48*6,48,48}, 3);
-		anim[15].add_frame(sleft, (SDL_Rect){48*2,48*6,48,48}, 3);
-	
-		// morrendo
-		anim[12].add_frame(sright, (SDL_Rect){0,48*4,48,48}, 6);
-		anim[12].add_frame(sright, (SDL_Rect){48,48*4,48,48}, 6);
-		anim[12].add_frame(sright, (SDL_Rect){48*2,48*4,48,48}, 10);
-		// esperando ser controlado
-		anim[13].add_frame(sright, (SDL_Rect){0,48*5,48,48}, 8);
-		anim[13].add_frame(sright, (SDL_Rect){0,0,0,0}, 4);
-	#else
-		if (!tright)
-				throw SDL_GetError();
-	
-		if (!tleft)
-			throw SDL_GetError();
-		
-		// virado para direita
-		// parado
-		anim[0].add_frame(tright, (SDL_Rect){48 * 3,0,48,48}, 1);
-		// caminhando
-		anim[1].add_frame(tright, (SDL_Rect){0,0,48,48}, 3);
-		anim[1].add_frame(tright, (SDL_Rect){48,0,48,48}, 5);
-		anim[1].add_frame(tright, (SDL_Rect){48*2,0,48,48}, 3);
-		// pulando ou caindo
-		anim[2].add_frame(tright, (SDL_Rect){0,48*2,48,48}, 1);
-		// parado nas árvores
-		anim[3].add_frame(tright, (SDL_Rect){48*2,48,48,48}, 1);
-		// caminhando nas árvores
-		anim[4].add_frame(tright, (SDL_Rect){0,48,48,48}, 4);
-		anim[4].add_frame(tright, (SDL_Rect){48,48,48,48}, 4);
-		// no jetpack
-		anim[5].add_frame(tright, (SDL_Rect){0,48*3,48,48}, 2);
-		anim[5].add_frame(tright, (SDL_Rect){48,48*3,48,48}, 2);
-		anim[5].add_frame(tright, (SDL_Rect){48*2,48*3,48,48}, 2);
-		// atirando
-		anim[14].add_frame(tright, (SDL_Rect){0,48*6,48,48}, 3);
-		anim[14].add_frame(tright, (SDL_Rect){48,48*6,48,48}, 3);
-		anim[14].add_frame(tright, (SDL_Rect){48*2,48*6,48,48}, 3);
+	if (!tleft)
+		throw SDL_GetError();
 
-		// virado para esquerda
-		// parado
-		anim[6].add_frame(tleft, (SDL_Rect){48 * 3,0,48,48}, 1);
-		// caminhando
-		anim[7].add_frame(tleft, (SDL_Rect){0,0,48,48}, 3);
-		anim[7].add_frame(tleft, (SDL_Rect){48,0,48,48}, 5);
-		anim[7].add_frame(tleft, (SDL_Rect){48*2,0,48,48}, 3);
-		// pulando ou caindo
-		anim[8].add_frame(tleft, (SDL_Rect){0,48*2,48,48}, 1);
-		// parado nas árvores
-		anim[9].add_frame(tleft, (SDL_Rect){48*2,48,48,48}, 1);
-		// caminhando nas árvores
-		anim[10].add_frame(tleft, (SDL_Rect){0,48,48,48}, 4);
-		anim[10].add_frame(tleft, (SDL_Rect){48,48,48,48}, 4);
-		// no jetpack
-		anim[11].add_frame(tleft, (SDL_Rect){0,48*3,48,48}, 2);
-		anim[11].add_frame(tleft, (SDL_Rect){48,48*3,48,48}, 2);
-		anim[11].add_frame(tleft, (SDL_Rect){48*2,48*3,48,48}, 2);
-		// atirando
-		anim[15].add_frame(tleft, (SDL_Rect){0,48*6,48,48}, 3);
-		anim[15].add_frame(tleft, (SDL_Rect){48,48*6,48,48}, 3);
-		anim[15].add_frame(tleft, (SDL_Rect){48*2,48*6,48,48}, 3);
-	
-		// morrendo
-		anim[12].add_frame(tright, (SDL_Rect){0,48*4,48,48}, 6);
-		anim[12].add_frame(tright, (SDL_Rect){48,48*4,48,48}, 6);
-		anim[12].add_frame(tright, (SDL_Rect){48*2,48*4,48,48}, 10);
-		// esperando ser controlado
-		anim[13].add_frame(tright, (SDL_Rect){0,48*5,48,48}, 8);
-		anim[13].add_frame(tright, (SDL_Rect){0,0,0,0}, 4);
-	#endif
+	// virado para direita
+	// parado
+	anim[0].add_frame(tright, (SDL_Rect){48 * 3,0,48,48}, 1);
+	// caminhando
+	anim[1].add_frame(tright, (SDL_Rect){0,0,48,48}, 3);
+	anim[1].add_frame(tright, (SDL_Rect){48,0,48,48}, 5);
+	anim[1].add_frame(tright, (SDL_Rect){48*2,0,48,48}, 3);
+	// pulando ou caindo
+	anim[2].add_frame(tright, (SDL_Rect){0,48*2,48,48}, 1);
+	// parado nas árvores
+	anim[3].add_frame(tright, (SDL_Rect){48*2,48,48,48}, 1);
+	// caminhando nas árvores
+	anim[4].add_frame(tright, (SDL_Rect){0,48,48,48}, 4);
+	anim[4].add_frame(tright, (SDL_Rect){48,48,48,48}, 4);
+	// no jetpack
+	anim[5].add_frame(tright, (SDL_Rect){0,48*3,48,48}, 2);
+	anim[5].add_frame(tright, (SDL_Rect){48,48*3,48,48}, 2);
+	anim[5].add_frame(tright, (SDL_Rect){48*2,48*3,48,48}, 2);
+	// atirando
+	anim[14].add_frame(tright, (SDL_Rect){0,48*6,48,48}, 3);
+	anim[14].add_frame(tright, (SDL_Rect){48,48*6,48,48}, 3);
+	anim[14].add_frame(tright, (SDL_Rect){48*2,48*6,48,48}, 3);
+
+	// virado para esquerda
+	// parado
+	anim[6].add_frame(tleft, (SDL_Rect){48 * 3,0,48,48}, 1);
+	// caminhando
+	anim[7].add_frame(tleft, (SDL_Rect){0,0,48,48}, 3);
+	anim[7].add_frame(tleft, (SDL_Rect){48,0,48,48}, 5);
+	anim[7].add_frame(tleft, (SDL_Rect){48*2,0,48,48}, 3);
+	// pulando ou caindo
+	anim[8].add_frame(tleft, (SDL_Rect){0,48*2,48,48}, 1);
+	// parado nas árvores
+	anim[9].add_frame(tleft, (SDL_Rect){48*2,48,48,48}, 1);
+	// caminhando nas árvores
+	anim[10].add_frame(tleft, (SDL_Rect){0,48,48,48}, 4);
+	anim[10].add_frame(tleft, (SDL_Rect){48,48,48,48}, 4);
+	// no jetpack
+	anim[11].add_frame(tleft, (SDL_Rect){0,48*3,48,48}, 2);
+	anim[11].add_frame(tleft, (SDL_Rect){48,48*3,48,48}, 2);
+	anim[11].add_frame(tleft, (SDL_Rect){48*2,48*3,48,48}, 2);
+	// atirando
+	anim[15].add_frame(tleft, (SDL_Rect){0,48*6,48,48}, 3);
+	anim[15].add_frame(tleft, (SDL_Rect){48,48*6,48,48}, 3);
+	anim[15].add_frame(tleft, (SDL_Rect){48*2,48*6,48,48}, 3);
+
+	// morrendo
+	anim[12].add_frame(tright, (SDL_Rect){0,48*4,48,48}, 6);
+	anim[12].add_frame(tright, (SDL_Rect){48,48*4,48,48}, 6);
+	anim[12].add_frame(tright, (SDL_Rect){48*2,48*4,48,48}, 10);
+	// esperando ser controlado
+	anim[13].add_frame(tright, (SDL_Rect){0,48*5,48,48}, 8);
+	anim[13].add_frame(tright, (SDL_Rect){0,0,0,0}, 4);
 	
 	curr_anim = &anim[13];
 }
 
-CPlayer::	~CPlayer ( )
+CPlayer::~CPlayer ( )
 {
-	#ifndef USE_SDL2
-		anim[0].destroy_surfaces();
-		anim[6].destroy_surfaces();
-	#else
-		anim[0].destroy_textures();
-		anim[6].destroy_textures();
-	#endif
-	
+	anim[0].destroy_textures();
+	anim[6].destroy_textures();
+
 	if (has_joystick)
 		SDL_JoystickClose(joystick);
 } 
@@ -741,19 +635,11 @@ void CPlayer::input ( SDL_Event & event )
 	}
 }
 
-#ifndef USE_SDL2
-void CPlayer::draw ( Camera * cam, SDL_Surface * screen )
-{
-	if (curr_anim)
-		curr_anim->draw(pos.x, pos.y, cam, screen);
-}
-#else
 void CPlayer::draw ( Camera * cam, SDL_Renderer * renderer )
 {
 	if (curr_anim)
 		curr_anim->draw(renderer, cam, pos.x, pos.y);
 }
-#endif
 
 int CPlayer::update (  )
 {

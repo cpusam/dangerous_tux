@@ -25,17 +25,10 @@ class CGameIntroduction: public StateMachine
 {
 	protected:
 		std::vector <Animation> anim;
-		#ifndef USE_SDL2
-			SDL_Surface * browser_bg;
-			SDL_Surface * keyboard_bg;
-			SDL_Surface * kernel_site;
-			SDL_Surface * igloo_bg;
-		#else
-			SDL_Texture * browser_bg;
-			SDL_Texture * keyboard_bg;
-			SDL_Texture * kernel_site;
-			SDL_Texture * igloo_bg;
-		#endif
+		SDL_Texture * browser_bg;
+		SDL_Texture * keyboard_bg;
+		SDL_Texture * kernel_site;
+		SDL_Texture * igloo_bg;
 		GuiLabel * parallel; // frase: "In a parallel universe..."
 		GuiLabel * later; // frase "Some time later..."
 		int pos_hand; // posição da mão
@@ -55,22 +48,14 @@ class CGameIntroduction: public StateMachine
 		int dialog_count; // contador de diálogos mostrados
 	
 	public:
-		#ifndef USE_SDL2
-			CGameIntroduction (  );
-		#else
-			CGameIntroduction ( SDL_Renderer * r );
-		#endif
-		
+		CGameIntroduction ( SDL_Renderer * r );
+
 		virtual ~CGameIntroduction (  );
 		
 		void reset (  );
-		
-		#ifndef USE_SDL2
-			void draw ( SDL_Surface * screen );
-		#else
-			void draw ( SDL_Renderer * renderer );
-		#endif
-		
+
+		void draw ( SDL_Renderer * renderer );
+
 		int update (  );
 };
 

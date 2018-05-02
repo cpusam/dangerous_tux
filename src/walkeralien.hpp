@@ -24,11 +24,7 @@ class CWalkerAlien: public CGameEntity
 		SAlienConfig config;
 		
 	public:
-		#ifndef USE_SDL2
-			CWalkerAlien ( CPlayer * p, int m_d, Vect i_p );
-		#else
-			CWalkerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p );
-		#endif
+		CWalkerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p );
 		
 		virtual ~CWalkerAlien (  );
 		
@@ -48,11 +44,7 @@ class CWalkerAlien: public CGameEntity
 		
 		void kill (  );
 		
-		#ifndef USE_SDL2
-			void draw ( Camera * cam, SDL_Surface * screen );
-		#else
-			void draw ( Camera * cam, SDL_Renderer * renderer );
-		#endif
+		void draw ( Camera * cam, SDL_Renderer * renderer );
 		
 		void process (  );
 		

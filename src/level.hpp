@@ -39,20 +39,11 @@ class CLevel: public StateMachine
 		SDL_Color widget_color;
 		static Widget * widget; // os widgets do level
 		static CPlayer * player;
-		#ifndef USE_SDL2
-			static SDL_Surface * screen;
-		#endif
 		static Camera * cam;
-		#if USE_SDL2
-			static SDL_Renderer * renderer;
-		#endif
+		static SDL_Renderer * renderer;
 
 	public:
-		#ifndef USE_SDL2
-			CLevel ( int tilesize, int i );
-		#else
-			CLevel ( SDL_Renderer * r, int tilesize, int i );
-		#endif
+		CLevel ( SDL_Renderer * r, int tilesize, int i );
 		
 		virtual ~CLevel (  );
 		

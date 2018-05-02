@@ -39,18 +39,12 @@ class CHighScore: public Widget
 		GuiLabel * name;
 		GuiLabel * score;
 		GuiLabel * level;
-		#if USE_SDL2
-			SDL_Renderer * renderer;
-		#endif
+		SDL_Renderer * renderer;
 		bool can_set_widgets;
 		int nscore; // novo score posição em ps + 1
 
 	public:
-		#ifndef USE_SDL2
-			CHighScore (  );
-		#else
-			CHighScore ( SDL_Renderer * r );
-		#endif
+		CHighScore ( SDL_Renderer * r );
 		
 		~CHighScore (  );
 

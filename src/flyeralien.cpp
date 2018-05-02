@@ -1,14 +1,8 @@
 #include "flyeralien.hpp"
 
-#ifndef USE_SDL2
-	CFlyerAlien::CFlyerAlien ( CPlayer * p, int m_d, Vect i_p )
-#else
-	CFlyerAlien::CFlyerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p )
-#endif
+CFlyerAlien::CFlyerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p )
 {
-	#if USE_SDL2
-		SDL_Texture * texture = 0;
-	#endif
+	SDL_Texture * texture = 0;
 	SDL_Surface * aux = 0;
 	dir = LEFT_ALIEN; // direção a seguir, LEFT_ALIEN ou RIGHT_ALIEN
 	shot_dir = LEFT_ALIEN;
@@ -42,47 +36,27 @@
 			sprintf(path, "%s/share/games/dangeroustux/images/flyeralien.png", PREFIX);
 		#endif
 	#endif
-	
-	#ifndef USE_SDL2
-		aux = optimize_surface_alpha(IMG_Load(path));
-		if (!aux)
-			throw "CFlyerAlien: não conseguiu abrir flyeralien.png\n";
-		
-		// animações
-		// voando
-		anim[0].add_frame(aux, (SDL_Rect){0,0,48,48}, 3);
-		// atirando
-		anim[1].add_frame(aux, (SDL_Rect){0,0,48,48}, 3);
-		// morrendo
-		anim[2].add_frame(aux, (SDL_Rect){0,48*2,48,48}, 6);
-		anim[2].add_frame(aux, (SDL_Rect){48,48*2,48,48}, 6);
-		anim[2].add_frame(aux, (SDL_Rect){48*2,48*2,48,48}, 6);
-	#else
-		texture = IMG_LoadTexture(r, path);
-		if (!texture)
-			throw "CFlyerAlien: não conseguiu abrir flyeralien.png\n";
-		
-		// animações
-		// voando
-		anim[0].add_frame(texture, (SDL_Rect){0,0,48,48}, 3);
-		// atirando
-		anim[1].add_frame(texture, (SDL_Rect){0,0,48,48}, 3);
-		// morrendo
-		anim[2].add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
-		anim[2].add_frame(texture, (SDL_Rect){48,48*2,48,48}, 6);
-		anim[2].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 6);
-	#endif
+
+	texture = IMG_LoadTexture(r, path);
+	if (!texture)
+		throw "CFlyerAlien: não conseguiu abrir flyeralien.png\n";
+
+	// animações
+	// voando
+	anim[0].add_frame(texture, (SDL_Rect){0,0,48,48}, 3);
+	// atirando
+	anim[1].add_frame(texture, (SDL_Rect){0,0,48,48}, 3);
+	// morrendo
+	anim[2].add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
+	anim[2].add_frame(texture, (SDL_Rect){48,48*2,48,48}, 6);
+	anim[2].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 6);
 	
 	reset();
 }
 
 CFlyerAlien::~CFlyerAlien (  )
 {
-	#ifndef USE_SDL2
-		anim[0].destroy_surfaces();
-	#else
-		anim[0].destroy_textures();
-	#endif
+	anim[0].destroy_textures();
 }
 
 
@@ -111,24 +85,13 @@ void CFlyerAlien::kill (  )
 	set_state(DYING_ALIEN);
 }
 
-#ifndef USE_SDL2
-	void CFlyerAlien::draw ( Camera * cam, SDL_Surface * screen )
-#else
-	void CFlyerAlien::draw ( Camera * cam, SDL_Renderer * renderer )
-#endif
+void CFlyerAlien::draw ( Camera * cam, SDL_Renderer * renderer )
 {
-	#ifndef USE_SDL2
-		if (curr_anim)
-			curr_anim->draw(pos.x, pos.y, cam, screen);
-	
-		gun.draw(cam, screen);
-	#else
-		if (curr_anim)
-			curr_anim->draw(renderer, cam, pos.x, pos.y);
-		
-		gun.draw(cam, renderer);
-	#endif
-	
+	if (curr_anim)
+		curr_anim->draw(renderer, cam, pos.x, pos.y);
+
+	gun.draw(cam, renderer);
+
 	if (get_state() == INACTIVE_ALIEN)
 		return;
 	

@@ -37,10 +37,6 @@
 
 #include "gamescreen.hpp" // cont�m todos os headers do jogo
 
-#ifndef USE_SDL2
-	#include "video.hpp"
-#endif
-
 #define TILESIZE 48
 
 #ifdef EMSCRIPTEN
@@ -48,11 +44,7 @@
 	
 	struct SGameData
 	{
-		#ifndef USE_SDL2
-			SDL_Surface * screen;
-		#else
-			SDL_Renderer * renderer;
-		#endif
+		SDL_Renderer * renderer;
 		CGameScreen * gamescreen;
 	};
 	
@@ -65,13 +57,9 @@
 		while (SDL_PollEvent(&event))
 			gd->gamescreen->input(event);
 
-		#ifndef USE_SDL2
-			SDL_FillRect(gd->screen, NULL, SDL_MapRGBA(gd->screen->format, 0,0,0,255));
-		#else
-			SDL_SetRenderDrawColor(gd->renderer, 0,0,0,0xff);
-			SDL_RenderClear(gd->renderer);
-		#endif
-		
+		SDL_SetRenderDrawColor(gd->renderer, 0,0,0,0xff);
+		SDL_RenderClear(gd->renderer);
+
 		if (gd->gamescreen->update() == MAIN_LOOP)
 		{
 			if (!set_main_loop)
@@ -93,15 +81,9 @@ int main ( int argc, char **argv )
 	try
 	{
 		srand(time(0));
-		
-		#ifndef USE_SDL2 
-			#ifndef EMSCRIPTEN
-				SDL_putenv("SDL_VIDEO_CENTERED=center");
-			#endif
-		#else
-			#if _WIN32 || _WIN64
-				SDL_SetMainReady();
-			#endif
+
+		#if _WIN32 || _WIN64
+			SDL_SetMainReady();
 		#endif
 
 		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_JOYSTICK) < 0)
@@ -121,39 +103,23 @@ int main ( int argc, char **argv )
 		SDL_Event event;
 		
 		int fullscreen = 0;
-		#ifndef USE_SDL2
-			// no tamanho aproximado do dangerous dave original
-			SDL_Surface * screen = set_screen(TILESIZE * 20, TILESIZE * 13);
-			if (!screen)
-				throw SDL_GetError();
-			SDL_WM_SetCaption("Dangerous Tux - alpha version 2018", NULL);
-		#else
-			SDL_Window * window = SDL_CreateWindow("Dangerous Tux! Alpha version 2018", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
-			SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-			
-			SDL_Texture * target_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, TILESIZE * 20, TILESIZE * 13);
-			
-			
-			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // em fase de testes
-			SDL_RenderSetLogicalSize(renderer, TILESIZE * 20, TILESIZE * 13);
-		#endif
+		SDL_Window * window = SDL_CreateWindow("Dangerous Tux! Alpha version 2018", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, TILESIZE * 20, TILESIZE * 13, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_SHOWN);
+		SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+		SDL_Texture * target_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, TILESIZE * 20, TILESIZE * 13);
+
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear"); // em fase de testes
+		SDL_RenderSetLogicalSize(renderer, TILESIZE * 20, TILESIZE * 13);
 
 		Camera cam(renderer, 0,0,TILESIZE * 20,TILESIZE * 13,TILESIZE * 20,TILESIZE * 13, (SDL_Rect){0,0,TILESIZE * 20,TILESIZE * 13});
-		#ifndef USE_SDL2
-			CGameScreen gamescreen(screen, &cam, TILESIZE);
-		#else
-			Writer::instance()->set_renderer(renderer);
-			CGameScreen gamescreen(window, renderer, &cam, TILESIZE);
-		#endif
-		
+		Writer::instance()->set_renderer(renderer);
+		CGameScreen gamescreen(window, renderer, &cam, TILESIZE);
+
 		#ifdef EMSCRIPTEN
 			SGameData gdata;
 			gdata.gamescreen = &gamescreen;
-			#ifndef USE_SDL2
-				gdata.screen = screen;
-			#else
-				gdata.renderer = renderer;
-			#endif
+			gdata.screen = screen;
+			gdata.renderer = renderer;
 			emscripten_set_main_loop_arg(main_loop, (void *)&gdata, 40, 1);
 		#else
 			int done = 0;
@@ -173,22 +139,11 @@ int main ( int argc, char **argv )
 							done = 1;
 						else if (event.key.keysym.sym == SDLK_f)
 						{
-							/*
-							#ifndef USE_SDL2
-								fullscreen = screen->flags;
-								fullscreen ^= SDL_FULLSCREEN;
-								screen = SDL_SetVideoMode(screen->w, screen->h, screen->format->BitsPerPixel, fullscreen);
-								if (!screen)
-									throw SDL_GetError();
+							#if _WIN32 || _WIN64 || __linux__
+								fullscreen ^= SDL_WINDOW_FULLSCREEN_DESKTOP;
+								SDL_SetWindowFullscreen(window, fullscreen);
 							#else
-							*/
-							#if USE_SDL2
-								#if _WIN32 || _WIN64 || __linux__
-									fullscreen ^= SDL_WINDOW_FULLSCREEN_DESKTOP;
-									SDL_SetWindowFullscreen(window, fullscreen);
-								#else
-									std::cout << "Fullscreen desativado para seu sistema, sorry!\n";
-								#endif
+								std::cout << "Fullscreen desativado para seu sistema, sorry!\n";
 							#endif
 						}
 					}
@@ -202,55 +157,41 @@ int main ( int argc, char **argv )
 				{
 					if (gamescreen.update() == EXIT_SCREEN)
 						done = 1;
-					#ifndef USE_SDL2
-						SDL_FillRect(screen, NULL, SDL_MapRGBA(screen->format, 0,0,0,255));
-						gamescreen.draw();
-						SDL_UpdateRect(screen, 0,0,0,0);
-					#else
-						SDL_SetRenderTarget(renderer, target_texture);
-						SDL_SetRenderDrawColor(renderer, 0,0,0,255);
-						SDL_RenderClear(renderer);
+					SDL_SetRenderTarget(renderer, target_texture);
+					SDL_SetRenderDrawColor(renderer, 0,0,0,255);
+					SDL_RenderClear(renderer);
 
-						gamescreen.draw();
-						cam.updateViewport(renderer);
+					gamescreen.draw();
+					cam.updateViewport(renderer);
 
-						SDL_SetRenderTarget(renderer, nullptr);
-						SDL_RenderCopyEx(renderer, target_texture, NULL, NULL, 0, NULL, SDL_FLIP_NONE);
-						SDL_RenderPresent(renderer);
-					#endif
+					SDL_SetRenderTarget(renderer, nullptr);
+					SDL_RenderCopyEx(renderer, target_texture, NULL, NULL, 0, NULL, SDL_FLIP_NONE);
+					SDL_RenderPresent(renderer);
 				}
 			}
 		#endif
-		
-		#ifdef USE_SDL2
-			SDL_DestroyTexture(target_texture);
-			SDL_DestroyWindow(window);
-			SDL_DestroyRenderer(renderer);
-		#endif
+
+		SDL_DestroyTexture(target_texture);
+		SDL_DestroyWindow(window);
+		SDL_DestroyRenderer(renderer);
 	}
 	catch (const char * e)
 	{
 		std::cout << "Erro: " << e << std::endl;
-		#ifdef USE_SDL2
-			SDL_Log(e);
-		#endif
+		SDL_Log(e);
 		return 1;
 	}
 	// Erros com alguma lib SDL
 	catch (char * e)
 	{
 		std::cout << "Erro: " << e << std::endl;
-		#ifdef USE_SDL2
-			SDL_Log(e);
-		#endif
+		SDL_Log(e);
 		return 1;
 	}
 	catch (std::exception & e)
 	{
 		std::cout << e.what() << std::endl;
-		#ifdef USE_SDL2
-			SDL_Log(e.what());
-		#endif
+		SDL_Log(e.what());
 		return 1;
 	}
 	

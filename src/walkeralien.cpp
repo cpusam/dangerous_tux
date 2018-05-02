@@ -1,14 +1,8 @@
 #include "walkeralien.hpp"
 
-#ifndef USE_SDL2
-	CWalkerAlien::CWalkerAlien ( CPlayer * p, int m_d, Vect i_p )
-#else
-	CWalkerAlien::CWalkerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p )
-#endif
+CWalkerAlien::CWalkerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p )
 {
-	#if USE_SDL2
-		SDL_Texture * texture = 0;
-	#endif
+	SDL_Texture * texture = 0;
 	SDL_Surface * aux = 0;
 	dir = LEFT_ALIEN;
 	player = p;
@@ -76,43 +70,23 @@
 		#endif
 	#endif
 	
-	#ifndef USE_SDL2
-		aux = optimize_surface_alpha(IMG_Load(path));
-		if (!aux)
-			throw "CWalkerAlien: não foi possível abrir walkeralien_right.png\n";
-		
-		// virado para direita
-		// caminhando para direita
-		anim[0].add_frame(aux, (SDL_Rect){0,0,48,48}, 3);
-		anim[0].add_frame(aux, (SDL_Rect){48,0,48,48}, 5);
-		anim[0].add_frame(aux, (SDL_Rect){48*2,0,48,48}, 3);
-		// atirando para direita
-		anim[1].add_frame(aux, (SDL_Rect){0,48,48,48}, 3);
-		anim[1].add_frame(aux, (SDL_Rect){48,48,48,48}, 3);
-		anim[1].add_frame(aux, (SDL_Rect){48*2,48,48,48}, 3);
-		// morrendo
-		anim[4].add_frame(aux, (SDL_Rect){0,48*2,48,48}, 6);
-		anim[4].add_frame(aux, (SDL_Rect){48,48*2,48,48}, 6);
-		anim[4].add_frame(aux, (SDL_Rect){48*2,48*2,48,48}, 6);
-	#else
-		texture = IMG_LoadTexture(r, path);
-		if (!texture)
-			throw "CWalkerAlien: não foi possível abrir walkeralien_right.png\n";
-		
-		// virado para direita
-		// caminhando para direita
-		anim[0].add_frame(texture, (SDL_Rect){0,0,48,48}, 3);
-		anim[0].add_frame(texture, (SDL_Rect){48,0,48,48}, 5);
-		anim[0].add_frame(texture, (SDL_Rect){48*2,0,48,48}, 3);
-		// atirando para direita
-		anim[1].add_frame(texture, (SDL_Rect){0,48,48,48}, 3);
-		anim[1].add_frame(texture, (SDL_Rect){48,48,48,48}, 3);
-		anim[1].add_frame(texture, (SDL_Rect){48*2,48,48,48}, 3);
-		// morrendo
-		anim[4].add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
-		anim[4].add_frame(texture, (SDL_Rect){48,48*2,48,48}, 6);
-		anim[4].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 6);
-	#endif
+	texture = IMG_LoadTexture(r, path);
+	if (!texture)
+		throw "CWalkerAlien: não foi possível abrir walkeralien_right.png\n";
+
+	// virado para direita
+	// caminhando para direita
+	anim[0].add_frame(texture, (SDL_Rect){0,0,48,48}, 3);
+	anim[0].add_frame(texture, (SDL_Rect){48,0,48,48}, 5);
+	anim[0].add_frame(texture, (SDL_Rect){48*2,0,48,48}, 3);
+	// atirando para direita
+	anim[1].add_frame(texture, (SDL_Rect){0,48,48,48}, 3);
+	anim[1].add_frame(texture, (SDL_Rect){48,48,48,48}, 3);
+	anim[1].add_frame(texture, (SDL_Rect){48*2,48,48,48}, 3);
+	// morrendo
+	anim[4].add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
+	anim[4].add_frame(texture, (SDL_Rect){48,48*2,48,48}, 6);
+	anim[4].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 6);
 	
 	
 	#if _WIN32 || _WIN64
@@ -129,43 +103,23 @@
 		#endif
 	#endif
 	
-	#ifndef USE_SDL2
-		aux = optimize_surface_alpha(IMG_Load(path));
-		if (!aux)
-			throw "CWalkerAlien: não foi possível abrir walkeralien_left.png\n";
-		
-		// virado para esquerda
-		// caminhando para esquerda
-		anim[2].add_frame(aux, (SDL_Rect){0,0,48,48}, 3);
-		anim[2].add_frame(aux, (SDL_Rect){48,0,48,48}, 5);
-		anim[2].add_frame(aux, (SDL_Rect){48*2,0,48,48}, 3);
-		// atirano para esquerda
-		anim[3].add_frame(aux, (SDL_Rect){0,48,48,48}, 3);
-		anim[3].add_frame(aux, (SDL_Rect){48,48,48,48}, 3);
-		anim[3].add_frame(aux, (SDL_Rect){48*2,48,48,48}, 3);
-		//morrendo
-		anim[5].add_frame(aux, (SDL_Rect){0,48*2,48,48}, 6);
-		anim[5].add_frame(aux, (SDL_Rect){48,48*2,48,48}, 6);
-		anim[5].add_frame(aux, (SDL_Rect){48*2,48*2,48,48}, 6);
-	#else
-		texture = IMG_LoadTexture(r, path);
-		if (!texture)
-			throw "CWalkerAlien: não foi possível abrir walkeralien_left.png\n";
-		
-		// virado para esquerda
-		// caminhando para esquerda
-		anim[2].add_frame(texture, (SDL_Rect){0,0,48,48}, 3);
-		anim[2].add_frame(texture, (SDL_Rect){48,0,48,48}, 5);
-		anim[2].add_frame(texture, (SDL_Rect){48*2,0,48,48}, 3);
-		// atirano para esquerda
-		anim[3].add_frame(texture, (SDL_Rect){0,48,48,48}, 3);
-		anim[3].add_frame(texture, (SDL_Rect){48,48,48,48}, 3);
-		anim[3].add_frame(texture, (SDL_Rect){48*2,48,48,48}, 3);
-		//morrendo
-		anim[5].add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
-		anim[5].add_frame(texture, (SDL_Rect){48,48*2,48,48}, 6);
-		anim[5].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 6);
-	#endif
+	texture = IMG_LoadTexture(r, path);
+	if (!texture)
+		throw "CWalkerAlien: não foi possível abrir walkeralien_left.png\n";
+
+	// virado para esquerda
+	// caminhando para esquerda
+	anim[2].add_frame(texture, (SDL_Rect){0,0,48,48}, 3);
+	anim[2].add_frame(texture, (SDL_Rect){48,0,48,48}, 5);
+	anim[2].add_frame(texture, (SDL_Rect){48*2,0,48,48}, 3);
+	// atirano para esquerda
+	anim[3].add_frame(texture, (SDL_Rect){0,48,48,48}, 3);
+	anim[3].add_frame(texture, (SDL_Rect){48,48,48,48}, 3);
+	anim[3].add_frame(texture, (SDL_Rect){48*2,48,48,48}, 3);
+	//morrendo
+	anim[5].add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
+	anim[5].add_frame(texture, (SDL_Rect){48,48*2,48,48}, 6);
+	anim[5].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 6);
 
 	curr_anim = &anim[0];
 	
@@ -174,13 +128,8 @@
 
 CWalkerAlien::~CWalkerAlien (  )
 {
-	#ifndef USE_SDL2
-		anim[0].destroy_surfaces();
-		anim[2].destroy_surfaces();
-	#else
-		anim[0].destroy_textures();
-		anim[2].destroy_textures();
-	#endif
+	anim[0].destroy_textures();
+	anim[2].destroy_textures();
 }
 
 void CWalkerAlien::set_map ( TileMap * m )
@@ -318,23 +267,13 @@ void CWalkerAlien::kill (  )
 	set_state(DYING_ALIEN);
 }
 
-#ifndef USE_SDL2
-	void CWalkerAlien::draw ( Camera * cam, SDL_Surface * screen )
-#else
-	void CWalkerAlien::draw ( Camera * cam, SDL_Renderer * renderer )
-#endif
+void CWalkerAlien::draw ( Camera * cam, SDL_Renderer * renderer )
 {
-	#ifndef USE_SDL2
-		if (curr_anim)
-			curr_anim->draw(pos.x, pos.y, cam, screen);
-	
-		gun.draw(cam, screen);
-	#else
-		if (curr_anim)
-			curr_anim->draw(renderer, cam, pos.x, pos.y);
-	
-		gun.draw(cam, renderer);
-		#endif
+	if (curr_anim)
+		curr_anim->draw(renderer, cam, pos.x, pos.y);
+
+	gun.draw(cam, renderer);
+
 	
 	if (get_state() == INACTIVE_ALIEN)
 		return;

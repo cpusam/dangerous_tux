@@ -16,36 +16,22 @@ class CGameTransition: public StateMachine
 		TileMapView * map;
 		CPlayer * player;
 		GuiLabel * phrase;
-		#if USE_SDL2
-			SDL_Renderer * renderer;
-		#endif
+		SDL_Renderer * renderer;
 	
 	public:
-		#ifndef USE_SDL2
-			CGameTransition (  );
-		#else
-			CGameTransition ( SDL_Renderer * r );
-		#endif
-		
+		CGameTransition ( SDL_Renderer * r );
+
 		virtual ~CGameTransition (  );
-		
-		#ifndef USE_SDL2
-			void set_cam ( Camera * c, SDL_Surface * screen );
-		#else
-			void set_cam ( Camera * c, SDL_Renderer * renderer );
-		#endif
+
+		void set_cam ( Camera * c, SDL_Renderer * renderer );
 		
 		void set_bg ( string path );
 		
 		void set_player ( CPlayer * p );
 		
 		void reset ( int curr_level, int num_levels );
-		
-		#ifndef USE_SDL2
-			void draw ( SDL_Surface * screen );
-		#else
-			void draw (  );
-		#endif
+
+		void draw (  );
 		
 		int update (  );
 };

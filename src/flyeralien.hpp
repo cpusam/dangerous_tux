@@ -25,12 +25,8 @@ class CFlyerAlien: public CGameEntity
 		SAlienConfig config;
 		
 	public:
-		#ifndef USE_SDL2
-			CFlyerAlien ( CPlayer * p, int m_d, Vect i_p );
-		#else
-			CFlyerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p );
-		#endif
-		
+		CFlyerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p );
+
 		virtual ~CFlyerAlien (  );
 		
 		void set_map ( TileMap * m );
@@ -39,12 +35,8 @@ class CFlyerAlien: public CGameEntity
 		
 		void kill (  );
 		
-		#ifndef USE_SDL2
-			void draw ( Camera * cam, SDL_Surface * screen );
-		#else
-			void draw ( Camera * cam, SDL_Renderer * renderer );
-		#endif
-		
+		void draw ( Camera * cam, SDL_Renderer * renderer );
+
 		void process (  );
 		
 		int update (  );

@@ -1,10 +1,6 @@
 #include "gamecredits.hpp"
 
-#ifndef USE_SDL2
-	CGameCredits::CGameCredits (  )
-#else
-	CGameCredits::CGameCredits ( SDL_Renderer * r )
-#endif
+CGameCredits::CGameCredits ( SDL_Renderer * r )
 {
 	SDL_Surface * aux;
 	
@@ -33,9 +29,7 @@
 	if (!Writer::instance()->load_font(path, path, 100))
 		throw "CGameCredits: não foi possível carregar font\n";
 
-	#if USE_SDL2
-		Writer::instance()->set_renderer(r);
-	#endif
+	Writer::instance()->set_renderer(r);
 	
 	
 	char s[5][32] =
@@ -60,20 +54,13 @@
 	widget.add_child(t);
 
 	widget.set_pos(Vect(960/2,624/2));
-	#ifndef USE_SDL2
-		int h = g->get_surface()->h + gg->get_surface()->h + p->get_surface()->h + ps->get_surface()->h;
-		g->set_rel_pos(Vect(-(g->get_surface()->w/2), -h/2));
-		gg->set_rel_pos(Vect(-(gg->get_surface()->w/2), g->get_surface()->h + g->get_rel_pos().y));
-		p->set_rel_pos(Vect(-(p->get_surface()->w/2), gg->get_surface()->h + gg->get_rel_pos().y));
-		ps->set_rel_pos(Vect(-(ps->get_surface()->w/2), p->get_surface()->h + p->get_rel_pos().y));
-	#else
-		int h = g->get_texture_height() + gg->get_texture_height() + p->get_texture_height() + ps->get_texture_height();
-		g->set_rel_pos(Vect(-(g->get_texture_width()/2), h));
-		gg->set_rel_pos(Vect(-(gg->get_texture_width()/2), g->get_texture_height() + g->get_rel_pos().y));
-		p->set_rel_pos(Vect(-(p->get_texture_width()/2), gg->get_texture_height() + gg->get_rel_pos().y));
-		ps->set_rel_pos(Vect(-(ps->get_texture_width()/2), p->get_texture_height() + p->get_rel_pos().y));
-		t->set_rel_pos(Vect(-(t->get_texture_width()/2), ps->get_texture_height() + ps->get_rel_pos().y));
-	#endif
+
+	int h = g->get_texture_height() + gg->get_texture_height() + p->get_texture_height() + ps->get_texture_height();
+	g->set_rel_pos(Vect(-(g->get_texture_width()/2), h));
+	gg->set_rel_pos(Vect(-(gg->get_texture_width()/2), g->get_texture_height() + g->get_rel_pos().y));
+	p->set_rel_pos(Vect(-(p->get_texture_width()/2), gg->get_texture_height() + gg->get_rel_pos().y));
+	ps->set_rel_pos(Vect(-(ps->get_texture_width()/2), p->get_texture_height() + p->get_rel_pos().y));
+	t->set_rel_pos(Vect(-(t->get_texture_width()/2), ps->get_texture_height() + ps->get_rel_pos().y));
 	
 	
 	#if _WIN32 || _WIN64
@@ -103,48 +90,26 @@
 					sprintf(bg_path, "%s/share/games/dangeroustux/images/credits_BG.png", PREFIX);
 			#endif
 		#endif
-	
-	#ifndef USE_SDL2
-		anim.add_frame(NULL, (SDL_Rect){0,0,0,0}, 250);
-		
-		aux = optimize_surface_alpha(IMG_Load(path));
-		if (!aux)
-			throw "CGameCredits: não foi possivel carregar tux_walk.png\n";
-		
-		tux_anim.add_frame(aux, (SDL_Rect){0,    0,214,234}, 3);
-		tux_anim.add_frame(aux, (SDL_Rect){0,  234,214,234}, 5); // meio
-		tux_anim.add_frame(aux, (SDL_Rect){0,2*234,214,234}, 3);
-		tux_anim.add_frame(aux, (SDL_Rect){0,  234,214,234}, 5); // meio
-		//tux_pos.x = widget.get_pos().x - tux_anim.surface->w/2;
-		tux_pos.x = (960 - aux->w)/2;
-		
-		if (!bg.set_surface(optimize_surface_alpha(IMG_Load(bg_path))))
-			throw "CGameCredits: não foi possível carregar credits_BG.png\n";
-	#else
-		anim.add_frame(NULL, (SDL_Rect){0,0,0,0}, 15000);
-		
-		SDL_Texture * texture = IMG_LoadTexture(r, path);
-		if (!texture)
-			throw "CGameCredits: não foi possivel carregar tux_walk.png\n";
-		
-		tux_anim.add_frame(texture, (SDL_Rect){0,    0,214,234}, 200);
-		tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 200); // meio
-		tux_anim.add_frame(texture, (SDL_Rect){0,2*234,214,234}, 200);
-		tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 200); // meio
-		//tux_pos.x = widget.get_pos().x - texture_width(texture)/2;
-		tux_pos.x = (960 - texture_width(texture))/2;
-		
-		if (!bg.set_texture(IMG_LoadTexture(r, bg_path)))
-			throw "CGameCredits: não foi possível carregar credits_BG.png\n";
-	#endif
+
+	anim.add_frame(NULL, (SDL_Rect){0,0,0,0}, 15000);
+
+	SDL_Texture * texture = IMG_LoadTexture(r, path);
+	if (!texture)
+		throw "CGameCredits: não foi possivel carregar tux_walk.png\n";
+
+	tux_anim.add_frame(texture, (SDL_Rect){0,    0,214,234}, 200);
+	tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 200); // meio
+	tux_anim.add_frame(texture, (SDL_Rect){0,2*234,214,234}, 200);
+	tux_anim.add_frame(texture, (SDL_Rect){0,  234,214,234}, 200); // meio
+	//tux_pos.x = widget.get_pos().x - texture_width(texture)/2;
+	tux_pos.x = (960 - texture_width(texture))/2;
+
+	if (!bg.set_texture(IMG_LoadTexture(r, bg_path)))
+		throw "CGameCredits: não foi possível carregar credits_BG.png\n";
 	//widget.set_pos(Vect(960/2, 358/2));
 	tux_pos.y = 358;
-	
-	#ifndef USE_SDL2
-		cam = new Camera((SDL_Rect){0,0,bg.get_surface()->w,bg.get_surface()->h}, (SDL_Rect){0,0,2000*bg.get_surface()->w,bg.get_surface()->h});
-	#else
-		cam = new Camera((SDL_Rect){0,0,texture_width(bg.get_texture()),texture_height(bg.get_texture())}, (SDL_Rect){0,0,2000*texture_width(bg.get_texture()),texture_height(bg.get_texture())});
-	#endif
+
+	cam = new Camera((SDL_Rect){0,0,texture_width(bg.get_texture()),texture_height(bg.get_texture())}, (SDL_Rect){0,0,2000*texture_width(bg.get_texture()),texture_height(bg.get_texture())});
 	set_state(ACTIVE_CREDITS);
 }
 
@@ -157,35 +122,20 @@ CGameCredits::~CGameCredits (  )
 
 
 	delete cam;
-	#ifndef USE_SDL2
-		tux_anim.destroy_surfaces();
-	#else
 		tux_anim.destroy_textures();
-	#endif
 }
 
 
-#ifndef USE_SDL2
-	void CGameCredits::draw ( SDL_Surface * screen )
-	{
-		SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0x00,0xc6,0xff));
-		bg.draw_hor(cam, screen);
-		tux_anim.draw(tux_pos.x, tux_pos.y, screen);
+void CGameCredits::draw ( SDL_Renderer * renderer )
+{
+	SDL_SetRenderDrawColor(renderer, 0x00,0xc6,0xff,0xFF);
+	SDL_RenderFillRect(renderer, NULL);
 
-		//widget.draw(screen);
-	}
-#else
-	void CGameCredits::draw ( SDL_Renderer * renderer )
-	{
-		SDL_SetRenderDrawColor(renderer, 0x00,0xc6,0xff,0xFF);
-		SDL_RenderFillRect(renderer, NULL);
-		
-		bg.draw_hor(cam, renderer);
-		tux_anim.draw(renderer, tux_pos.x, tux_pos.y);
+	bg.draw_hor(cam, renderer);
+	tux_anim.draw(renderer, tux_pos.x, tux_pos.y);
 
-		widget.draw(renderer);
-	}
-#endif
+	widget.draw(renderer);
+}
 
 void CGameCredits::reset (  )
 {

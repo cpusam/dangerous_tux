@@ -10,13 +10,13 @@ using namespace std;
 
 struct SPlayerConfig
 {
-	Vect vel_max; // velocidades máximas em pé em pixels
-	Vect acc; // aceleração ao se movimentar
-	Vect acc_jetpack; // aceleração ao se movimentar com o jetpack
-	float gravity; // aceleração da gravidade quando pulando ou caindo
-	float vel_max_jump; // velocidade maxima ao começar a pular
-	float vel_max_tree; // velocidade máxima na árvore
-	float vel_max_jetpack; // velocidade máxima usando o jetpack
+	Vect vel_max; // velocidades mï¿½ximas em pï¿½ em pixels
+	Vect acc; // aceleraï¿½ï¿½o ao se movimentar
+	Vect acc_jetpack; // aceleraï¿½ï¿½o ao se movimentar com o jetpack
+	float gravity; // aceleraï¿½ï¿½o da gravidade quando pulando ou caindo
+	float vel_max_jump; // velocidade maxima ao comeï¿½ar a pular
+	float vel_max_tree; // velocidade mï¿½xima na ï¿½rvore
+	float vel_max_jetpack; // velocidade mï¿½xima usando o jetpack
 	float shot_vel;
 
 	SPlayerConfig (  )
@@ -63,24 +63,24 @@ enum EPlayerDirection
 class CPlayer: public CGameEntity
 {
 	protected:
-		int dir; // direção, 0 - esquerda e 1 - direita
+		int dir; // direï¿½ï¿½o, 0 - esquerda e 1 - direita
 		int up_key, down_key, left_key, right_key;
 		int jump_key, gun_key, jetpack_key;
 		int lives; // quantidade de vidas
 		bool kernel; // se tem o Ã­tem "chave" da porta
 		bool shot_at; // se foi baleado pelos aliens
 		bool touched_alien; // se tocou um alien
-		bool has_joystick; // se tem ou não joystick
-		float final_pos; // posição final em X na tela de transição
+		bool has_joystick; // se tem ou nï¿½o joystick
+		float final_pos; // posiï¿½ï¿½o final em X na tela de transiï¿½ï¿½o
 		SDL_Joystick * joystick; // o joystick propriamente dito
 		SDL_Rect limit; // limites de movimento do jogador
 		Vect respawn; // ponto onde deve reaparecer quando morrer
-		Animation * curr_anim; // animação atual
-		vector <Animation> anim; // animações
-		vector <int> item; // tiles que são itens de coletar
-		vector <int> coll_tiles; // tiles de colisão completa
-		vector <Vect> c_point; // pontos de colisão
-		TileMap * map; // mapa para colisão
+		Animation * curr_anim; // animaï¿½ï¿½o atual
+		vector <Animation> anim; // animaï¿½ï¿½es
+		vector <int> item; // tiles que sï¿½o itens de coletar
+		vector <int> coll_tiles; // tiles de colisï¿½o completa
+		vector <Vect> c_point; // pontos de colisï¿½o
+		TileMap * map; // mapa para colisï¿½o
 		
 	public:
 		CGun gun;
@@ -89,11 +89,7 @@ class CPlayer: public CGameEntity
 		SPlayerConfig config;
 
 	public:
-		#ifndef USE_SDL2
-			CPlayer (  );
-		#else
-			CPlayer ( SDL_Renderer * r );
-		#endif
+		CPlayer ( SDL_Renderer * r );
 		
 		virtual ~CPlayer (  );
 		
@@ -135,26 +131,22 @@ class CPlayer: public CGameEntity
 		bool touch_bad_tile (  );
 		
 		/*
-			Função que verifca e coleta itens
+			Funï¿½ï¿½o que verifca e coleta itens
 		*/
 		bool collect_items (  );
 		
 		bool has_kernel (  );
 		
 		/*
-			função que verifica e faz entrar na porta se tiver a chave
+			funï¿½ï¿½o que verifica e faz entrar na porta se tiver a chave
 		*/
 		bool enter_door (  );
 
 		void process (  );
 
 		void input ( SDL_Event & event );
-		
-		#ifndef USE_SDL2
-		void draw ( Camera * cam, SDL_Surface * screen );
-		#else
+
 		void draw ( Camera * cam, SDL_Renderer * renderer );
-		#endif
 		
 		int update (  );
 };
