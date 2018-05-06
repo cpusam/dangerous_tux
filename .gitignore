@@ -4,4 +4,5 @@ DangerousTux
 ./*~
 objs/*.o
 src/*.*~
+src/*.o
 include/*.*~
