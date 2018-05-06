@@ -195,7 +195,7 @@ void CGameOptions::reset (  )
 			{
 				data = save[i]->get_data();
 				sscanf(data.curr_level, "%d", &level);
-				sprintf(str, "LEVEL: %d - LIVES: %s", ++level, data.lives);
+				sprintf(str, "LEVEL: %d - TUXES: %s", ++level, data.lives);
 			}
 			else
 			{

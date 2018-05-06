@@ -345,39 +345,37 @@ int CWalkerAlien::update (  )
 			break;
 	
 		case MOVING_ALIEN:
-			if (no_ground() || (pos.x + c_point[9].x) - init_pos.x > move_distance ||
-			   (pos.x + c_point[9].x) - init_pos.x < -move_distance ||
-			   wall())
+			acc.y = config.acc.y;
+			
+			if (dir == LEFT_ALIEN)
 			{
-				acc.y = config.acc.y;
-				
-				if (dir == LEFT_ALIEN)
+				acc.x = -config.acc.x;
+				curr_anim = &anim[2]; // caminhando para esquerda
+				if (no_ground() == -1 || (pos.x + c_point[9].x) - init_pos.x < -move_distance || wall() == -1)
 				{
 					dir = RIGHT_ALIEN;
 					acc.x = config.acc.x;
 					vel.x = -vel.x;
-					curr_anim = &anim[0]; // caminhando para direita
+					pos.x += vel.x;
+					curr_anim = &anim[0];
 					curr_anim->reset();
-					
-					while (no_ground() == -1 || (pos.x + c_point[9].x) - init_pos.x < -move_distance || wall() == -1)
-					{
-						pos.x += 1; // move para direita
-					}
 				}
-				else
+			}
+			else
+			{
+				acc.x = config.acc.x;
+				curr_anim = &anim[0]; // caminhando para direita
+				if (no_ground() == 1 || (pos.x + c_point[9].x) - init_pos.x > move_distance || wall() == 1)
 				{
 					dir = LEFT_ALIEN;
 					acc.x = -config.acc.x;
 					vel.x = -vel.x;
-					curr_anim = &anim[2]; // caminhando para esquerda
+					pos.x += vel.x;
+					curr_anim = &anim[2];
 					curr_anim->reset();
-					
-					while (no_ground() == 1 || (pos.x + c_point[9].x) - init_pos.x > move_distance || wall() == 1)
-					{
-						pos.x -= 1; // move para esquerda
-					}
 				}
 			}
+			
 			
 			if (!gun.was_used())
 			{
@@ -414,14 +412,16 @@ int CWalkerAlien::update (  )
 			else if (vel.x < -config.vel_max.x)
 				vel.x = -config.vel_max.x;
 
+			collide_hor();
+			pos.x += vel.x;
+
 			vel.y += acc.y;
 			if (vel.y > config.vel_max.y)
 				vel.y = config.vel_max.y;
 			else if (vel.y < -config.vel_max.y)
 				vel.y = -config.vel_max.y;
 
-			collide_hor();
-			pos.x += vel.x;
+			
 			collide_ver();
 			pos.y += vel.y;
 			
