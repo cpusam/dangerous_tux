@@ -178,20 +178,20 @@ int main ( int argc, char **argv )
 	catch (const char * e)
 	{
 		std::cout << "Erro: " << e << std::endl;
-		SDL_Log(e);
+		SDL_Log(e, SDL_LOG_CATEGORY_APPLICATION);
 		return 1;
 	}
 	// Erros com alguma lib SDL
 	catch (char * e)
 	{
 		std::cout << "Erro: " << e << std::endl;
-		SDL_Log(e);
+		SDL_Log(e, SDL_LOG_CATEGORY_APPLICATION);
 		return 1;
 	}
 	catch (std::exception & e)
 	{
 		std::cout << e.what() << std::endl;
-		SDL_Log(e.what());
+		SDL_Log(e.what(), SDL_LOG_CATEGORY_APPLICATION);
 		return 1;
 	}
 	

@@ -12,6 +12,7 @@ include_directories(../Chora_Engine)
 file(GLOB_RECURSE SRCS src/*.cpp)
 file(GLOB_RECURSE HDRS *.h)
 
+
 IF (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	add_executable(DangerousTux.exe ${SRCS})
 	target_link_libraries(DangerousTux.exe SDL2main SDL2 SDL2_ttf SDL2_image SDL2_mixer)
@@ -28,6 +29,8 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	install(DIRECTORY sounds DESTINATION ${CMAKE_INSTALL_PREFIX}/dangeroustux)
 
 ELSE ()
+	#adicionado para compilar com gcc
+	add_definitions("--std=c++11")
 	add_executable(DangerousTux ${SRCS})
 	target_link_libraries(DangerousTux SDL2 SDL2_ttf SDL2_image SDL2_mixer chora)
 

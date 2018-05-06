@@ -1,8 +1,7 @@
 
-./DangerousTux
-*~
-*.*~
-obj/*.o
-src/*.o
+DangerousTux
+./teste
+./*~
+objs/*.o
 src/*.*~
 include/*.*~
