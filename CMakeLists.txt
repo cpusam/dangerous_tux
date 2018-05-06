@@ -2,12 +2,12 @@ cmake_minimum_required(VERSION 2.6)
 
 project(DangerousTux)
 
-add_definitions(-I../Chora_Engine)
-add_definitions(-L../Chora_Engine)
-LINK_DIRECTORIES(../Chora_Engine/)
-LINK_DIRECTORIES(../Chora_Engine/)
+add_definitions(-I../chora_engine)
+add_definitions(-L../chora_engine)
+LINK_DIRECTORIES(../chora_engine/)
+LINK_DIRECTORIES(../chora_engine/)
 include_directories(src)
-include_directories(../Chora_Engine)
+include_directories(../chora_engine)
 
 file(GLOB_RECURSE SRCS src/*.cpp)
 file(GLOB_RECURSE HDRS *.h)

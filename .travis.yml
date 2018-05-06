@@ -1,0 +1,20 @@
+sudo: required
+before_install:
+  - sudo apt-get install -y libegl1-mesa-dev libgles2-mesa-dev libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev
+  
+# Enable C++ support
+language: cpp
+
+# Compiler selection
+compiler:
+  - gcc
+
+# Build steps
+script:
+  - cd ..
+  - git clone https://github.com/algunsnerds/chora_engine.git
+  - cd chora_engine
+  - make -j4
+  - cd ../dangerous_tux
+  - cmake .
+  - make -j4
