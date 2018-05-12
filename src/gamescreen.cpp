@@ -51,13 +51,13 @@ CGameScreen::CGameScreen ( SDL_Window * w, SDL_Renderer * r, Camera * c, int ts 
     int width, height;
     SDL_RenderGetLogicalSize(renderer, &width, &height);
 
-    pause = new GuiLabel("PAUSE!", (SDL_Color){0,0,0,0});
+    pause = new GuiLabel("PAUSE!", (SDL_Color){0,0,0,255});
     pause->set_pos(Vect((width - pause->get_texture_width())/2, (height - pause->get_texture_height())/2));
     name_msg = new GuiLabel("YOU GOT A HIGH SCORE!\n Enter your name:", (SDL_Color){255,255,0, 0});
     name_msg->set_pos(Vect(230, 110));
-    textinput = new GuiTextInput(80, (SDL_Color){255,0,0,0});
+    textinput = new GuiTextInput(80, (SDL_Color){255,0,0,255}, 11);
     textinput->set_pos(Vect(name_msg->get_pos().x, name_msg->get_pos().y + name_msg->get_texture_height()));
-    final_msg = new GuiLabel("   FINAL\npress any key", (SDL_Color){255,0,0,0});
+    final_msg = new GuiLabel("   FINAL\npress any key", (SDL_Color){255,0,0,255});
     final_msg->set_pos(Vect((width - final_msg->get_texture_width())/2, (height - final_msg->get_texture_height())/2));
 
 	widget.add_child(pause);
@@ -149,7 +149,12 @@ void CGameScreen::input ( SDL_Event & event )
 	
 	if (event.type == SDL_KEYDOWN)
 	{
-        textinput->set_pos(Vect(name_msg->get_pos().x + (name_msg->get_texture_width() - textinput->get_texture_width())/2, textinput->get_pos().y));
+		textinput->set_pos(Vect(name_msg->get_pos().x + (name_msg->get_texture_width() - textinput->get_texture_width())/2, textinput->get_pos().y));
+		if (textinput->is_visible())
+		{
+			textinput->input(event);
+		}
+
 		if (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER)
 			enter_key = 1;
 			
@@ -218,6 +223,7 @@ void CGameScreen::draw (  )
             widget.draw(renderer);
 			break;
 
+		
 		case HIGHSCORE_SCREEN:
             SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
             SDL_RenderClear(renderer);
@@ -598,10 +604,11 @@ int CGameScreen::update (  )
 			break;
 
 		case GET_SCORE_NAME: // tela de digitar nome para high score
+			widget.update();
 			if (enter_key)
 			{
 				SPlayerScore s;
-				
+
 				if (textinput->get_str().size() <= 1)
 					sprintf(s.name, "PLAYER");
 				else
