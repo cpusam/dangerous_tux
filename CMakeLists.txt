@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 2.6)
 
 project(DangerousTux)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine/CMakeLists.txt)
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine/)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine/gui)
@@ -30,7 +28,7 @@ IF (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 ELSE ()
 	#adicionado para compilar com gcc
-	add_definitions("--std=c++11")
+	add_definitions("--std=c++11 -O0")
 	add_executable(DangerousTux ${SRCS})
 	target_link_libraries(DangerousTux SDL2 SDL2_ttf SDL2_image SDL2_mixer ${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine/libchora.a)
 

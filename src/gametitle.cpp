@@ -95,9 +95,9 @@ CGameTitle::CGameTitle ( SDL_Renderer * r )
 		if (!texture)
 			throw "CGameTitle: não conseguiu carregar segunda imagem do tux no foguete\n";
 		
-		tux_rocket.add_frame(texture, (SDL_Rect){0,0,319,624}, 300);
-		tux_rocket.add_frame(texture, (SDL_Rect){0,599,319,624}, 300);
-		tux_rocket.add_frame(texture, (SDL_Rect){0,599*2,319,624}, 300);
+		tux_rocket.add_frame(texture, (SDL_Rect){0,0,319,624}, 200);
+		tux_rocket.add_frame(texture, (SDL_Rect){0,599,319,624}, 200);
+		tux_rocket.add_frame(texture, (SDL_Rect){0,599*2,319,624}, 200);
 
 	tn_final = Vect(34,60);
 	tn_init = tn_pos = Vect(-texture_width(title_name), tn_final.y);
@@ -125,7 +125,8 @@ CGameTitle::CGameTitle ( SDL_Renderer * r )
 	press_enter = new GuiLabel("PRESS ENTER!", (SDL_Color){0,0,0,0});
 	press_enter->set_pos(Vect(188,439));
 
-	Writer::intance()->resize_font("=>default", 40);
+	Writer::instance()->resize_font(path, 40);
+	printf("SEM RESIZE\n");
 	version = new GuiLabel("ALPHA VERSION - 2018", (SDL_Color){0,255,0,255});
 	version->set_pos(Vect((960 - version->get_texture_width())/2, 624 - version->get_texture_height()));
 	texture = press_enter->get_texture();

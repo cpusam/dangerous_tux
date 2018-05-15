@@ -195,11 +195,15 @@ int main ( int argc, char **argv )
 		return 1;
 	}
 	
+	SoundPlayer::instance()->free_sounds();
+	Writer::instance()->destroy();
+	FPSManager::instance()->destroy();
+
 	#ifndef EMSCRIPTEN
 		IMG_Quit();
 		TTF_Quit();
 	#endif
-	SoundPlayer::instance()->free_sounds();
+	
 	Mix_CloseAudio();
 	SDL_Quit();
 	
