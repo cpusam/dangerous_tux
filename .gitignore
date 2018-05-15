@@ -6,3 +6,11 @@ objs/*.o
 src/*.*~
 src/*.o
 include/*.*~
+libchora.a
+cmake-build-debug
+CMakeFiles
+.idea
+cmake_install.cmake
+CMakeCache.txt
+Makefile
+DangerousTux.cbp

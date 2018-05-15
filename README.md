@@ -16,9 +16,7 @@ Dangerous Tux is a game based on Dangerous Dave from DOS.
 
 ## Compiling
 - git clone https://github.com/algunsnerds/chora_engine.git
-- cd chora_engine 
-- make -j4
-- cd ../ && git clone https://github.com/algunsnerds/dangerous_tux.git
+- git clone https://github.com/algunsnerds/dangerous_tux.git
 - cd dangerous_tux 
 - cmake .
 - make -j4
