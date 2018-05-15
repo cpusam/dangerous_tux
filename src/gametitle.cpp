@@ -124,8 +124,9 @@ CGameTitle::CGameTitle ( SDL_Renderer * r )
 
 	press_enter = new GuiLabel("PRESS ENTER!", (SDL_Color){0,0,0,0});
 	press_enter->set_pos(Vect(188,439));
-	version = new GuiLabel("ALPHA VERSION - 2018", (SDL_Color){0,255,0,255});
 
+	Writer::intance()->resize_font("=>default", 40);
+	version = new GuiLabel("ALPHA VERSION - 2018", (SDL_Color){0,255,0,255});
 	version->set_pos(Vect((960 - version->get_texture_width())/2, 624 - version->get_texture_height()));
 	texture = press_enter->get_texture();
 	p_enter.add_frame(texture, (SDL_Rect){0,0,texture_width(texture),texture_height(texture)}, 400);
