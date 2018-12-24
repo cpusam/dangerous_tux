@@ -85,7 +85,7 @@ int CLevel::get_id (  )
 
 void CLevel::draw (  )
 {
-	bg->draw_hor(cam, renderer);
+	bg->draw_hor(renderer, cam);
 
 
 	map->draw(renderer, cam);
@@ -333,58 +333,58 @@ int CLevel::update (  )
 			map->set_source('4', (SDL_Rect){ts*7,ts*3,ts,ts}); // tile de gramado
 		
 			CAnimatedTile a;
-			a.add_frame(map->texture, (SDL_Rect){0,ts * 2,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts,ts * 2,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts * 2,ts * 2,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){0,ts * 2,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts,ts * 2,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts * 2,ts * 2,ts,ts}, 40);
 			map->add_animation(a, 'o'); // tile de fogo
 			
 			a.clear_frames();
-			a.add_frame(map->texture, (SDL_Rect){ts * 3,ts * 2,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts * 4,ts * 2,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts * 5,ts * 2,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts * 3,ts * 2,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts * 4,ts * 2,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts * 5,ts * 2,ts,ts}, 40);
 			map->add_animation(a, 'p'); // macarrão roxo
 			
 			a.clear_frames();
-			a.add_frame(map->texture, (SDL_Rect){ts*8,ts,ts,ts}, 4); // início
-			a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
-			a.add_frame(map->texture, (SDL_Rect){ts*10,ts,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts*11,ts,ts,ts}, 4); // final
-			a.add_frame(map->texture, (SDL_Rect){ts*10,ts,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts*6,ts,ts,ts}, 4); // centro
-			a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts*8,ts,ts,ts}, 40); // início
+			a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts*6,ts,ts,ts}, 40); // centro
+			a.add_frame(map->texture, (SDL_Rect){ts*10,ts,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts*11,ts,ts,ts}, 40); // final
+			a.add_frame(map->texture, (SDL_Rect){ts*10,ts,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts*6,ts,ts,ts}, 40); // centro
+			a.add_frame(map->texture, (SDL_Rect){ts*9,ts,ts,ts}, 40);
 			map->add_animation(a, 'q'); // jetpack
 			
 			a.clear_frames();
-			a.add_frame(map->texture, (SDL_Rect){ts*8,ts*2,ts,ts}, 4); // início
-			a.add_frame(map->texture, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
-			a.add_frame(map->texture, (SDL_Rect){ts*10,ts*2,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts*11,ts*2,ts,ts}, 4); // final
-			a.add_frame(map->texture, (SDL_Rect){ts*10,ts*2,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts*7,ts,ts,ts}, 4); // centro
-			a.add_frame(map->texture, (SDL_Rect){ts*9,ts*2,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){ts*8,ts*2,ts,ts}, 40); // início
+			a.add_frame(map->texture, (SDL_Rect){ts*9,ts*2,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts*7,ts,ts,ts}, 40); // centro
+			a.add_frame(map->texture, (SDL_Rect){ts*10,ts*2,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts*11,ts*2,ts,ts}, 40); // final
+			a.add_frame(map->texture, (SDL_Rect){ts*10,ts*2,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts*7,ts,ts,ts}, 40); // centro
+			a.add_frame(map->texture, (SDL_Rect){ts*9,ts*2,ts,ts}, 40);
 			map->add_animation(a, 'r'); // arma laser
 			
 			a.clear_frames();
-			a.add_frame(map->texture, (SDL_Rect){0,ts*3,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts,ts*3,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts*2,ts*3,ts,ts}, 4);
-			a.add_frame(map->texture, (SDL_Rect){ts*3,ts*3,ts,ts}, 4);
+			a.add_frame(map->texture, (SDL_Rect){0,ts*3,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts,ts*3,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts*2,ts*3,ts,ts}, 40);
+			a.add_frame(map->texture, (SDL_Rect){ts*3,ts*3,ts,ts}, 40);
 			map->add_animation(a, 'K'); // kernel
 			
 			a.clear_frames();
-			a.add_frame(map->texture, (SDL_Rect){ts*6,ts*4,ts,ts}, 6);
-			a.add_frame(map->texture, (SDL_Rect){ts*5,ts*4,ts,ts}, 6);
-			a.add_frame(map->texture, (SDL_Rect){ts*4,ts*4,ts,ts}, 6);
-			a.add_frame(map->texture, (SDL_Rect){ts*3,ts*4,ts,ts}, 6);
+			a.add_frame(map->texture, (SDL_Rect){ts*6,ts*4,ts,ts}, 60);
+			a.add_frame(map->texture, (SDL_Rect){ts*5,ts*4,ts,ts}, 60);
+			a.add_frame(map->texture, (SDL_Rect){ts*4,ts*4,ts,ts}, 60);
+			a.add_frame(map->texture, (SDL_Rect){ts*3,ts*4,ts,ts}, 60);
 			map->add_animation(a, 'x'); // água fervente
 			
 			a.clear_frames();
-			a.add_frame(map->texture, (SDL_Rect){ts*10,ts*4,ts,ts}, 6);
-			a.add_frame(map->texture, (SDL_Rect){ts*9,ts*4,ts,ts}, 6);
-			a.add_frame(map->texture, (SDL_Rect){ts*8,ts*4,ts,ts}, 6);
-			a.add_frame(map->texture, (SDL_Rect){ts*7,ts*4,ts,ts}, 6);
+			a.add_frame(map->texture, (SDL_Rect){ts*10,ts*4,ts,ts}, 60);
+			a.add_frame(map->texture, (SDL_Rect){ts*9,ts*4,ts,ts}, 60);
+			a.add_frame(map->texture, (SDL_Rect){ts*8,ts*4,ts,ts}, 60);
+			a.add_frame(map->texture, (SDL_Rect){ts*7,ts*4,ts,ts}, 60);
 			map->add_animation(a, 'y'); // piche
 			
 			

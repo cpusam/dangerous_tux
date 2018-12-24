@@ -115,57 +115,57 @@ CPlayer::CPlayer ( SDL_Renderer * r ): jetpack(100.0f, 0.1f, false)
 
 	// virado para direita
 	// parado
-	anim[0].add_frame(tright, (SDL_Rect){48 * 3,0,48,48}, 1);
+	anim[0].add_frame(tright, (SDL_Rect){48 * 3,0,48,48}, 10);
 	// caminhando
-	anim[1].add_frame(tright, (SDL_Rect){0,0,48,48}, 3);
-	anim[1].add_frame(tright, (SDL_Rect){48,0,48,48}, 5);
-	anim[1].add_frame(tright, (SDL_Rect){48*2,0,48,48}, 3);
+	anim[1].add_frame(tright, (SDL_Rect){0,0,48,48}, 30);
+	anim[1].add_frame(tright, (SDL_Rect){48,0,48,48}, 50);
+	anim[1].add_frame(tright, (SDL_Rect){48*2,0,48,48}, 30);
 	// pulando ou caindo
-	anim[2].add_frame(tright, (SDL_Rect){0,48*2,48,48}, 1);
+	anim[2].add_frame(tright, (SDL_Rect){0,48*2,48,48}, 10);
 	// parado nas árvores
-	anim[3].add_frame(tright, (SDL_Rect){48*2,48,48,48}, 1);
+	anim[3].add_frame(tright, (SDL_Rect){48*2,48,48,48}, 10);
 	// caminhando nas árvores
-	anim[4].add_frame(tright, (SDL_Rect){0,48,48,48}, 4);
-	anim[4].add_frame(tright, (SDL_Rect){48,48,48,48}, 4);
+	anim[4].add_frame(tright, (SDL_Rect){0,48,48,48}, 40);
+	anim[4].add_frame(tright, (SDL_Rect){48,48,48,48}, 40);
 	// no jetpack
-	anim[5].add_frame(tright, (SDL_Rect){0,48*3,48,48}, 2);
-	anim[5].add_frame(tright, (SDL_Rect){48,48*3,48,48}, 2);
-	anim[5].add_frame(tright, (SDL_Rect){48*2,48*3,48,48}, 2);
+	anim[5].add_frame(tright, (SDL_Rect){0,48*3,48,48}, 20);
+	anim[5].add_frame(tright, (SDL_Rect){48,48*3,48,48}, 20);
+	anim[5].add_frame(tright, (SDL_Rect){48*2,48*3,48,48}, 20);
 	// atirando
-	anim[14].add_frame(tright, (SDL_Rect){0,48*6,48,48}, 3);
-	anim[14].add_frame(tright, (SDL_Rect){48,48*6,48,48}, 3);
-	anim[14].add_frame(tright, (SDL_Rect){48*2,48*6,48,48}, 3);
+	anim[14].add_frame(tright, (SDL_Rect){0,48*6,48,48}, 30);
+	anim[14].add_frame(tright, (SDL_Rect){48,48*6,48,48}, 30);
+	anim[14].add_frame(tright, (SDL_Rect){48*2,48*6,48,48}, 30);
 
 	// virado para esquerda
 	// parado
-	anim[6].add_frame(tleft, (SDL_Rect){48 * 3,0,48,48}, 1);
+	anim[6].add_frame(tleft, (SDL_Rect){48 * 3,0,48,48}, 10);
 	// caminhando
-	anim[7].add_frame(tleft, (SDL_Rect){0,0,48,48}, 3);
-	anim[7].add_frame(tleft, (SDL_Rect){48,0,48,48}, 5);
-	anim[7].add_frame(tleft, (SDL_Rect){48*2,0,48,48}, 3);
+	anim[7].add_frame(tleft, (SDL_Rect){0,0,48,48}, 30);
+	anim[7].add_frame(tleft, (SDL_Rect){48,0,48,48}, 50);
+	anim[7].add_frame(tleft, (SDL_Rect){48*2,0,48,48}, 30);
 	// pulando ou caindo
-	anim[8].add_frame(tleft, (SDL_Rect){0,48*2,48,48}, 1);
+	anim[8].add_frame(tleft, (SDL_Rect){0,48*2,48,48}, 10);
 	// parado nas árvores
-	anim[9].add_frame(tleft, (SDL_Rect){48*2,48,48,48}, 1);
+	anim[9].add_frame(tleft, (SDL_Rect){48*2,48,48,48}, 10);
 	// caminhando nas árvores
-	anim[10].add_frame(tleft, (SDL_Rect){0,48,48,48}, 4);
-	anim[10].add_frame(tleft, (SDL_Rect){48,48,48,48}, 4);
+	anim[10].add_frame(tleft, (SDL_Rect){0,48,48,48}, 40);
+	anim[10].add_frame(tleft, (SDL_Rect){48,48,48,48}, 40);
 	// no jetpack
-	anim[11].add_frame(tleft, (SDL_Rect){0,48*3,48,48}, 2);
-	anim[11].add_frame(tleft, (SDL_Rect){48,48*3,48,48}, 2);
-	anim[11].add_frame(tleft, (SDL_Rect){48*2,48*3,48,48}, 2);
+	anim[11].add_frame(tleft, (SDL_Rect){0,48*3,48,48}, 20);
+	anim[11].add_frame(tleft, (SDL_Rect){48,48*3,48,48}, 20);
+	anim[11].add_frame(tleft, (SDL_Rect){48*2,48*3,48,48}, 20);
 	// atirando
-	anim[15].add_frame(tleft, (SDL_Rect){0,48*6,48,48}, 3);
-	anim[15].add_frame(tleft, (SDL_Rect){48,48*6,48,48}, 3);
-	anim[15].add_frame(tleft, (SDL_Rect){48*2,48*6,48,48}, 3);
+	anim[15].add_frame(tleft, (SDL_Rect){0,48*6,48,48}, 30);
+	anim[15].add_frame(tleft, (SDL_Rect){48,48*6,48,48}, 30);
+	anim[15].add_frame(tleft, (SDL_Rect){48*2,48*6,48,48}, 30);
 
 	// morrendo
-	anim[12].add_frame(tright, (SDL_Rect){0,48*4,48,48}, 6);
-	anim[12].add_frame(tright, (SDL_Rect){48,48*4,48,48}, 6);
-	anim[12].add_frame(tright, (SDL_Rect){48*2,48*4,48,48}, 10);
+	anim[12].add_frame(tright, (SDL_Rect){0,48*4,48,48}, 60);
+	anim[12].add_frame(tright, (SDL_Rect){48,48*4,48,48}, 60);
+	anim[12].add_frame(tright, (SDL_Rect){48*2,48*4,48,48}, 100);
 	// esperando ser controlado
-	anim[13].add_frame(tright, (SDL_Rect){0,48*5,48,48}, 8);
-	anim[13].add_frame(tright, (SDL_Rect){0,0,0,0}, 4);
+	anim[13].add_frame(tright, (SDL_Rect){0,48*5,48,48}, 80);
+	anim[13].add_frame(tright, (SDL_Rect){0,0,0,0}, 40);
 	
 	curr_anim = &anim[13];
 }

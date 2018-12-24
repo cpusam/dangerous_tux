@@ -43,13 +43,13 @@ CFlyerAlien::CFlyerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p )
 
 	// animações
 	// voando
-	anim[0].add_frame(texture, (SDL_Rect){0,0,48,48}, 3);
+	anim[0].add_frame(texture, (SDL_Rect){0,0,48,48}, 3*17);
 	// atirando
-	anim[1].add_frame(texture, (SDL_Rect){0,0,48,48}, 3);
+	anim[1].add_frame(texture, (SDL_Rect){0,0,48,48}, 3*17);
 	// morrendo
-	anim[2].add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
-	anim[2].add_frame(texture, (SDL_Rect){48,48*2,48,48}, 6);
-	anim[2].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 6);
+	anim[2].add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6*17);
+	anim[2].add_frame(texture, (SDL_Rect){48,48*2,48,48}, 6*17);
+	anim[2].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 6*17);
 	
 	reset();
 }

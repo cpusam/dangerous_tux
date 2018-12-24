@@ -177,7 +177,7 @@ void CGameTransition::draw (  )
 {
 	SDL_SetRenderDrawColor(renderer, 0,0,0,0xFF);
 	SDL_RenderClear(renderer);
-	bg.draw(cam, renderer);
+	bg.draw(renderer, cam);
 	map->draw(renderer, cam);
 	player->draw(cam, renderer);
 	phrase->draw(renderer);

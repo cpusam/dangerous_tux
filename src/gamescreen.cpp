@@ -90,7 +90,7 @@ CGameScreen::CGameScreen ( SDL_Window * w, SDL_Renderer * r, Camera * c, int ts 
 	#endif
 
     SDL_Texture * aux = IMG_LoadTexture(r, path);
-    chora.add_frame(aux, (SDL_Rect){0,0,texture_width(aux),texture_height(aux)}, 60);
+    chora.add_frame(aux, (SDL_Rect){0,0,texture_width(aux),texture_height(aux)}, 600);
 	chora.set_repeat(false);
 	set_state(CHORA_SCREEN);
 	//credits.reset();

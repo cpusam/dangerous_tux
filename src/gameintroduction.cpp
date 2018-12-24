@@ -168,9 +168,9 @@ CGameIntroduction::CGameIntroduction ( SDL_Renderer * r )
 		throw "CGameIntroduction: não foi possível carregar scene2-Enter.png\n";
 
 	anim[0].set_repeat(false); // animação da tecla enter pressionada
-	anim[0].add_frame(texture, (SDL_Rect){0,0,270,269}, 1);
-	anim[0].add_frame(texture, (SDL_Rect){0,269,270,269}, 2);
-	anim[0].add_frame(texture, (SDL_Rect){0,269*2,270,269}, 20);
+	anim[0].add_frame(texture, (SDL_Rect){0,0,270,269}, 100);
+	anim[0].add_frame(texture, (SDL_Rect){0,269,270,269}, 200);
+	anim[0].add_frame(texture, (SDL_Rect){0,269*2,270,269}, 2000);
 
 	#if _WIN32 || _WIN64
 		#ifndef PREFIX
@@ -192,8 +192,8 @@ CGameIntroduction::CGameIntroduction ( SDL_Renderer * r )
 
 	anim[1].set_repeat(false); // animação da mão
 	anim[1].pause();
-	anim[1].add_frame(texture, (SDL_Rect){0,0,698,585}, 15);
-	anim[1].add_frame(texture, (SDL_Rect){0,585,698,585}, 15);
+	anim[1].add_frame(texture, (SDL_Rect){0,0,698,585}, 150);
+	anim[1].add_frame(texture, (SDL_Rect){0,585,698,585}, 150);
 
 	#if _WIN32 || _WIN64
 		#ifndef PREFIX
@@ -214,8 +214,8 @@ CGameIntroduction::CGameIntroduction ( SDL_Renderer * r )
 		throw "CGameIntroduction: não foi possível carregar scene4.png\n";
 
 	anim[3].set_repeat(false); // animação do rosto de Linus
-	anim[3].add_frame(texture, (SDL_Rect){0,0,960,624}, 20);
-	anim[3].add_frame(texture, (SDL_Rect){0,624,960,624}, 75);
+	anim[3].add_frame(texture, (SDL_Rect){0,0,960,624}, 200);
+	anim[3].add_frame(texture, (SDL_Rect){0,624,960,624}, 750);
 
 	#if _WIN32 || _WIN64
 		#ifndef PREFIX
@@ -247,16 +247,16 @@ CGameIntroduction::CGameIntroduction ( SDL_Renderer * r )
 	if (!texture)
 		throw "CGameIntroduction: não foi possível carregar scene1-Kernel.png\n";
 
-	anim[4].add_frame(texture, (SDL_Rect){0,170*9,717,170}, 20); // animação de digitando
-	anim[4].add_frame(texture, (SDL_Rect){0,170*8,717,170}, 10);
-	anim[4].add_frame(texture, (SDL_Rect){0,170*7,717,170}, 10);
-	anim[4].add_frame(texture, (SDL_Rect){0,170*6,717,170}, 10);
-	anim[4].add_frame(texture, (SDL_Rect){0,170*5,717,170}, 10);
-	anim[4].add_frame(texture, (SDL_Rect){0,170*4,717,170}, 10);
-	anim[4].add_frame(texture, (SDL_Rect){0,170*3,717,170}, 10);
-	anim[4].add_frame(texture, (SDL_Rect){0,170*2,717,170}, 10);
-	anim[4].add_frame(texture, (SDL_Rect){0,170,717,170}, 10);
-	anim[4].add_frame(texture, (SDL_Rect){0,0,717,170}, 25);
+	anim[4].add_frame(texture, (SDL_Rect){0,170*9,717,170}, 200); // animação de digitando
+	anim[4].add_frame(texture, (SDL_Rect){0,170*8,717,170}, 100);
+	anim[4].add_frame(texture, (SDL_Rect){0,170*7,717,170}, 100);
+	anim[4].add_frame(texture, (SDL_Rect){0,170*6,717,170}, 100);
+	anim[4].add_frame(texture, (SDL_Rect){0,170*5,717,170}, 100);
+	anim[4].add_frame(texture, (SDL_Rect){0,170*4,717,170}, 100);
+	anim[4].add_frame(texture, (SDL_Rect){0,170*3,717,170}, 100);
+	anim[4].add_frame(texture, (SDL_Rect){0,170*2,717,170}, 100);
+	anim[4].add_frame(texture, (SDL_Rect){0,170,717,170}, 100);
+	anim[4].add_frame(texture, (SDL_Rect){0,0,717,170}, 250);
 	anim[4].set_repeat(false);
 
 	/* EM CONSTRUÇÃO
@@ -285,16 +285,16 @@ CGameIntroduction::CGameIntroduction ( SDL_Renderer * r )
 	*/
 
 	// animação do hack do kernel
-	anim[2].add_frame(0, (SDL_Rect){0,0,0,0}, 75);
+	anim[2].add_frame(0, (SDL_Rect){0,0,0,0}, 750);
 	anim[2].set_repeat(false);
 	 // em um universo paralelo
-	anim[5].add_frame(0, (SDL_Rect){0,0,0,0}, 100);
+	anim[5].add_frame(0, (SDL_Rect){0,0,0,0}, 1000);
 	anim[5].set_repeat(false);
 	// algum tempo depois
-	anim[6].add_frame(0, (SDL_Rect){0,0,0,0}, 60);
+	anim[6].add_frame(0, (SDL_Rect){0,0,0,0}, 600);
 	anim[6].set_repeat(false);
 	// mostrando lado de fora do iglu
-	anim[7].add_frame(0, (SDL_Rect){0,0,0,0}, 60);
+	anim[7].add_frame(0, (SDL_Rect){0,0,0,0}, 600);
 	anim[7].set_repeat(false);
 
 	init_hand = -texture_width(anim[1].get_texture(0))/2;

@@ -67,24 +67,24 @@ CGyroAlien::CGyroAlien ( SDL_Renderer * r, CPlayer * p, Vect i_p, int t )
 		throw "CGyroAlien: não foi possível carregar circlealien.png\n";
 
 	// animação de indo para esquerda pregado em cima do tile
-	anim[0].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+	anim[0].add_frame(texture, (SDL_Rect){0,0,36,35}, 10);
 	// animação de indo para esquerda pregado em baixo do tile
-	anim[1].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+	anim[1].add_frame(texture, (SDL_Rect){0,0,36,35}, 10);
 
 	// animação de indo para baixo pregado a esquerda do tile
-	anim[2].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+	anim[2].add_frame(texture, (SDL_Rect){0,0,36,35}, 10);
 	// animação de indo para baixo pregado a direita do tile
-	anim[3].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+	anim[3].add_frame(texture, (SDL_Rect){0,0,36,35}, 10);
 
 	// animação de indo para direita pregado em cima do tile
-	anim[4].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+	anim[4].add_frame(texture, (SDL_Rect){0,0,36,35}, 10);
 	// animação de indo para direita pregado em baixo do tile
-	anim[5].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+	anim[5].add_frame(texture, (SDL_Rect){0,0,36,35}, 10);
 
 	// animação de indo para cima pregado a esquerda do tile
-	anim[6].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+	anim[6].add_frame(texture, (SDL_Rect){0,0,36,35}, 10);
 	// animação de indo para cim pregado a direita do tile
-	anim[7].add_frame(texture, (SDL_Rect){0,0,36,35}, 1);
+	anim[7].add_frame(texture, (SDL_Rect){0,0,36,35}, 10);
 	
 	tile = t;
 	switch (tile)

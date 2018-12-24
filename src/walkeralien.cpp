@@ -76,17 +76,17 @@ CWalkerAlien::CWalkerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p )
 
 	// virado para direita
 	// caminhando para direita
-	anim[0].add_frame(texture, (SDL_Rect){0,0,48,48}, 3);
-	anim[0].add_frame(texture, (SDL_Rect){48,0,48,48}, 5);
-	anim[0].add_frame(texture, (SDL_Rect){48*2,0,48,48}, 3);
+	anim[0].add_frame(texture, (SDL_Rect){0,0,48,48}, 30);
+	anim[0].add_frame(texture, (SDL_Rect){48,0,48,48}, 50);
+	anim[0].add_frame(texture, (SDL_Rect){48*2,0,48,48}, 30);
 	// atirando para direita
-	anim[1].add_frame(texture, (SDL_Rect){0,48,48,48}, 3);
-	anim[1].add_frame(texture, (SDL_Rect){48,48,48,48}, 3);
-	anim[1].add_frame(texture, (SDL_Rect){48*2,48,48,48}, 3);
+	anim[1].add_frame(texture, (SDL_Rect){0,48,48,48}, 30);
+	anim[1].add_frame(texture, (SDL_Rect){48,48,48,48}, 30);
+	anim[1].add_frame(texture, (SDL_Rect){48*2,48,48,48}, 30);
 	// morrendo
-	anim[4].add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
-	anim[4].add_frame(texture, (SDL_Rect){48,48*2,48,48}, 6);
-	anim[4].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 6);
+	anim[4].add_frame(texture, (SDL_Rect){0,48*2,48,48}, 60);
+	anim[4].add_frame(texture, (SDL_Rect){48,48*2,48,48}, 60);
+	anim[4].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 60);
 	
 	
 	#if _WIN32 || _WIN64
@@ -109,17 +109,17 @@ CWalkerAlien::CWalkerAlien ( SDL_Renderer * r, CPlayer * p, int m_d, Vect i_p )
 
 	// virado para esquerda
 	// caminhando para esquerda
-	anim[2].add_frame(texture, (SDL_Rect){0,0,48,48}, 3);
-	anim[2].add_frame(texture, (SDL_Rect){48,0,48,48}, 5);
-	anim[2].add_frame(texture, (SDL_Rect){48*2,0,48,48}, 3);
+	anim[2].add_frame(texture, (SDL_Rect){0,0,48,48}, 30);
+	anim[2].add_frame(texture, (SDL_Rect){48,0,48,48}, 50);
+	anim[2].add_frame(texture, (SDL_Rect){48*2,0,48,48}, 30);
 	// atirano para esquerda
-	anim[3].add_frame(texture, (SDL_Rect){0,48,48,48}, 3);
-	anim[3].add_frame(texture, (SDL_Rect){48,48,48,48}, 3);
-	anim[3].add_frame(texture, (SDL_Rect){48*2,48,48,48}, 3);
+	anim[3].add_frame(texture, (SDL_Rect){0,48,48,48}, 30);
+	anim[3].add_frame(texture, (SDL_Rect){48,48,48,48}, 30);
+	anim[3].add_frame(texture, (SDL_Rect){48*2,48,48,48}, 30);
 	//morrendo
-	anim[5].add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
-	anim[5].add_frame(texture, (SDL_Rect){48,48*2,48,48}, 6);
-	anim[5].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 6);
+	anim[5].add_frame(texture, (SDL_Rect){0,48*2,48,48}, 60);
+	anim[5].add_frame(texture, (SDL_Rect){48,48*2,48,48}, 60);
+	anim[5].add_frame(texture, (SDL_Rect){48*2,48*2,48,48}, 60);
 
 	curr_anim = &anim[0];
 	

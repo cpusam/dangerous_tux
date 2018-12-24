@@ -25,10 +25,10 @@ CKernelSignal::CKernelSignal ( SDL_Renderer * r )
 	if (!texture)
 		throw "CKernelSignal: não foi possível abrir kernel_signal.png\n";
 
-	anim.add_frame(texture, (SDL_Rect){0,0,48,48}, 6);
-	anim.add_frame(texture, (SDL_Rect){0,48,48,48}, 6);
-	anim.add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
-	anim.add_frame(texture, (SDL_Rect){0,48*3,48,48}, 6);
+	anim.add_frame(texture, (SDL_Rect){0,0,48,48}, 60);
+	anim.add_frame(texture, (SDL_Rect){0,48,48,48}, 60);
+	anim.add_frame(texture, (SDL_Rect){0,48*2,48,48}, 60);
+	anim.add_frame(texture, (SDL_Rect){0,48*3,48,48}, 60);
 	show(false);
 	cam = 0;
 }
@@ -153,10 +153,10 @@ CExitSignal::CExitSignal ( SDL_Renderer * r )
 	if (!texture)
 		throw "CExitSignal: não foi possível abrir exit_signal.png\n";
 
-	anim.add_frame(texture, (SDL_Rect){0,0,48,48}, 6);
-	anim.add_frame(texture, (SDL_Rect){0,48,48,48}, 6);
-	anim.add_frame(texture, (SDL_Rect){0,48*2,48,48}, 6);
-	anim.add_frame(texture, (SDL_Rect){0,48*3,48,48}, 6);
+	anim.add_frame(texture, (SDL_Rect){0,0,48,48}, 60);
+	anim.add_frame(texture, (SDL_Rect){0,48,48,48}, 60);
+	anim.add_frame(texture, (SDL_Rect){0,48*2,48,48}, 60);
+	anim.add_frame(texture, (SDL_Rect){0,48*3,48,48}, 60);
 	show(false);
 	cam = 0;
 }

@@ -2,11 +2,13 @@ cmake_minimum_required(VERSION 2.6)
 
 project(DangerousTux)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine/)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine/gui)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine/platform)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine/SDL_gfx)
+SET(CHORA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine-2-master/)
+
+include_directories(${CHORA_DIR}/./)
+include_directories(${CHORA_DIR}/include)
+include_directories(${CHORA_DIR}/gui)
+include_directories(${CHORA_DIR}/platform)
+include_directories(${CHORA_DIR}/SDL_gfx)
 
 file(GLOB_RECURSE SRCS src/*.cpp)
 file(GLOB_RECURSE HDRS src/*.hpp)
@@ -30,7 +32,7 @@ ELSE ()
 	#adicionado para compilar com gcc
 	add_definitions("--std=c++11")
 	add_executable(DangerousTux ${SRCS})
-	target_link_libraries(DangerousTux SDL2 SDL2_ttf SDL2_image SDL2_mixer ${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine/libchora.a)
+	target_link_libraries(DangerousTux ${CHORA_DIR}/libchora.a SDL2 SDL2_ttf SDL2_image SDL2_mixer)
 
 	install(TARGETS DangerousTux DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 	install(DIRECTORY levels DESTINATION ${CMAKE_INSTALL_PREFIX}/share/games/dangeroustux)

@@ -131,7 +131,7 @@ void CGameCredits::draw ( SDL_Renderer * renderer )
 	SDL_SetRenderDrawColor(renderer, 0x00,0xc6,0xff,0xFF);
 	SDL_RenderFillRect(renderer, NULL);
 
-	bg.draw_hor(cam, renderer);
+	bg.draw_hor(renderer, cam);
 	tux_anim.draw(renderer, tux_pos.x, tux_pos.y);
 
 	widget.draw(renderer);

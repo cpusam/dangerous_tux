@@ -74,13 +74,13 @@ CGameOver::CGameOver ( SDL_Renderer * r )
 		throw "SGameOver: não conseguiu abrir gameover_stars\n";
 
 	t_pos.x = (texture_width(background) - texture_width(title))/2.0f;
-	stars.add_frame(texture, (SDL_Rect){0,0,296,184}, 3);
-	stars.add_frame(texture, (SDL_Rect){0,184,296,184}, 3);
-	stars.add_frame(texture, (SDL_Rect){0,184*2,296,184}, 3);
-	stars.add_frame(texture, (SDL_Rect){0,184*3,296,184}, 3);
-	stars.add_frame(texture, (SDL_Rect){0,184*4,296,184}, 3);
-	stars.add_frame(texture, (SDL_Rect){0,184*5,296,184}, 3);
-	stars.add_frame(texture, (SDL_Rect){0,184*6,296,184}, 3);
+	stars.add_frame(texture, (SDL_Rect){0,0,296,184}, 30);
+	stars.add_frame(texture, (SDL_Rect){0,184,296,184}, 30);
+	stars.add_frame(texture, (SDL_Rect){0,184*2,296,184}, 30);
+	stars.add_frame(texture, (SDL_Rect){0,184*3,296,184}, 30);
+	stars.add_frame(texture, (SDL_Rect){0,184*4,296,184}, 30);
+	stars.add_frame(texture, (SDL_Rect){0,184*5,296,184}, 30);
+	stars.add_frame(texture, (SDL_Rect){0,184*6,296,184}, 30);
 	s_pos = Vect(254,220);
 }
 
