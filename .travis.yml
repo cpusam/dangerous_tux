@@ -13,6 +13,10 @@ compiler:
 script:
   - cd ..
   - git clone https://github.com/algunsnerds/chora_engine.git
+  - cd chora_engine
+  - cmake .
+  - make -j4
+  - cd ..
   - cd dangerous_tux
   - cmake .
   - make -j4
