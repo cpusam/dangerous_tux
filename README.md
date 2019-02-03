@@ -1,4 +1,7 @@
 # Dangerous Tux [![Build Status](https://travis-ci.org/algunsnerds/dangerous_tux.svg?branch=master)](https://travis-ci.org/algunsnerds/dangerous_tux)
+### Click in the link for more info:
+[Please, click HERE for more info.](https://shon.xyz/a/79248/dangeroustux)
+
 Dangerous Tux is a game based on Dangerous Dave from DOS.  
 ![Preview of game title](https://s26.postimg.cc/5r7o4nrzd/image.jpg)  
 ![Preview of game levels](https://s26.postimg.cc/j84mnjx61/image.jpg)  
