@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 2.6)
 
 project(DangerousTux)
 
-IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine-2-master/)
-	SET(CHORA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine-2-master/)
-ELSE (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine-2-master/)
-SET(CHORA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine/)
-ENDIF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../chora_engine-2-master/)
+IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/chora_engine-2-master/)
+	SET(CHORA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/chora_engine-2-master/)
+ELSE (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/chora_engine-2-master/)
+SET(CHORA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/chora_engine/)
+ENDIF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/chora_engine-2-master/)
 
 include_directories(${CHORA_DIR}/./)
 include_directories(${CHORA_DIR}/include)

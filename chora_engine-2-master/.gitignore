@@ -1,0 +1,25 @@
+#objs
+obj/*.*
+libchora.a
+
+#arquivos backup do gedit
+*~ 
+other/*~
+platform/*~ 
+gui/*~ 
+SDL_gfx/*~ 
+sound/*~
+src/*.*~
+include/*~
+game/*~
+
+#cmake e outros
+cmake-build-debug
+CMakeFiles
+.idea
+cmake_install.cmake
+CMakeCache.txt
+Makefile
+
+#sdl2
+SDL2/*

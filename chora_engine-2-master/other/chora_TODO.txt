@@ -1,0 +1,101 @@
+[iniciado em 22/09/2014 mas a engine é de setembro de 2013]
+	[21/05/15] Removido SDL 1.2!
+	NOTA: quando compilar um programa com a engine adicionar o linker dela 
+	      no inicio do linha de comando antes do link do SDL2
+
+Só lembrando que o objetivo da engine é ser uma engine para jogos de plataforma.
+E talvez, faça um editor da engine onde basta apenas montar o código sem programar diretamente, para isso preciso estudar o scratch e outros.
+
+Observações:
+	-Agora tem uma área de ação na camera, use-a para ativar/desativar a movimentação de
+	 personagens enfim, é para ativar/desativar ações. Geralmente a area de ação é igual 
+	 ao viewport da camera.
+	-Usando o viewport na camera deve-se atualizar com Camera::updateViewport(), antes de 
+	 desenhar na tela assim todo desenho irá para aquela viewport, além disso, 
+	 não pode usar uma textura como alvo do renderer, pois pode ser que a camera fique 
+	 diminuida na textura renderizada.
+	-tem que ocmpilar a SDL2 (e as outras libs) com o compilador mingw no linux 
+	 para poder compilar programas, dá erro de versão quando tenta compilar com o SDL2-*devel.
+	-NO MAC OS X tem que usar um compilador atual para compilar os jogos e a engine.
+	 Indicado no mínimo clang-7 e executar: cmake -DCMAKE_CXX_COMPILER="caminhio/do/compilador/clang++" .
+Observações para o GameEditor:
+	-agora entendo por que no scratch usa uma seta indicando a orientação do sprite, é porque 
+	 assim pode-se padronizar o movimento do sprite.
+
+Adicionar:
+	-Adicionar os códigos do Entity, Exception, Key, Elements na chora engine. Eles estão na pasta do projeto SuperMarioBros
+
+Tarefas:
+	-trocar a passagem de SDL_Rect para referencias ou ponteiros
+	-[RESOLVIDO]fazer leitura de um mapa de tiles no formato de imagem XPM do kolourpaint
+	-refazer os singletons copiando da classe Elements, função instance()
+	-[RESOLVIDO]refatorar as funções Rand e RandInt do util.hpp para usar qualquer tipo.
+	 digo, fazer elas com templates.
+	-testar game/Entity::moveToPosition e ::moveInPath
+	-criar um leitor de configurações ou de variaveis tipo o Editor.cpp do DonkeyKong
+	 colocar para se ter comentários no arquivo
+	-Elements::getAllEntities não deveria retornar nenhuma entidade que esteja nula
+	-depois resolver o problema de ter uma tela autoajustavel (uma camera no caso), ver main.cpp do DonkeyKong
+	 no if (event.type == SDL_WINDOWEVENT)
+	-adicionar um método update() na camera e também um input, talvez seja bom virar uma state machine
+	-adicionar suporte a scons para o make
+	-adicionar um toString() no vector
+	-refazer os elementos de GUI
+	-atualizar os exemplos pois mudei muito a engine.
+	-adicionar uma posição x/y ao TileMap
+	-adicionar Megaman/src/Entity.cpp.hpp ao código da engine
+	-[ABANDONADO]remover o dst do Animation::add_frame e adicionar w,h como destino no
+	 Animation::draw
+	-Adicionar métodos estáticos para acessar funções das classes singleton, pois é muito ruim 
+	 acessar com instance(), como Writer::instance().fazAlgumaCoisa();
+	-Consertar o bug da função rectIntersect() que retorna errado quando rectA < rectB, 
+	 por enquanto ela retorna RectNULL quando área de A < B
+	-Fazer o botão ter um tamanho pré-definido e não deixar ser redimensionado. 
+	 Usar textures como as imagens dos estados do botão.
+	-Fazer o blit do mapa não depender das dimensões da cam e nem dos limites dela.
+	-Adicionar um objeto de nó de cena um scene graph:
+	 Veja aqui: 
+	 http://archive.gamedev.net/archive/reference/programming/features/scenegraph/page2.html
+	-Ao invés de criar um Entity em todo game, poderia criar uma classe base 
+	 chamada Actor que derivaria de SceneNode
+	-mudar a ordem de usar/passar SDL_Renderer, agora será algo como foo(renderer, cam, ...)
+	-testar se a action area de Camera está centralizada com a viewport.
+	-colocar para usar milissegundos nas animações e não atualizações.
+	-refazer texture manager para usar ponteiros de texturas
+	-usar texture manager nas animações e para gui
+	-consertar o bug das funções de desenho de util.hpp
+	-retirar o membro surface e texture de CAnimation, substituir por frames
+	 que tem o mesmo efeito
+	-tem que rever o source da animação ao blitar, pois se está usando só surfaces não precisa
+	 dos frames, a não ser para contar os frames que a animação tem. Preciso decidir se vou
+	 usar os frames ou as surfaces e texturas mas não os 3 ao mesmo tempo.
+	-tem outro bug na compilação para emscripten. Ele não identifica o surf->format->colorkey
+	 mas parece que tem (ou não) uma função de pegar a cor chave da surface. Preciso alterar as
+	 funções mirror_surface e clone_surface para não usarem o colorkey, porque talvez funcione
+	 sem ele.
+	-usar -Os nos módulos da lib com emscripten causa muitos erros no Dangerous Tux, mas o
+	 tamanho do arquivo de javascript fica "minusculo". isso porque também usei o -O3 na
+	 compilação do executavel. [Ah, mas lembrei que a lib ainda tá bugada, talvez seja por isso
+	 que não funcionou]
+
+RESOLVIDOS:
+	-[RESOLVIDO]adotar o novo padrão de nomear variaveis e classes, não usar mais CClasse ou 
+	 SStruct e nem _ nas funções/métodos. [já mudei o nome das classes e structs, falta funções]
+	-[RESOLVIDO]acho que é bem melhor eu me atualizar e passar a usar o SDL2, o 1.2 tá muito 
+	 bugado e causa muita raiva [ATUALIZADO PARA SDL 2.0]
+	-usar milisegundos para as animações ao invés de ticks. Isso deixaria
+	 mais fácil de controlá-las.
+	-[RESOLVIDO]tem bug no colorkey das funções mirror_surface e clone_surface de util.hpp.
+	 As duas deixam uma surface transparente, se não usá-las em CAnimation::add_frame
+	 a animação mostra os frames normalmente. Consegui consertar o bug só que em CAnimation
+	 continua sendo transparente as surfaces. A surface de frame da animação está ok, deve
+	 ser erro na blitagem.[Consegui resolver!!! Era que falta só setar as posições x e y do
+	 source do frame para 0,0, pois estamos usando uma surface inteira como frame]
+
+ABANDONADOS:
+	-[ABANDONADO]novo bug nas funções clone_surface e mirror_surface. Eles deixam a surface 
+	 toda transparente, As funções funcionam normal quando não se usa optimize_surface_alpha.
+
+NOTAS:
+	-nos CControls dos jogos trocar o input por leitura de teclado diretamente a cada atualização
+	-as animações para terem rotação precisão ser ativada antes de adicionar frames

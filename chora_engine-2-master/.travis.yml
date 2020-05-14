@@ -1,0 +1,15 @@
+sudo: required
+before_install:
+  - sudo apt-get install -y libegl1-mesa-dev libgles2-mesa-dev libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev
+  
+# Enable C++ support
+language: cpp
+
+# Compiler selection
+compiler:
+  - gcc
+
+# Build steps
+script:
+  - cmake .
+  - make -j4
