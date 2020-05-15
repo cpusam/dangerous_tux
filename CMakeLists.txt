@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.6)
 
 project(DangerousTux)
 
-<<<<<<< HEAD
 IF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/chora_engine-2-master/)
 	SET(CHORA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/chora_engine-2-master/)
 ELSE (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/chora_engine-2-master/)
@@ -14,14 +13,6 @@ include_directories(${CHORA_DIR}/include)
 include_directories(${CHORA_DIR}/gui)
 include_directories(${CHORA_DIR}/platform)
 include_directories(${CHORA_DIR}/SDL_gfx)
-=======
-add_definitions(-I../chora_engine)
-add_definitions(-L../chora_engine)
-LINK_DIRECTORIES(../chora_engine/)
-LINK_DIRECTORIES(../chora_engine/)
-include_directories(src)
-include_directories(../chora_engine)
->>>>>>> 3614ed47c73c147d7022caf6437783d6aec8a599
 
 file(GLOB_RECURSE SRCS src/*.cpp)
 file(GLOB_RECURSE HDRS src/*.hpp)

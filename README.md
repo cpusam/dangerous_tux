@@ -1,15 +1,8 @@
-<<<<<<< HEAD
-# Dangerous Tux [![Build Status](https://travis-ci.org/algunsnerds/dangerous_tux.svg?branch=master)](https://travis-ci.org/algunsnerds/dangerous_tux)
+# Dangerous Tux 
 ### Click in the link for more info:
-[Please, click HERE for more info.](https://shon.xyz/a/79248/dangeroustux)
 
 Dangerous Tux is a game based on Dangerous Dave from DOS.  
 ![Preview of game title](https://s26.postimg.cc/5r7o4nrzd/image.jpg)  
-=======
-# Dnagerous Tux
-Dangerous Tux is a game based on Dangerous Dave from DOS.  
-![Preview of game levels](https://s26.postimg.cc/5r7o4nrzd/image.jpg)  
->>>>>>> 3614ed47c73c147d7022caf6437783d6aec8a599
 ![Preview of game levels](https://s26.postimg.cc/j84mnjx61/image.jpg)  
 ![Preview of game levels](https://s26.postimg.cc/z6dcdojo9/image.jpg)  
 ![Preview of game levels](https://s26.postimg.cc/63z2aupop/image.jpg)  
@@ -25,23 +18,13 @@ Dangerous Tux is a game based on Dangerous Dave from DOS.
 
 ## Compiling
 - git clone https://github.com/algunsnerds/chora_engine.git
-<<<<<<< HEAD
 - git clone https://github.com/algunsnerds/dangerous_tux.git
-=======
-- cd chora_engine 
-- make -j4
-- cd ../ && git clone https://github.com/algunsnerds/dangerous_tux.git
->>>>>>> 3614ed47c73c147d7022caf6437783d6aec8a599
 - cd dangerous_tux 
 - cmake .
 - make -j4
 
 ## Running 
-<<<<<<< HEAD
 Just click on the DangerousTux after compilling the executable or run under the terminal to see ugly messages :)
-=======
-Just click on the DangerousTux after compilling the executable ou run under the terminal to see ugly messages :)
->>>>>>> 3614ed47c73c147d7022caf6437783d6aec8a599
 
 ## License
 See LICENSE file for more info.
